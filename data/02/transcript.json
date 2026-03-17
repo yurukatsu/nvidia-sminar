@@ -1,0 +1,3571 @@
+{
+    "model": "voxtral-mini-latest",
+    "text": "Hello everyone, welcome to our very exciting session. It's titled Beyond the Black Box, Interpretability of LLM in Finance. And we are, my name is Ari Shader, and we are a team of AI quants that focus on AI applications across all of Barclays, including risk finance, and trading. And we're going to talk about a very important topic that we've written a paper about that really focuses on understanding how LLMs work. And I'll hand it over to Haryam to introduce himself and take it off.Thank you, Ari. Hi, everyone. My name is Ariom. I work with Ari in a team called Risk AI ML. We work on several use cases of AI and in Gen AI. And just continuing to what Ari mentioned for this paper, we used a lot of resources from the researchers, from OpenAI, DeepMind, Anthropic, their papers, their code. And we gave a tweak for those research and gave a financial angle to that. And that's what, talking about the agenda, the first thing we will be talking about is the importance of Interpretability of AI in finance, there are a lot of arguments, a lot of points about it, we will double down on that. Then we will talk about the interpretability tools. Here the brand of interpretability or the type of interpretability that we are using is called mechanistic interpretability. All the toolkits will be related to that. We call it MechInterp in short. And then we talk about three use cases which we have put in the paper. The first one is the sentiment feature where we talk about credit sentiment. The second one is the Warren Buffett AI where we talk about trading. This is related to trading use case. And the third one is hallucination police in which we talk about hallucination, not just specific.to finance it can be for other domains as well. And given the success, given very good response on our paper, we are continuing the work. We will be talking about the upcoming work in terms of age prediction model. So I'll encourage you guys to focus on the use cases as well which will come after 20 minutes 20 to 30 minutes and we have the QR code of the paper link on the side you can scan and go through all of these use cases in detail okay moving on to the next slide so why do we need interpretability So there are three numbers you can see on the slide. One is 85%, the second one is 0%, and the third one is 20 trillion. Now let's narrow down to the first number, which is 85%. We have been there, we all have AI pilots in our organizations, the POCs, which don't reach the production. And about 70% of the leaders or 70% of the folks attribute it to the lack of expandability. We don't have so much of confidence in our AI models, AI systems, due to which there are a lot of AI pilots still in the pilot stage. The second number is 0%, which is the total number of Gen AI tools that look inside the model in the enterprise center, which means there's hardly any tool, there's hardly any algorithm, and hardly any models.that look inside the large language models or the AI models. Yes, we have prompts. Yes, we have chain of thoughts. Yes, we have guardrails. But all of these look at the models from outside and not from inside. And the third number you see is 20 trillion, which is the cost or the loss that we had last time. We didn't understand the financial models really well in 2008. Now we have all these AI models, which are even more complex. These are even more ingrained in the workflows of the organization. And if we don't understand it well, we might be at loss again. So these are a couple of arguments which are the reasons for why we took this research and why interpretability is needed. Another reason why interpretability is needed is this. I'll let you guys go through this slide. The idea here is that if we are not satisfied with the answer we get from chat GPT or AI models, we just try to run it again and again till we reach a really good state, a really good answer. It's good. Everybody does that. I do that as well. But it doesn't work in the enterprise setup, especially in the high-stake domains. Like finance. You don't want to do that again and again. And you need to have more deterministic output. You need to understand the models really well. Now, talking about the interpretability type,It's not something which is new. This is something which has been there since always. We all have used machine learning and AI models in finance, in other use cases, or in other domains, for things like fraud detection, trading, and whatnot. And we have used all of these interpretability. The first one is feature attribution. There are a bunch of models, approaches, Shai, Lime, integrated gradients. So what we do here is, hey, what percentage of this fraud is attributed to the location of the person? So the attribution comes from the feature attribution based interpretability. Then we have model simplification, where we simplify the model or try to use simpler models. And that's one of the reasons why in finance you will see we focus on the simpler models because there is more explainability. You can see the variables. And that's the second kind of interpretability where we simplify the models or tend to use simpler models. Then we have behavioral interpretability where you do some sensitivity testing. What we are doing here is we are kind of shocking the inputs in order to see the impact of the output. It gives you the marginal impact of the input and the output. And then we have visual explanation where we see the input maps which are kind of causing or impacting the output and there are a bunch of techniques there as well. And then we have mechanistic interpretability. It stands out. Why? Because all of these approaches you see, they...look at the inputs and the outputs from outside. They don't go deeper inside the model. And that's where the McIntyre or mechanistic interpretability comes into picture. Okay, so going deeper into mechanistic interpretability, something I talked about in the previous slide, We call it neuroscience of generative AI. Some people also call it MRI for AI. The idea here is, unlike other types of interpretability techniques, we go deeper into the neurons and the layers, and we reverse engineer that. So on the right-hand side, you see an example of diabetes control. If you think about other types of interpretability, what we are doing there is you are trying to analyze what person eats, what's the pattern. And through that, you are trying to understand the overall pattern and find out the solution. It's different in mechanistic interpretability or McIntyre. What you're trying to do is you're trying to go inside the brain of the person. You are trying to find out the neurons or the layer, the part of the brain which is responsible for sugar craving and not just find it, but you can also reduce its influence. So it's very powerful. It's something you can control from inside. And you don't have to do the same prompting, for example, do the same thing again and again because you know the reason and you can control it. So I'll cover why.Do we need mech and terp or mechanistic invertibility? And I think it's really, we believe strongly that LLM adoption depends on transparency. So I think it's very hard to trust, you know, as you can see, we're embedding AI in every part of our lives or industries or systems. But I think it's very hard to trust this, if you will, black boxes, so to speak. Without really understanding how they work. And this was the real reason why we wrote and researched this space. And I think Harry, I'm a little bit alluded to the financial crisis. I think post financial crisis, there was a very heavy investment in financial services and what we call model risk management. And what is model risk management? Fundamentally, Post-financial crisis, the trust in models went almost to zero. We couldn't trust our models to measure our risk, to produce valuations. So we introduced a process where we have independent functions inside banks that review and verify the models. And the same could be said by regulators. We're a heavily regulated industry, and the regulators need to trust that our systems are safe of the financial systems. As you can remember, Lehman Brothers, I used to work there,It caused a systemic risk. Hence, AI has a chance of causing a systemic risk. Hence, we need to understand it, how it works. We cannot just leave it as a black box. And I think fundamentally, you know, it's somewhat obvious, but it's very important. Finance is a high-stakes AI application. You know, losses are, could be monumental, and the government's requirements are higher versus potentially other industries. Therefore, we need to invest more and understand better how these black boxes work. What tools do we use for actually doing this interpretability analysis? And I'll dive a little bit of what I call microscope of LLMs. It's a little bit of a technical name, sparse order encoders. I think it's a cool, you know, machine learning term. But it's really, I think of it as a way to zoom in and understand how models interpret the input and output data. So why do we need this far? So the encoders are short SAEs. The real issue is polysemanticity. And I think polysemanticity means the model reuses parameters for different concepts. So there's a lot more concept than parameters. For example, Astrophysics and Michael Jordan can be represented by the same neuron. They mean absolutely different things.but they're actually reusing the parameters. So then disentangling these features is very difficult. So what do we do? We create this microscope to zoom in into residual stream of a network. And see, you know, by making it sparse, you're effectively disentangling the features inside the model. And on the right side here, you can see an interesting example. It's a fairly simple example. And you ask LLM, what is the capital of France? I mean, I think the answer is most LMs these days, you don't need to have billions of parameters to get that answer, that the answer is Paris. But what's interesting, when you apply microscope or sparse on encoder to residual stream, what you're starting to see is these features forming. And the features are actually relevant to your question, because when we ask what is the capital of France, the features you're seeing is things associated with French culture, French flag, Eiffel Tower, maybe wine, baguette. So you start believing that the model actually... Disentangling and relating to the right features to answer that the capital of France is Paris and not anything else. Let's move to the next slide. And here is an example whereYou can also think of the sparse order encoder as a tap, a tap into residual stream. And this tap disentangles or distributes the residual stream into particular features. And this particular example, we have a, you know, layer two residual stream feeding into sparse order encoder. Sparsely encoder starts disentangling dogs and cats. It knows that there's an animal, but then it starts seeing what type of animal it is. And it now tries to understand that there's a car and a tree. And after that, order encoder completes its stream disentangling. It passes the data back to layer three. And that way you can start tapping into multiple layers of the neural network. And seeing what are different features or concepts are forming across different parts of the network. And that therefore builds confidence that what's happening inside, so to speak, black box, is actually correct behavior. And it builds confidence that the models, the way we use them, are actually going to be used properly without errors or faults. Now, I already talked about Sparsoto encoder. What you see as the features or the concepts doesn't come like this. It comes like numbers. So we need to convert those into human readable label.The simple thing that we do here is we run this parse autoencoder by many sentences, many keywords, many articles, and many tokens. Where they activate the most, that's the label we give to them. So for example, in this case, one of the features is activating quite a lot on the keyword London and we give this feature the name as references to London. Now it doesn't sound, it's not as easy as it sounds because think about the number of concepts we have, think about the number of features we have, so it has to run by multiple sentences, multiple tokens and it's research in itself. Now quickly touching upon some of the other interpretability tools that we also looked into when we were doing this research, apart from this sparse autoencoder that Ari talked about. One of them is called LogitLens. What we do here is we just look at each and every layer of the large language model and see what's the result of the next in terms of the next token for a given prompt from different layer. So here we see the cat at which is kind of the list of the tokens. We're trying to look for the next token. The layer one gives token which is not very intuitive and as we go deeper into the large language models we see we go deeperinto the layers of the LLMVC, it becomes more and more intuitive. So in a way, it kind of gives you which layer adds the maximum impact or maximum value, but it doesn't go much deeper beyond the layer level. So we thought it's slightly on a higher level, and we have an example of this in the paper as well. The next tool, which is kind of the folks in the McIntyre focus on this tool quite a lot these days, which is called Linear Probe. The idea is it works very similar to the prediction model. You can predict whether, let's say, the price will go up or down if you think about financial context. But the difference is that the prediction model is inside or baked into the layers and the neurons of the LLM. So what you have in order to train this model, you have a sample where you have, let's say, the news articles and then the price going up or down. That's what you train this probe with. So the internal layers of the internal neurons of the LLM, they kind of are used for the prediction. Those are the variables. Those are much richer in terms of the context. And once you have trained the model, you can predict whether the price will go up or down. So this is not just used for, let's say, these kind of scenarios in finance. It's also used for predicting, let's say, toxicity or harmful nature.and so on and so forth. So these were a couple of tools I would say it's kind of maybe simpler compared to sparse autoencoder, but something we have even more complex compared to sparse autoencoder, pretty new, these are called circuits. So the LLMs have multiple layers and the information flows through them in form of some complex circuits. So you can think of this as a combination of logic lens and sparse autoencoder. And what happens here is it gives you the feature for the different tokens that activate across different layers and how those features kind of combine together to give you the output. So for example, if you have this input token, the capital of state containing Dallas is. So if you see the first layer or the first level, there are a couple of features which get activated. Capital, state, Dallas, move to the next one where the features kind of combine. There's more complex interactions between the feature. There we see a capital, then we Texas, and finally it gives the answer of Austin. So there's a lot of work which has been done on this. There's a recent paper from Anthropic called Biology of Large Language Model. The link is here. Where they train something called transcoder. Simply speaking, it's a combination of logic and lens.and then sparse autoencoder. It's very difficult to train, very complex, but something which might be very useful in understanding what happens inside these large language models. So here I cover a little bit the continuation of feature labeling. But what's interesting, we're also going to introduce the concept of steering. And that will describe it more in actual use cases. But what's interesting is that what Hiram mentioned before is that usually the residual stream and the sparse autoencoders, you know, data flows, you don't really understand what these features are. You can try to label them by passing a lot of text through a neural network and seeing what activations are happening and infer that most likely this feature is maybe, you know, French culture or feature it's a car or a tree. There's a different way you can actually have the model explain what this feature is. And it's something kind of fascinating personally to me is you actually ask a model to describe the feature. But then what you do, you steer the feature. What steering the feature or the concept means is that you actually start modifying the network using this autoencoder. And what happens is you take a particular feature that you don't have a label for. For example, it's French culture. What you do is you take that... Feature or vector of numbersand you scale it up and down, you increase the scale of this vector. Once you increase the scale, you ask, once you increase the scale, you ask the neural network, what is the meaning of word X? And you prompt it saying the meaning of word X is. And once you tap with your special sparse autoencoder or SAE into your neural network, and you jack up the scale of a particular feature, the model describes itself what the features are. So if I find a feature, and I can go through a list of all the features that we have in a sparse autoencoder, and one by one increase the scale and ask the model what the feature X is, the model will explain itself what this means. I feel like it's a fascinating concept of letting model to self-intervene itself. One other interesting concept that we're able to do once we went through all of the features of a sparse order encoder and we've managed to label every feature available to us, some features are very similar to each other. So what you can actually do, you can start clustering these features. And what this means is that, you know, on the left side, you have a list of different, you know, you have a concept of calmness. You have a concept, Jim.political boundaries, regions, countries. You have terms and, you know, uniqueness of possession, instruments. But a lot of terms are somewhat related to each other. So what we've done, we've created a cluster of features that are specific to finance. So on the right side, you can see you can take all of your... Features and you put them together and you get a cluster talking about climate change or renewable energy, which is very important for financial services. You have a, you know, market risk or market and related terminology for price performance. So it's an investment cluster. You have a cluster talking about payments and taxes. And you have a cluster more generic talking about banking and finance and transaction and wealth management in general. So what's amazing is these features inside the models, they're related to each other and you can actually cluster them by vector similarity. Which builds the confidence that what we are zooming in is actually correct set of outputs the model produces. Okay. So, so far we talked about the tools, the different techniques, sparse autoencoder, logic lens, and a bunch of other tools. How do we use it in the actual use case or actual application? So this is the first one where we talk about, which is called sentiment feature.This is about credit sentiment. So just a quick background. In 2017, while OpenAI was training one of its models, which was a smaller model, which was called LSTM, long short term memory, what it realized was that there was just one neuron which was kind of responsible or identified the sentiment on Amazon reviews. So what I mean by that is even if you remove the entire model and just leave that neuron, the sentiment would still be really good. So this was very impactful, this was very useful. Why? Because you're able to dissect or find out the neuron or the part of the model which is responsible for a given purpose or in this case the sentiment. The link is here. I would recommend you guys to look through it. And this was powerful and this kind of motivated us to look inside the model as well, although it was for a smaller model. So going to the next slide, this is a screenshot you see from a platform called Neuronpedia. So we have the model, Lama 3, 8 billion parameter model. The sparse autoencoder which Ari talked about is loaded in the backend. And what you can do here is you can search for a keyword. The keyword we are searching is credit risk related. And when we search for this keyword,We find out the features. So these are the features we talked about, how to label those features in English phrases. So when we search for this feature, we see, search for this keyword, sorry, we find all of these features which are very relevant. So if you look at one of these features, financial risk and issues related to credit payments and financial terms. So we are able to find the part of the model which might be related to this particular financial phrase. And the site, the website is Neuronpedia, again, really good website. We use it a lot for our research. Going to the next slide, we talked about steering. What is steering? You can make the model obsessive about a feature. You can increase the activation on one or two features with steering. So that's what we did. We found out one of the credit features. Which is concept related to credit rating and financial discovery. We increased the intensity, we increased the activation. We made it obsessive about that, slightly obsessive. And on the right hand side you will see a lot of text, but what we tried to do there is we gave it a sentence and we asked it to rate the sentence on a scale of minus 10 to 10 in terms of the credit sentiment, not general sentiment, but credit sentiment. So this one, the left-hand side, is the result of no steering, just normal output. You see a number 2.which was the sentiment rating on a scale of 10. On the right hand side, we have the result of the steered model, where we perform the same thing, the same sentence, the same prompt. The number we see is 4. The sentiment was different and we also asked the model to give the rationale, the reason why it is different or why the sentiment is what you think it is. And you see some of the keywords which are lower credit score, secured financial and reduced debt. So the model focuses more on the credit related concepts. And it also gives the reason for that which are related to credit. Now one thing, one very important thing to note here is that there is no prompting, there is no fine tuning we did, it was just the result of steering the model. And with just steering we are able to align the model more towards the credit sentiment rather than a generic sentiment. That's the difference between the number three and four. We did further analysis on this with more sentences. Yeah, I mean, I'll jump in here too. So actually the real application we tried of the credit sentiment steering is we have real application that actually classifies sentiment that comes from the news. And there's always some sort of accuracy problems. So what we try is the following. We have a pre-labeled data set of new sentences anddifferent sentiment values. So what we've tried to do the following, we decided to run the model before we steered credit risk and after we steered to increase the value of credit risk feature. And what we actually saw in this confusion matrix you can actually see that the sentiment is improving in our pre-labeled data set. And what makes us feel comfortable is that now the model is more focused on the credit risk sentiment versus maybe a generic sentiment you hear in the news. And I think that's actually one of the potential application of this. Feature steering to actually real applications. And now we're going to wrap up this use case and move to exciting Warren Buffett AI. Ari, we'll talk about. Thanks, Ari. Here, Warren Buffett AI. You guys might have guessed this is related to trading. Which is one of the most common, very famous or well adopted use case. Now one of the main argument here is, I'm just taking a step back, is that the brain of LLM already has all the information on the entire internet. So all these models and approaches and the factors, features, all these trading firms use, LLM might have it already and it's because it's trained on the history of thestock market, strain on things like pricing anomalies. It might already consist of things like, let's say, subprime crisis-related information or COVID-related information. Macro regime signal, when we see regime shift, that might already be baked into LLMs. Volatility shift pattern might also be baked into LLMs and even the satellite image information that's It's a weird thing which some of the trading firms use as well, might also be baked into the LLM. So what we are trying to do here is we are trying to find out that signal or the needle in the haystack from the LLM brain. That's why we call it Warren Buffett AI. We are trying to find out the zone in the LLM brain or the part of the LLM brain which might be like a really good trader which understands the financial concepts really well and then it can use it for the trading purpose. Moving to the next slide, what we do here is going back to this power sort of encoder. That's the tool we use here. In two simple lines, we try to find out the features. That activate on the news headlines. That's part one. Then we train a prediction model on the selected features. Just to go deeper into it,So this is our training pipeline. You will see the financial news headlines on the top. So what we are doing here is we had some news headlines, last 10 years of news data, multiple of news headlines, more than 10,000. That's what we use to get the relevant features from this sparse autoencoder. We talked about how to get the relevant features in the previous use case. Here what we are trying to do is trying to get the relevant features for the financial news headlines. The model used was JMOD2 and the toolkit, our favorite sparse autoencoder was used here. And then we found out the relevant features. So what might be the most relevant features in terms of the features which activate quite a lot. So out of all the features which were close to 10,000 plus, we selected 300 features which might be relevant, which get activated quite a lot on these financial news articles. Now how do we link it to the prediction as in the price going up or down? That's where the prediction model comes into picture. We had the label data of which news corresponds to the price going up or down, let's say in S&P 500 and Apple. So we had that label data on which we trained a decision tree classifier. Like a random forest to be precise. So what we have is like on my prediction model, have a list of feature or an input, the activation on them, which again acts as aand the output is the price going up or down. This is how we kind of train the model. This was the training pipeline. Just trying to explain the thing, the training steps I talked about in the previous slide in more details. So here you can see the different input headlines. So these are the news headlines. And these are some of the sample features which get activated. So for example, learning performance market sentiment. So what we are doing there is for getting the features, we run it by multiple news headlines, as I mentioned in the previous slide, close to 10,000. And we try to see what are the features which are activating quite a lot. Generally, we try to capture the features which are related to finance or the financial features. Now, this is just an illustrative example. The next slide is the actual result. So on the left-hand side, you see some of the features, some of the names of the features. On the right-hand side, you see how much is the importance of the feature. That's what we get from our random forest model that we have trained. You can also see the feature importance. Now one of the most interesting things that we found here was that the top feature, if you see names of the places or location, this is something the folks in finance, they would know. There's something called named entity recognition. Which is being used in a lot of application, a lot of use cases, that interestingly came out to thecame out to the most relevant feature. And the next one was financial terms, again, really important. Then we had stock ticker symbols and finance-related abbreviations, again, which is important. And most of these features were really, really relevant. You will see, it's not a surprise, even while we train some of the trading models, we see some of the spurious correlation, and that's what we see here as well, car and vehicle related terms, but keeping that on the side, this is really relevant, and the results were very, very intuitive, especially the first one, which was named entity recognition or the NERF feature. So really great outcome of this and we'll talk about how we're expanding it even more in the subsequent sections. So next use case is hallucination police. This is something which is not just limited to finance, it can also be used for other domains as well. Now hallucination remains one of the most problematic thing when it comes to the usage of AI, especially in the high stake domain like finance. Hallucination is something which might cause like your reputation, it might lead to a lot of fines and all that. Now there are a lot of solutions as of now, a lot of ways to look into hallucination these days. We look into, we try to do better prompting, we do guardrails, we try to do the references, use better model, reasoning models and whatnot. Human in the loop as well.All these are good, but what we have done here is, again, like the previous use cases, we have looked inside the brain of LLMs to find out the hallucination or to kind of figure out or reduce the hallucination. So what we are doing again in simple terms, We are trying here to build a finance-related chatbot, for example, a finance-related toolkit, which gives you answer to the finance-related questions. So for that, the first step was, like we did in the previous use cases, select finance-specific features. What are the different features which might be related to finance? And here what we are doing is we are doing conditional check. We are monitoring the activation on those features, the relevant features which are selected. And if the activation is not good, if it's below threshold, then we augment the answer through something called prompt, something like prompt enhancement. So this is the summary. Let's go deeper. So these are the steps. The first step that I talked about was finding the features. So we had a bunch of financial sentences and financial phrases. We tried to find out what would be the features related to finance. Once let's say we found out 20 to 30 features, this is the workflow that we run. So let's say there is a financialquestion it goes through this power sort of encoder because we call the features captured there we have the features activation computed and if the feature activation is greater than the threshold and again there can be discussion around what what's the right threshold it can be percentile basis person basis Here is a crude threshold that we put, let's say, 20%, which can be calibrated. But if the feature activation is more than the threshold, we just give the output that the model is giving. But if it is not, then we do some kind of prompt enhancement. We add some more things to the prompt. Just to get a really grounded good output. So in this scenario, because it's a financial chatbot, we are asking questions related to SEC filings and financial documents. We supplement it with prompt which is related to SEC filings and financial documents and which gives us the right and grounded output. Going deeper into some of the features that we selected, this is relevant, similar thing that we did in the previous use case of trading and also credit. So here we see one of the features 15857 which gets activated quite a lot on financial terms or financial keywords and tokens and we can also see the feature labels that's wherethis power sort of encoder becomes important because you can see the explanation of the features in English and you can decide which one to choose, which one not to choose, which one might be activated. Of course activation is one of the main thing but you can also look at the feature label and that's why we looked at the first one which is related to finance, 5405 as well related to finance. And then there are one, two other ones, 15354, for example. It's again related to financial news and companies. So this is how we pick the features. The result, how does the result look like? Now, we asked it a question, for example, related to the timelines around regulatory filing for 8K. So the left hand side when there is no conditional check you just get the output from the LLM. What we see here is that it's typically within four business days of the event, right? So very short Chris reply. But on the right hand side when we do the conditional check which and we run it by all the financial features, it not only gives you the four business days, it also gives you the details about which items, which section have some deviation from the four days. And along with that, it also gives you the citations. Citations is something, I mean, you can take a look at the document in detail. So really good output, no hallucination or less hallucination and really grounded one.Okay, so these are a couple of use cases that we have in the paper. Now, given good response in the paper, given the overall interest in this work of going deeper into the mind of LLM, especially for finance, we are doing or we're continuing the research work. Now, it's more related to the use cases closer to production, actual bigger models, and even fine-tuning or training the toolkit ourselves. So one of the use cases is what we are trying is augmenting classical factors. So this is kind of extension of what we talked about in the previous slide, which was related to Warren Buffett AI. So in finance, we have been using classical factors for our trading models and factor modeling. Some of the classical factors we use are on the bottom left hand side, for example. We have been using S&P 500, return of the stocks, volatility, the historical data of the stock, even the news sentiment. Now, the point here is, why not we augment those with the features we get from LLMs? So, some of the features, for example, on the right hand side, if you see, insider buying, that's one feature in one of the LLMs for that. Then we have earning misses, analyst blog, commentary, and M&A.deal them out. So this augmentation is really powerful because when we moved from rule-based modeling to statistical technique, we augmented it with statistical and machine learning technique. Now the idea can be moved to the next step, augmenting those statistical technique with all these features. Using a similar technique we talked about earlier, you can have these feature activation. You can model it and have the prediction model for trading, factor modeling, and many other use cases in finance.So here I'll cover another future work that's very important in our view is agentic monitoring. So clearly we've moved into a massively agentic usage of AI. But I think agents is, you know, if you think about, you know, the high stakes applications of AI, agents even raises more of a stakes because now you're letting AI make decisions. So what are we doing about it? We are looking into the way to monitor agent reasoning during execution of the workflow steps. We're looking at the signals to predict whether there's a reasoning fault. We're using feature activations and live diagnostic signal that something might be wrong with an agent or something wrong with execution. For example, we could detect tool called misfires. So agents call various tools, you know, they go to the web, they go to internal databases, but that could be, you know, we could be executing the wrong query in the database. So what we could do, we can actually detect it live and either stop execution or we can actually correct the execution. So I think here it's, you know, I think the benefits are enormous. It's not just monitoring or compliance. This is actually about saving costs because agents, as you might be aware, are consuming a lot of tokens. So what you could be doing is here on a diagram.below, you can be looking at agent execution, looking inside the model, and you could be pausing or adjusting the agents to do the right thing. And that not only builds confidence in your agentic system, but it also actually potentially saves on compute. So now we're kind of coming to the end of our talk. We're going to talk a little bit about what tools we used. I think we used a fairly common software stack. We used PyTorch and NVIDIA CUDA, rich software libraries. And we used an interesting, going down the software stack, we used NVIDIA Launchpad, which is an amazing remote system where you can... On a lot of different experiments. You get access to underlying hardware, which were H100 GPUs. There were eight of them. And that allowed us, this stack allowed us to do a lot of experimentation and push our research forward, especially where compute requirements were higher than an average workstation would allow.So let's talk a little bit about limitations. So I think limitations are, we are still in early days of understanding these models. Number one requirement, and I would say it's less of a limitation, more of a requirement, you need to have open wave models. You cannot look inside of the black boxes, not in your control. So I think the alternatives are if you don't have access to open weight models or you don't have the hardware, you can always ask your favorite vendor to provide interpretability tools. I think it's very fair as a, you know, if you are a large user of LLM models, you should be able to ask for interpretability tools to build confidence in applications you're building. The other limitation of our research is right now, as Hiram alluded to, we're limited to single layers. We're looking at particular layers. Obviously, circuits, as described, was the future of this space. Unfortunately, circuits are still very hard. If you think about it, you have multiple layers and you're putting them together into a circuit. That's not an obvious or simple task to do. But this is obviously a limitation that we're working to address in the future. It's also very compute heavy. The cross coders to train them, order encoder across all layers is very compute intensive. And we have...limited kind of metrics around interpretability. How do you detect kind of your, you know, what are these features and how do you translate it to metrics that help you evaluate the model? This is very much an ongoing research. What are the final thoughts? So still we feel that mechanistic interpretability, looking inside the model, might be underrated, especially in high-stake domain like finance. And we think that this is something which should be must-have in finance and also high-stakes domain. Why? Because going back to some of the slides that I talked about earlier, 85% of the use cases are still stuck in POC state, valid state. So knowing deeper or getting insight into the models might unlock and give us confidence so that we are able to even unlock new use cases and scale adoption across our industry. It will definitely build regulator trust because now we can say that, hey, at least we are able to go inside and look and see, understand some part of the model, and which will again allow for wider deployment. And I talked about the subprime crisis in one of the slides before. If we understand the model really well inside out, it might avoid or it might help us avoid one of the financial crisis going forward. And that's why, that's one of the reasons we are very much focused on this interpretability research.Thank you. Thank you.",
+    "usage": {
+        "prompt_tokens": 238,
+        "completion_tokens": 13284,
+        "total_tokens": 13522,
+        "prompt_audio_seconds": 2829,
+        "request_count": 34
+    },
+    "language": null,
+    "segments": [
+        {
+            "text": "Hello everyone, welcome to our very exciting session.",
+            "start": 0.0,
+            "end": 2.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's titled Beyond the Black Box, Interpretability of LLM in Finance.",
+            "start": 2.9,
+            "end": 6.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we are, my name is Ari Shader, and we are a team of AI quants that focus on AI applications across all of Barclays, including risk finance,",
+            "start": 7.6,
+            "end": 19.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and trading.",
+            "start": 20.1,
+            "end": 20.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we're going to talk about a very important topic that we've written a paper about that really focuses on understanding how LLMs work.",
+            "start": 21.9,
+            "end": 31.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'll hand it over to Haryam to introduce himself and take it off.",
+            "start": 32.0,
+            "end": 35.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "Thank you, Ari.",
+            "start": 37.712,
+            "end": 38.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Hi, everyone.",
+            "start": 38.512,
+            "end": 39.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " My name is Ariom.",
+            "start": 39.312,
+            "end": 40.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I work with Ari in a team called Risk AI ML.",
+            "start": 40.312,
+            "end": 43.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We work on several use cases of AI and in Gen AI.",
+            "start": 44.212,
+            "end": 46.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And just continuing to what Ari mentioned for this paper, we used a lot of resources from the researchers, from OpenAI, DeepMind, Anthropic, their papers, their code.",
+            "start": 47.512,
+            "end": 58.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we gave a tweak for those research and gave a financial angle to that.",
+            "start": 59.712,
+            "end": 66.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's what, talking about the agenda, the first thing we will be talking about is the importance of",
+            "start": 67.312,
+            "end": 76.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Interpretability of AI in finance, there are a lot of arguments, a lot of points about it, we will double down on that.",
+            "start": 77.312,
+            "end": 83.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we will talk about the interpretability tools.",
+            "start": 84.912,
+            "end": 87.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here the brand of interpretability or the type of interpretability that we are using is called mechanistic interpretability.",
+            "start": 88.312,
+            "end": 95.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " All the toolkits will be related to that.",
+            "start": 95.912,
+            "end": 97.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We call it MechInterp in short.",
+            "start": 98.312,
+            "end": 100.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we talk about three use cases which we have put in the paper.",
+            "start": 102.212,
+            "end": 105.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The first one is the sentiment feature where we talk about credit sentiment.",
+            "start": 105.912,
+            "end": 111.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The second one is the Warren Buffett AI where we talk about trading.",
+            "start": 111.912,
+            "end": 116.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is related to trading use case.",
+            "start": 116.812,
+            "end": 119.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the third one is hallucination police in which we talk about hallucination, not just specific.",
+            "start": 120.012,
+            "end": 126.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "to finance it can be for other domains as well.",
+            "start": 126.112,
+            "end": 129.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And given the success, given very good response on our paper, we are continuing the work.",
+            "start": 130.512,
+            "end": 137.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We will be talking about the upcoming work in terms of age prediction model.",
+            "start": 138.312,
+            "end": 144.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I'll encourage you guys to",
+            "start": 144.712,
+            "end": 146.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " focus on the use cases as well which will come after 20 minutes 20 to 30 minutes and we have the QR code of the paper link on the side you can scan and go through all of these use cases in detail",
+            "start": 147.312,
+            "end": 159.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " okay moving on to the next slide so why do we need interpretability",
+            "start": 160.412,
+            "end": 164.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So there are three numbers you can see on the slide.",
+            "start": 166.112,
+            "end": 168.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " One is 85%, the second one is 0%, and the third one is 20 trillion.",
+            "start": 168.612,
+            "end": 174.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now let's narrow down to the first number, which is 85%.",
+            "start": 175.612,
+            "end": 178.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have been there, we all have AI pilots in our organizations, the POCs, which don't reach the production.",
+            "start": 179.112,
+            "end": 185.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And about 70% of the leaders or 70% of the folks attribute it to the lack of expandability.",
+            "start": 186.612,
+            "end": 193.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We don't have so much of confidence in our AI models, AI systems, due to which there are a lot of AI pilots still in the pilot stage.",
+            "start": 193.412,
+            "end": 202.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The second number is 0%, which is the total number of Gen AI tools that look inside the model in the enterprise center, which means there's hardly any tool, there's hardly any algorithm, and hardly any models.",
+            "start": 203.512,
+            "end": 215.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "that look inside the large language models or the AI models.",
+            "start": 216.112,
+            "end": 219.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yes, we have prompts.",
+            "start": 219.612,
+            "end": 220.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yes, we have chain of thoughts.",
+            "start": 221.112,
+            "end": 222.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yes, we have guardrails.",
+            "start": 222.512,
+            "end": 223.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But all of these look at the models from outside and not from inside.",
+            "start": 224.112,
+            "end": 227.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the third number you see is 20 trillion, which is the cost or the loss that we had last time.",
+            "start": 229.412,
+            "end": 235.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We didn't understand the financial models really well in 2008.",
+            "start": 235.112,
+            "end": 238.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now we have all these AI models, which are even more complex.",
+            "start": 239.512,
+            "end": 243.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " These are even more ingrained in the workflows of the organization.",
+            "start": 243.212,
+            "end": 249.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And if we don't understand it well, we might be at loss again.",
+            "start": 250.312,
+            "end": 254.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So these are a couple of arguments which are the reasons for why we took this research and why interpretability is needed.",
+            "start": 255.012,
+            "end": 264.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Another reason why interpretability is needed is this.",
+            "start": 264.912,
+            "end": 267.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'll let you guys go through this slide.",
+            "start": 268.512,
+            "end": 271.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The idea here is that if we are not satisfied with the answer we get from chat GPT or AI models, we just try to run it again and again till we reach a really good state, a really good answer.",
+            "start": 273.512,
+            "end": 287.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's good.",
+            "start": 287.612,
+            "end": 288.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Everybody does that.",
+            "start": 288.312,
+            "end": 289.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I do that as well.",
+            "start": 289.112,
+            "end": 290.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But it doesn't work in the enterprise setup, especially in the high-stake domains.",
+            "start": 290.212,
+            "end": 294.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like finance.",
+            "start": 294.912,
+            "end": 295.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You don't want to do that again and again.",
+            "start": 295.512,
+            "end": 297.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you need to have more deterministic output.",
+            "start": 297.812,
+            "end": 300.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You need to understand the models really well.",
+            "start": 300.812,
+            "end": 302.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, talking about the interpretability type,",
+            "start": 304.112,
+            "end": 306.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "It's not something which is new.",
+            "start": 306.712,
+            "end": 308.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is something which has been there since always.",
+            "start": 309.412,
+            "end": 312.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We all have used machine learning and AI models in finance, in other use cases, or in other domains, for things like fraud detection, trading, and whatnot.",
+            "start": 312.812,
+            "end": 322.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we have used all of these interpretability.",
+            "start": 323.312,
+            "end": 325.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The first one is feature attribution.",
+            "start": 325.312,
+            "end": 326.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There are a bunch of models, approaches, Shai, Lime, integrated gradients.",
+            "start": 327.412,
+            "end": 331.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what we do here is, hey, what percentage of this fraud is attributed to the location of the person?",
+            "start": 332.012,
+            "end": 337.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the attribution comes from the feature attribution based interpretability.",
+            "start": 337.512,
+            "end": 342.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we have model simplification, where we simplify the model or try to use simpler models.",
+            "start": 343.512,
+            "end": 348.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's one of the reasons why in finance you will see we focus on the simpler models because there is more explainability.",
+            "start": 348.912,
+            "end": 355.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can see the variables.",
+            "start": 355.512,
+            "end": 356.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's the second kind of interpretability where we simplify the models or tend to use simpler models.",
+            "start": 357.412,
+            "end": 362.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we have behavioral interpretability where you do some sensitivity testing.",
+            "start": 363.312,
+            "end": 367.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What we are doing here is we are kind of shocking the inputs in order to see the impact of the output.",
+            "start": 368.112,
+            "end": 374.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It gives you the marginal impact of the input and the output.",
+            "start": 374.512,
+            "end": 376.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we have visual explanation where we see the input maps which are kind of causing or impacting the output and there are a bunch of techniques there as well.",
+            "start": 377.412,
+            "end": 388.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we have mechanistic interpretability.",
+            "start": 389.912,
+            "end": 391.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It stands out.",
+            "start": 391.812,
+            "end": 392.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Why?",
+            "start": 392.812,
+            "end": 393.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because all of these approaches you see, they...",
+            "start": 393.512,
+            "end": 396.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "look at the inputs and the outputs from outside.",
+            "start": 396.112,
+            "end": 399.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They don't go deeper inside the model.",
+            "start": 399.512,
+            "end": 401.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's where the McIntyre or mechanistic interpretability comes into picture.",
+            "start": 402.312,
+            "end": 405.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Okay, so going deeper into mechanistic interpretability, something I talked about in the previous slide,",
+            "start": 407.012,
+            "end": 412.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We call it neuroscience of generative AI.",
+            "start": 413.612,
+            "end": 416.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Some people also call it MRI for AI.",
+            "start": 416.412,
+            "end": 418.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The idea here is, unlike other types of interpretability techniques, we go deeper into the neurons and the layers, and we reverse engineer that.",
+            "start": 419.412,
+            "end": 429.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So on the right-hand side, you see an example of diabetes control.",
+            "start": 430.412,
+            "end": 434.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you think about other types of interpretability, what we are doing there is you are trying to analyze what person eats, what's the pattern.",
+            "start": 434.612,
+            "end": 442.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And through that, you are trying to understand the overall pattern and find out the solution.",
+            "start": 443.312,
+            "end": 449.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's different in mechanistic interpretability or McIntyre.",
+            "start": 450.612,
+            "end": 454.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What you're trying to do is you're trying to go inside the brain of the person.",
+            "start": 454.512,
+            "end": 459.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You are trying to find out the neurons or the layer, the part of the brain which is responsible for sugar craving and not just find it, but you can also reduce its influence.",
+            "start": 460.512,
+            "end": 472.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it's very powerful.",
+            "start": 472.812,
+            "end": 474.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's something you can control from inside.",
+            "start": 474.112,
+            "end": 476.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you don't have to do the same prompting, for example, do the same thing again and again because you know the reason and you can control it.",
+            "start": 476.912,
+            "end": 483.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I'll cover why.",
+            "start": 484.412,
+            "end": 486.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Do we need mech and terp or mechanistic invertibility?",
+            "start": 486.112,
+            "end": 489.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I think it's really, we believe strongly that LLM adoption depends on transparency.",
+            "start": 490.112,
+            "end": 497.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I think it's very hard to trust, you know, as you can see, we're embedding AI in every part of our lives or industries or systems.",
+            "start": 497.912,
+            "end": 509.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But I think it's very hard to trust this, if you will, black boxes, so to speak.",
+            "start": 509.612,
+            "end": 515.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Without really understanding how they work.",
+            "start": 515.812,
+            "end": 517.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this was the real reason why we wrote and researched this space.",
+            "start": 517.412,
+            "end": 521.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I think Harry, I'm a little bit alluded to the financial crisis.",
+            "start": 522.112,
+            "end": 525.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think post financial crisis, there was a very heavy investment in financial services and what we call model risk management.",
+            "start": 525.812,
+            "end": 532.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And what is model risk management?",
+            "start": 533.412,
+            "end": 534.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Fundamentally,",
+            "start": 534.912,
+            "end": 535.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Post-financial crisis, the trust in models went almost to zero.",
+            "start": 536.612,
+            "end": 542.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We couldn't trust our models to measure our risk, to produce valuations.",
+            "start": 542.512,
+            "end": 547.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we introduced a process where we have independent functions inside banks that review",
+            "start": 547.612,
+            "end": 555.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and verify the models.",
+            "start": 556.312,
+            "end": 558.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the same could be said by regulators.",
+            "start": 559.912,
+            "end": 561.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're a heavily regulated industry, and the regulators need to trust that our systems are safe of the financial systems.",
+            "start": 561.912,
+            "end": 572.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " As you can remember, Lehman Brothers, I used to work there,",
+            "start": 572.512,
+            "end": 575.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "It caused a systemic risk.",
+            "start": 576.112,
+            "end": 577.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Hence, AI has a chance of causing a systemic risk.",
+            "start": 578.612,
+            "end": 583.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Hence, we need to understand it, how it works.",
+            "start": 583.212,
+            "end": 585.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We cannot just leave it as a black box.",
+            "start": 586.312,
+            "end": 588.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I think fundamentally, you know, it's somewhat obvious, but it's very important.",
+            "start": 588.612,
+            "end": 594.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Finance is a high-stakes AI application.",
+            "start": 594.112,
+            "end": 596.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, losses are, could be monumental, and the government's requirements are higher versus potentially other industries.",
+            "start": 597.312,
+            "end": 606.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Therefore, we need to invest more and understand better how these black boxes work.",
+            "start": 607.212,
+            "end": 612.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What tools do we use for actually doing this interpretability analysis?",
+            "start": 613.312,
+            "end": 617.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'll dive a little bit of what I call",
+            "start": 617.812,
+            "end": 619.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " microscope of LLMs.",
+            "start": 620.212,
+            "end": 622.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a little bit of a technical name, sparse order encoders.",
+            "start": 622.712,
+            "end": 625.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think it's a cool, you know, machine learning term.",
+            "start": 625.512,
+            "end": 628.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But it's really, I think of it as a way to zoom in and understand how models interpret the input and output data.",
+            "start": 629.012,
+            "end": 638.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So why do we need this far?",
+            "start": 640.312,
+            "end": 641.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the encoders are short SAEs.",
+            "start": 641.712,
+            "end": 643.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The real issue is polysemanticity.",
+            "start": 644.612,
+            "end": 647.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I think polysemanticity means the model reuses parameters for different concepts.",
+            "start": 647.912,
+            "end": 655.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So there's a lot more concept than parameters.",
+            "start": 655.412,
+            "end": 657.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example,",
+            "start": 657.612,
+            "end": 658.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Astrophysics and Michael Jordan can be represented by the same neuron.",
+            "start": 659.512,
+            "end": 663.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They mean absolutely different things.",
+            "start": 664.012,
+            "end": 665.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "but they're actually reusing the parameters.",
+            "start": 666.512,
+            "end": 670.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So then disentangling these features is very difficult.",
+            "start": 670.512,
+            "end": 674.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what do we do?",
+            "start": 674.612,
+            "end": 675.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We create this microscope to zoom in into residual stream of a network.",
+            "start": 675.912,
+            "end": 682.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And see, you know, by making it sparse, you're effectively disentangling the features inside the model.",
+            "start": 683.412,
+            "end": 690.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And on the right side here, you can see an interesting example.",
+            "start": 691.012,
+            "end": 693.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a fairly simple example.",
+            "start": 693.912,
+            "end": 695.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you ask LLM, what is the capital of France?",
+            "start": 696.012,
+            "end": 700.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I mean, I think the answer is most LMs these days, you don't need to have billions of parameters to get that answer, that the answer is Paris.",
+            "start": 700.812,
+            "end": 709.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But what's interesting, when you apply microscope or sparse on encoder to residual stream, what you're starting to see is these features forming.",
+            "start": 709.912,
+            "end": 719.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the features are actually relevant to your question, because when we ask what is the capital of France, the features you're seeing is things associated with French culture, French flag, Eiffel Tower, maybe wine, baguette.",
+            "start": 720.012,
+            "end": 733.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you start believing that the model actually...",
+            "start": 734.112,
+            "end": 737.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Disentangling and relating to the right features to answer that the capital of France is Paris and not anything else.",
+            "start": 738.312,
+            "end": 746.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Let's move to the next slide.",
+            "start": 748.212,
+            "end": 749.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And here is an example where",
+            "start": 751.912,
+            "end": 755.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "You can also think of the sparse order encoder as a tap, a tap into residual stream.",
+            "start": 757.912,
+            "end": 764.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this tap disentangles or distributes the residual stream into particular features.",
+            "start": 765.312,
+            "end": 772.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this particular example, we have a, you know, layer two residual stream feeding into sparse order encoder.",
+            "start": 773.012,
+            "end": 780.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Sparsely encoder starts disentangling dogs and cats.",
+            "start": 781.612,
+            "end": 785.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It knows that there's an animal, but then it starts seeing what type of animal it is.",
+            "start": 785.112,
+            "end": 788.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it now tries to understand that there's a car and a tree.",
+            "start": 789.212,
+            "end": 793.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And after that, order encoder completes its stream disentangling.",
+            "start": 793.912,
+            "end": 798.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It passes the data back to layer three.",
+            "start": 798.612,
+            "end": 800.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that way you can start tapping into multiple layers of the neural network.",
+            "start": 801.312,
+            "end": 805.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And seeing what are different features or concepts are forming across different parts of the network.",
+            "start": 806.212,
+            "end": 813.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that therefore builds confidence that what's happening inside, so to speak, black box, is actually correct behavior.",
+            "start": 813.412,
+            "end": 821.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it builds confidence that the models, the way we use them, are actually going to be used properly without errors or faults.",
+            "start": 822.012,
+            "end": 829.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, I already talked about Sparsoto encoder.",
+            "start": 830.612,
+            "end": 832.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What you see as the features or the concepts doesn't come like this.",
+            "start": 833.312,
+            "end": 839.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It comes like numbers.",
+            "start": 839.612,
+            "end": 840.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we need to convert those into human readable label.",
+            "start": 841.212,
+            "end": 844.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "The simple thing that we do here is we run this parse autoencoder by many sentences, many keywords, many articles, and many tokens.",
+            "start": 846.412,
+            "end": 856.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Where they activate the most, that's the label we give to them.",
+            "start": 857.312,
+            "end": 862.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So for example, in this case, one of the features",
+            "start": 862.212,
+            "end": 865.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " is activating quite a lot on the keyword London and we give this feature the name as references to London.",
+            "start": 866.112,
+            "end": 875.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now it doesn't sound, it's not as easy as it sounds because think about the number of concepts we have, think about the number of features we have, so it has to run by multiple sentences, multiple tokens and it's research in itself.",
+            "start": 875.912,
+            "end": 889.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now quickly touching upon some of the other interpretability tools that we also looked into when we were doing this research, apart from this sparse autoencoder that Ari talked about.",
+            "start": 890.412,
+            "end": 901.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " One of them is called LogitLens.",
+            "start": 904.212,
+            "end": 906.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What we do here is we",
+            "start": 906.612,
+            "end": 908.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " just look at each and every layer of the large language model and see what's the result of the next in terms of the next token for a given prompt from different layer.",
+            "start": 909.012,
+            "end": 919.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So here we see the cat at which is kind of the list of the tokens.",
+            "start": 920.512,
+            "end": 924.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We're trying to look for the next token.",
+            "start": 924.912,
+            "end": 926.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The layer one gives",
+            "start": 927.212,
+            "end": 928.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " token which is not very intuitive and as we go deeper into the large language models we see we go deeper",
+            "start": 928.812,
+            "end": 936.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "into the layers of the LLMVC, it becomes more and more intuitive.",
+            "start": 936.112,
+            "end": 939.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So in a way, it kind of gives you which layer adds the maximum impact or maximum value, but it doesn't go much deeper beyond the layer level.",
+            "start": 940.212,
+            "end": 949.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we thought it's slightly on a higher level, and we have an example of this in the paper as well.",
+            "start": 949.312,
+            "end": 956.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The next tool, which is kind of the folks in the McIntyre focus on this tool quite a lot these days, which is called Linear Probe.",
+            "start": 957.512,
+            "end": 967.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The idea is it works very similar to the prediction model.",
+            "start": 967.912,
+            "end": 971.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can predict whether, let's say, the price will go up or down if you think about financial context.",
+            "start": 971.812,
+            "end": 976.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But the difference is that the prediction model is inside or baked into the layers and the neurons of the LLM.",
+            "start": 977.012,
+            "end": 984.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what you have in order to train this model, you have a sample where you have, let's say, the news articles and then the price going up or down.",
+            "start": 985.212,
+            "end": 994.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's what you train this probe with.",
+            "start": 995.012,
+            "end": 997.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the internal layers of the internal neurons of the LLM, they kind of are used for the prediction.",
+            "start": 998.212,
+            "end": 1006.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Those are the variables.",
+            "start": 1006.612,
+            "end": 1007.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Those are much richer in terms of the context.",
+            "start": 1008.612,
+            "end": 1011.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And once you have trained the model, you can predict whether the price will go up or down.",
+            "start": 1012.012,
+            "end": 1016.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is not just used for, let's say, these kind of scenarios in finance.",
+            "start": 1017.412,
+            "end": 1022.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's also used for predicting, let's say, toxicity or harmful nature.",
+            "start": 1022.312,
+            "end": 1026.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "and so on and so forth.",
+            "start": 1027.212,
+            "end": 1028.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So these were a couple of tools I would say it's kind of maybe simpler compared to sparse autoencoder, but something we have even more complex compared to sparse autoencoder,",
+            "start": 1030.112,
+            "end": 1042.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " pretty new, these are called circuits.",
+            "start": 1043.212,
+            "end": 1045.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the LLMs have multiple layers and the information flows through them in form of some complex circuits.",
+            "start": 1046.112,
+            "end": 1054.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So you can think of this as a combination of logic lens and sparse autoencoder.",
+            "start": 1055.812,
+            "end": 1060.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And what happens here is it gives you the feature for the different tokens that activate across different layers and how those features kind of combine together to give you the output.",
+            "start": 1061.512,
+            "end": 1073.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So for example, if you have this input token, the capital of state containing Dallas is.",
+            "start": 1074.012,
+            "end": 1079.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if you see the first layer or the first level, there are a couple of features which get activated.",
+            "start": 1080.212,
+            "end": 1087.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Capital, state, Dallas, move to the next one where the features kind of combine.",
+            "start": 1087.712,
+            "end": 1091.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's more complex interactions between the feature.",
+            "start": 1091.312,
+            "end": 1093.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There we see a capital, then we Texas, and finally it gives the answer of Austin.",
+            "start": 1094.112,
+            "end": 1098.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So there's a lot of work which has been done on this.",
+            "start": 1099.412,
+            "end": 1102.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's a recent paper from Anthropic called Biology of Large Language Model.",
+            "start": 1102.212,
+            "end": 1107.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The link is here.",
+            "start": 1107.012,
+            "end": 1107.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Where they train something called transcoder.",
+            "start": 1108.312,
+            "end": 1111.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Simply speaking, it's a combination of logic and lens.",
+            "start": 1113.712,
+            "end": 1115.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "and then sparse autoencoder.",
+            "start": 1117.012,
+            "end": 1118.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's very difficult to train, very complex, but something which might be very useful in understanding what happens inside these large language models.",
+            "start": 1119.512,
+            "end": 1127.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So here I cover a little bit the continuation of feature labeling.",
+            "start": 1128.812,
+            "end": 1132.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But what's interesting, we're also going to introduce the concept of steering.",
+            "start": 1133.012,
+            "end": 1136.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that will describe it more in actual use cases.",
+            "start": 1137.012,
+            "end": 1143.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But what's interesting is that what Hiram mentioned before is that usually the residual stream and the sparse autoencoders, you know, data flows, you don't really understand what these features are.",
+            "start": 1143.612,
+            "end": 1155.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You can try to label them by passing a lot of text through a neural network and seeing what activations are happening and infer that most likely this feature is maybe, you know, French culture or feature it's a car or a tree.",
+            "start": 1155.312,
+            "end": 1169.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " There's a different way you can actually have the model explain what this feature is.",
+            "start": 1170.112,
+            "end": 1174.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it's something kind of fascinating personally to me is you actually ask a model to describe the feature.",
+            "start": 1174.712,
+            "end": 1181.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But then what you do, you steer the feature.",
+            "start": 1181.712,
+            "end": 1183.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What steering the feature or the concept means is that you actually start modifying the network using this autoencoder.",
+            "start": 1184.012,
+            "end": 1192.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And what happens is you take a particular feature that you don't have a label for.",
+            "start": 1193.212,
+            "end": 1197.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, it's French culture.",
+            "start": 1197.612,
+            "end": 1200.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What you do is you take that...",
+            "start": 1200.712,
+            "end": 1202.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Feature or vector of numbers",
+            "start": 1203.212,
+            "end": 1205.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "and you scale it up and down, you increase the scale of this vector.",
+            "start": 1206.112,
+            "end": 1210.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Once you increase the scale, you ask, once you increase the scale, you ask the neural network, what is the meaning of word X?",
+            "start": 1211.112,
+            "end": 1218.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you prompt it saying the meaning of word X is.",
+            "start": 1220.112,
+            "end": 1222.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And once you tap with your special sparse autoencoder or SAE into your neural network, and you jack up",
+            "start": 1223.412,
+            "end": 1231.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " the scale of a particular feature, the model describes itself what the features are.",
+            "start": 1232.712,
+            "end": 1238.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So if I find a feature, and I can go through a list of all the features that we have in a sparse autoencoder, and one by one",
+            "start": 1239.112,
+            "end": 1248.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " increase the scale and ask the model what the feature X is, the model will explain itself what this means.",
+            "start": 1248.512,
+            "end": 1256.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I feel like it's a fascinating concept of letting model to self-intervene itself.",
+            "start": 1256.812,
+            "end": 1262.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One other interesting concept that we're able to do once we went through all of the features of a sparse order encoder and we've managed to",
+            "start": 1263.112,
+            "end": 1273.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " label every feature available to us, some features are very similar to each other.",
+            "start": 1275.012,
+            "end": 1282.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what you can actually do, you can start clustering these features.",
+            "start": 1282.712,
+            "end": 1286.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And what this means is that, you know, on the left side, you have a list of different, you know, you have a concept of calmness.",
+            "start": 1287.312,
+            "end": 1294.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You have a concept, Jim.",
+            "start": 1294.912,
+            "end": 1296.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "political boundaries, regions, countries.",
+            "start": 1296.112,
+            "end": 1299.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You have terms and, you know, uniqueness of possession, instruments.",
+            "start": 1299.512,
+            "end": 1304.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But a lot of terms are somewhat related to each other.",
+            "start": 1304.312,
+            "end": 1306.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what we've done, we've created a cluster of features that are specific to finance.",
+            "start": 1306.612,
+            "end": 1312.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So on the right side, you can see you can take all of your...",
+            "start": 1312.612,
+            "end": 1316.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Features and you put them together and you get a cluster talking about climate change or renewable energy, which is very important for financial services.",
+            "start": 1316.312,
+            "end": 1325.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You have a, you know, market risk or market and related terminology for price performance.",
+            "start": 1325.912,
+            "end": 1332.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it's an investment cluster.",
+            "start": 1332.212,
+            "end": 1334.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You have a cluster talking about payments and taxes.",
+            "start": 1335.012,
+            "end": 1338.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you have a cluster more generic talking about banking and finance and transaction and wealth management in general.",
+            "start": 1338.912,
+            "end": 1344.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what's amazing is these features inside the models, they're related to each other and you can actually cluster them by vector similarity.",
+            "start": 1344.712,
+            "end": 1354.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Which builds the confidence that what we are zooming in is actually correct set of outputs the model produces.",
+            "start": 1354.712,
+            "end": 1363.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Okay.",
+            "start": 1364.912,
+            "end": 1365.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So, so far we talked about the tools, the different techniques, sparse autoencoder, logic lens, and a bunch of other tools.",
+            "start": 1365.912,
+            "end": 1374.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " How do we use it in the actual use case or actual application?",
+            "start": 1374.812,
+            "end": 1380.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is the first one where we talk about, which is called sentiment feature.",
+            "start": 1381.012,
+            "end": 1385.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "This is about credit sentiment.",
+            "start": 1386.512,
+            "end": 1388.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So just a quick background.",
+            "start": 1389.612,
+            "end": 1391.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In 2017, while OpenAI was training one of its models, which was a smaller model, which was called LSTM, long short term memory,",
+            "start": 1392.612,
+            "end": 1403.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " what it realized was that there was just one neuron which was kind of responsible or identified the sentiment on Amazon reviews.",
+            "start": 1404.412,
+            "end": 1413.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what I mean by that is even if you remove the entire model and just leave that neuron, the sentiment would still be really good.",
+            "start": 1413.912,
+            "end": 1421.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this was very impactful, this was very useful.",
+            "start": 1422.312,
+            "end": 1424.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Why?",
+            "start": 1425.612,
+            "end": 1425.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because you're able to dissect or find out the neuron or the part of the model which is responsible for a given",
+            "start": 1425.912,
+            "end": 1432.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " purpose or in this case the sentiment.",
+            "start": 1434.212,
+            "end": 1436.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The link is here.",
+            "start": 1437.212,
+            "end": 1438.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I would recommend you guys to look through it.",
+            "start": 1438.912,
+            "end": 1440.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this was powerful and this kind of motivated us to look inside the model as well, although it was for a smaller model.",
+            "start": 1441.212,
+            "end": 1447.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So going to the next slide, this is a screenshot you see from a platform called Neuronpedia.",
+            "start": 1448.912,
+            "end": 1455.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we have the model, Lama 3, 8 billion parameter model.",
+            "start": 1456.412,
+            "end": 1461.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The sparse autoencoder which Ari talked about is loaded in the backend.",
+            "start": 1461.812,
+            "end": 1465.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And what you can do here is you can search for a keyword.",
+            "start": 1466.612,
+            "end": 1470.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The keyword we are searching is credit risk related.",
+            "start": 1470.712,
+            "end": 1473.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And when we search for this keyword,",
+            "start": 1474.212,
+            "end": 1475.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "We find out the features.",
+            "start": 1476.212,
+            "end": 1477.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So these are the features we talked about, how to label those features in English phrases.",
+            "start": 1477.812,
+            "end": 1482.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So when we search for this feature, we see, search for this keyword, sorry, we find all of these features which are very relevant.",
+            "start": 1484.012,
+            "end": 1492.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if you look at one of these features, financial risk and issues related to credit payments and financial terms.",
+            "start": 1492.712,
+            "end": 1498.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we are able to find the part of the model which might be related to this particular financial phrase.",
+            "start": 1498.612,
+            "end": 1505.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the site, the website is Neuronpedia, again, really good website.",
+            "start": 1506.512,
+            "end": 1510.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We use it a lot for our research.",
+            "start": 1510.512,
+            "end": 1512.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Going to the next slide, we talked about steering.",
+            "start": 1515.012,
+            "end": 1517.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What is steering?",
+            "start": 1517.512,
+            "end": 1518.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can make the model obsessive about a feature.",
+            "start": 1518.512,
+            "end": 1522.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can increase the activation on one or two features with steering.",
+            "start": 1522.112,
+            "end": 1527.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So that's what we did.",
+            "start": 1527.612,
+            "end": 1528.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We found out one of the credit features.",
+            "start": 1528.612,
+            "end": 1530.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Which is concept related to credit rating and financial discovery.",
+            "start": 1531.212,
+            "end": 1534.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We increased the intensity, we increased the activation.",
+            "start": 1534.712,
+            "end": 1537.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We made it obsessive about that, slightly obsessive.",
+            "start": 1537.212,
+            "end": 1539.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And on the right hand side you will see a lot of text, but what we tried to do there is we gave it a sentence and we asked it to rate the sentence",
+            "start": 1540.512,
+            "end": 1550.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " on a scale of minus 10 to 10 in terms of the credit sentiment, not general sentiment, but credit sentiment.",
+            "start": 1551.112,
+            "end": 1557.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this one, the left-hand side, is the result of no steering, just normal output.",
+            "start": 1558.312,
+            "end": 1564.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You see a number 2.",
+            "start": 1564.612,
+            "end": 1566.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "which was the sentiment rating on a scale of 10.",
+            "start": 1566.612,
+            "end": 1569.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On the right hand side, we have the result of the steered model, where we perform the same thing, the same sentence, the same prompt.",
+            "start": 1570.812,
+            "end": 1580.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The number we see is 4.",
+            "start": 1581.512,
+            "end": 1583.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The sentiment was different and we also asked the model to give the rationale, the reason why it is different or why the sentiment is what you think it is.",
+            "start": 1584.412,
+            "end": 1593.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you see some of the keywords which are lower credit score, secured financial and reduced debt.",
+            "start": 1594.512,
+            "end": 1599.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the model focuses more on the credit related concepts.",
+            "start": 1600.412,
+            "end": 1604.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it also gives the reason for that which are related to credit.",
+            "start": 1605.412,
+            "end": 1609.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now one thing, one very important thing to note here is that there is no prompting, there is no fine tuning we did, it was just the result of steering the model.",
+            "start": 1610.112,
+            "end": 1617.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And with just steering we are able to align the model more towards the credit sentiment rather than a generic sentiment.",
+            "start": 1618.312,
+            "end": 1623.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's the difference between the number three and four.",
+            "start": 1624.912,
+            "end": 1626.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We did further analysis on this with more sentences.",
+            "start": 1627.812,
+            "end": 1630.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yeah, I mean, I'll jump in here too.",
+            "start": 1630.912,
+            "end": 1632.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So actually the real application we tried of the credit sentiment steering is we have real application that actually classifies sentiment that comes from the news.",
+            "start": 1632.412,
+            "end": 1643.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And there's always some sort of accuracy problems.",
+            "start": 1644.412,
+            "end": 1646.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what we try is the following.",
+            "start": 1647.112,
+            "end": 1649.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We have a pre-labeled data set of new sentences and",
+            "start": 1649.312,
+            "end": 1655.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "different sentiment values.",
+            "start": 1656.412,
+            "end": 1659.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what we've tried to do the following, we decided to run the model before we steered credit risk and after we steered to increase the value of credit risk feature.",
+            "start": 1659.212,
+            "end": 1671.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And what we actually saw in this confusion matrix",
+            "start": 1671.912,
+            "end": 1674.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " you can actually see that the sentiment is improving in our pre-labeled data set.",
+            "start": 1675.612,
+            "end": 1681.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And what makes us feel comfortable is that now the model is more focused on the credit risk sentiment versus maybe a generic sentiment you hear in the news.",
+            "start": 1681.812,
+            "end": 1691.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I think that's actually one of the potential application of this.",
+            "start": 1692.112,
+            "end": 1696.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Feature steering to actually real applications.",
+            "start": 1697.112,
+            "end": 1701.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And now we're going to wrap up this use case and move to exciting Warren Buffett AI.",
+            "start": 1702.612,
+            "end": 1707.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Ari, we'll talk about.",
+            "start": 1708.112,
+            "end": 1709.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thanks, Ari.",
+            "start": 1710.612,
+            "end": 1711.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here, Warren Buffett AI.",
+            "start": 1712.712,
+            "end": 1713.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You guys might have guessed this is related to trading.",
+            "start": 1714.512,
+            "end": 1716.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Which is one of the most common, very famous or well adopted use case.",
+            "start": 1717.612,
+            "end": 1723.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now one of the main argument here is, I'm just taking a step back, is that the brain of LLM already has all the information on the entire internet.",
+            "start": 1725.612,
+            "end": 1733.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So all these models and approaches and the factors, features, all these trading firms use,",
+            "start": 1734.312,
+            "end": 1739.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " LLM might have it already and it's because it's trained on the history of the",
+            "start": 1739.612,
+            "end": 1746.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "stock market, strain on things like pricing anomalies.",
+            "start": 1746.112,
+            "end": 1749.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It might already consist of things like, let's say, subprime crisis-related information or COVID-related information.",
+            "start": 1750.212,
+            "end": 1755.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Macro regime signal, when we see regime shift, that might already be baked into LLMs.",
+            "start": 1756.912,
+            "end": 1762.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Volatility shift pattern might also be baked into LLMs and even the satellite image information that's",
+            "start": 1762.912,
+            "end": 1767.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's a weird thing which some of the trading firms use as well, might also be baked into the LLM.",
+            "start": 1768.112,
+            "end": 1772.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what we are trying to do here is we are trying to find out that signal or the needle in the haystack from the LLM brain.",
+            "start": 1772.712,
+            "end": 1780.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's why we call it Warren Buffett AI.",
+            "start": 1780.712,
+            "end": 1783.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We are trying to find out the zone in the LLM brain or the part of the LLM brain which might be",
+            "start": 1783.112,
+            "end": 1787.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " like a really good trader which understands the financial concepts really well and then it can use it for the trading purpose.",
+            "start": 1788.112,
+            "end": 1795.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Moving to the next slide, what we do here is going back to this power sort of encoder.",
+            "start": 1796.512,
+            "end": 1801.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's the tool we use here.",
+            "start": 1802.212,
+            "end": 1804.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In two simple lines, we try to find out the features.",
+            "start": 1804.612,
+            "end": 1808.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That activate on the news headlines.",
+            "start": 1808.412,
+            "end": 1810.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's part one.",
+            "start": 1811.112,
+            "end": 1811.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we train a prediction model on the selected features.",
+            "start": 1812.212,
+            "end": 1815.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Just to go deeper into it,",
+            "start": 1816.112,
+            "end": 1817.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So this is our training pipeline.",
+            "start": 1820.392,
+            "end": 1821.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You will see the financial news headlines on the top.",
+            "start": 1822.092,
+            "end": 1825.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what we are doing here is we had some news headlines, last 10 years of news data, multiple of news headlines, more than 10,000.",
+            "start": 1825.992,
+            "end": 1833.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's what we use to get the relevant features from this sparse autoencoder.",
+            "start": 1834.392,
+            "end": 1839.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We talked about how to get the relevant features in the previous use case.",
+            "start": 1839.792,
+            "end": 1842.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here what we are trying to do is trying to get the relevant features for the financial news headlines.",
+            "start": 1842.592,
+            "end": 1848.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The model used was JMOD2 and the toolkit, our favorite sparse autoencoder was used here.",
+            "start": 1849.092,
+            "end": 1855.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we found out the relevant features.",
+            "start": 1856.092,
+            "end": 1859.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what might be the most relevant features in terms of the features which activate quite a lot.",
+            "start": 1859.392,
+            "end": 1865.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So out of all the features which were close to 10,000 plus, we selected 300 features which might be relevant, which get activated quite a lot on these financial news articles.",
+            "start": 1865.692,
+            "end": 1875.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now how do we link it to the prediction as in the price going up or down?",
+            "start": 1876.592,
+            "end": 1879.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's where the prediction model comes into picture.",
+            "start": 1879.892,
+            "end": 1882.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We had the label data of which news corresponds to the price going up or down, let's say in S&P 500 and Apple.",
+            "start": 1883.692,
+            "end": 1890.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we had that label data on which we trained a decision tree classifier.",
+            "start": 1891.292,
+            "end": 1896.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like a random forest to be precise.",
+            "start": 1897.092,
+            "end": 1898.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what we have is like on my prediction model, have a list of feature or an input, the activation on them, which again acts as a",
+            "start": 1899.192,
+            "end": 1908.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "and the output is the price going up or down.",
+            "start": 1908.492,
+            "end": 1910.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is how we kind of train the model.",
+            "start": 1911.792,
+            "end": 1914.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This was the training pipeline.",
+            "start": 1915.192,
+            "end": 1916.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Just trying to explain the thing, the training steps I talked about in the previous slide in more details.",
+            "start": 1917.092,
+            "end": 1923.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So here you can see the different input headlines.",
+            "start": 1923.892,
+            "end": 1927.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So these are the news headlines.",
+            "start": 1927.492,
+            "end": 1928.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And these are some of the sample features which get activated.",
+            "start": 1929.292,
+            "end": 1931.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So for example, learning performance market sentiment.",
+            "start": 1931.992,
+            "end": 1934.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what we are doing there is for getting the features, we run it by multiple news headlines, as I mentioned in the previous slide, close to 10,000.",
+            "start": 1934.992,
+            "end": 1943.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we try to see what are the features which are activating quite a lot.",
+            "start": 1943.392,
+            "end": 1946.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Generally, we try to capture the features which are related to finance or the financial features.",
+            "start": 1947.692,
+            "end": 1952.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, this is just an illustrative example.",
+            "start": 1953.592,
+            "end": 1956.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The next slide is the actual result.",
+            "start": 1956.692,
+            "end": 1960.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So on the left-hand side, you see some of the features, some of the names of the features.",
+            "start": 1961.192,
+            "end": 1966.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On the right-hand side, you see how much is the importance of the feature.",
+            "start": 1966.292,
+            "end": 1969.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's what we get from our random forest model that we have trained.",
+            "start": 1970.492,
+            "end": 1974.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can also see the feature importance.",
+            "start": 1974.792,
+            "end": 1976.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now one of the most interesting things that we found here was that the top feature, if you see names of the places or location, this is something the folks in finance, they would know.",
+            "start": 1977.192,
+            "end": 1988.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's something called named entity recognition.",
+            "start": 1988.492,
+            "end": 1990.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Which is being used in a lot of application, a lot of use cases, that interestingly came out to the",
+            "start": 1991.592,
+            "end": 1997.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "came out to the most relevant feature.",
+            "start": 1998.292,
+            "end": 2000.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the next one was financial terms, again, really important.",
+            "start": 2001.192,
+            "end": 2005.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we had stock ticker symbols and finance-related abbreviations, again, which is important.",
+            "start": 2006.592,
+            "end": 2011.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And most of these features were really, really relevant.",
+            "start": 2011.992,
+            "end": 2015.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You will see, it's not a surprise, even while we train some of the trading models, we see some of the spurious correlation, and that's what we see here as well, car and vehicle related terms, but keeping that on the side, this is really relevant,",
+            "start": 2016.592,
+            "end": 2029.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " and the results were very, very intuitive, especially the first one, which was named entity recognition or the NERF feature.",
+            "start": 2030.692,
+            "end": 2036.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So really great outcome of this and we'll talk about how we're expanding it even more in the subsequent sections.",
+            "start": 2037.792,
+            "end": 2045.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So next use case is hallucination police.",
+            "start": 2047.792,
+            "end": 2050.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is something which is not just limited to finance, it can also be used for other domains as well.",
+            "start": 2050.892,
+            "end": 2056.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now hallucination remains one of the most problematic thing when it comes to the usage of AI, especially in the high stake domain like finance.",
+            "start": 2057.192,
+            "end": 2065.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Hallucination is something which might cause like your reputation, it might lead to a lot of fines and all that.",
+            "start": 2066.092,
+            "end": 2072.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now there are a lot of solutions as of now, a lot of ways to look into hallucination these days.",
+            "start": 2073.392,
+            "end": 2077.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We look into, we try to do better prompting, we do guardrails, we try to do the references, use better model, reasoning models and whatnot.",
+            "start": 2078.392,
+            "end": 2086.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Human in the loop as well.",
+            "start": 2087.292,
+            "end": 2088.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "All these are good, but what we have done here is, again, like the previous use cases, we have looked inside the brain of LLMs to find out the hallucination or to kind of",
+            "start": 2089.292,
+            "end": 2101.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " figure out or reduce the hallucination.",
+            "start": 2102.892,
+            "end": 2105.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So what we are doing again in simple terms,",
+            "start": 2106.892,
+            "end": 2108.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We are trying here to build a finance-related chatbot, for example, a finance-related toolkit, which gives you answer to the finance-related questions.",
+            "start": 2109.692,
+            "end": 2119.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So for that, the first step was, like we did in the previous use cases, select finance-specific features.",
+            "start": 2119.992,
+            "end": 2126.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What are the different features which might be related to finance?",
+            "start": 2126.492,
+            "end": 2128.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And here what we are doing is we are doing conditional check.",
+            "start": 2129.692,
+            "end": 2133.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We are monitoring the activation on those features, the relevant features which are selected.",
+            "start": 2133.692,
+            "end": 2139.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And if the activation is not good, if it's below threshold, then we augment the answer through something called prompt, something like prompt enhancement.",
+            "start": 2139.792,
+            "end": 2150.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is the summary.",
+            "start": 2151.692,
+            "end": 2152.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Let's go deeper.",
+            "start": 2153.192,
+            "end": 2153.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So these are the steps.",
+            "start": 2155.492,
+            "end": 2156.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The first step that I talked about was finding the features.",
+            "start": 2156.792,
+            "end": 2159.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we had a bunch of financial sentences and financial phrases.",
+            "start": 2160.592,
+            "end": 2166.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We tried to find out what would be the features related to finance.",
+            "start": 2167.092,
+            "end": 2170.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Once let's say we found out 20 to 30 features, this is the workflow that we run.",
+            "start": 2170.592,
+            "end": 2176.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So let's say there is a financial",
+            "start": 2177.092,
+            "end": 2178.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "question it goes through this power sort of encoder because we call the features captured there",
+            "start": 2178.492,
+            "end": 2184.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " we have the features activation computed and if the feature activation",
+            "start": 2185.892,
+            "end": 2193.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " is greater than the threshold and again there can be discussion around what what's the right threshold it can be percentile basis person basis",
+            "start": 2193.892,
+            "end": 2201.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here is a crude threshold that we put, let's say, 20%, which can be calibrated.",
+            "start": 2201.792,
+            "end": 2207.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But if the feature activation is more than the threshold, we just give the output that the model is giving.",
+            "start": 2207.092,
+            "end": 2214.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But if it is not, then we do some kind of prompt enhancement.",
+            "start": 2214.592,
+            "end": 2219.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We add some more things to the prompt.",
+            "start": 2219.892,
+            "end": 2222.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Just to get a really grounded good output.",
+            "start": 2222.992,
+            "end": 2226.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So in this scenario, because it's a financial chatbot, we are asking questions related to SEC filings and financial documents.",
+            "start": 2226.492,
+            "end": 2232.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We supplement it with prompt which is related to SEC filings and financial documents and which gives us the right and grounded output.",
+            "start": 2232.992,
+            "end": 2242.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Going deeper into some of the features that we selected, this is relevant, similar thing that we did in the previous use case of trading and also credit.",
+            "start": 2243.692,
+            "end": 2252.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So here we see one of the features 15857 which gets activated quite a lot on financial terms or financial",
+            "start": 2253.192,
+            "end": 2262.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " keywords and tokens and we can also see the feature labels that's where",
+            "start": 2263.992,
+            "end": 2268.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "this power sort of encoder becomes important because you can see the explanation of the features in English and you can decide which one to choose, which one not to choose, which one might be activated.",
+            "start": 2268.292,
+            "end": 2276.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Of course activation is one of the main thing but you can also look at the feature label and that's why we looked at the first one which is related to finance, 5405 as well related to finance.",
+            "start": 2276.792,
+            "end": 2287.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then there are one, two other ones, 15354, for example.",
+            "start": 2287.792,
+            "end": 2292.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's again related to financial news and companies.",
+            "start": 2292.192,
+            "end": 2294.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is how we pick the features.",
+            "start": 2294.592,
+            "end": 2296.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The result, how does the result look like?",
+            "start": 2296.292,
+            "end": 2299.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, we asked it a question, for example, related to the timelines around regulatory filing for 8K.",
+            "start": 2299.692,
+            "end": 2306.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the left hand side when there is no conditional check you just get the output from the LLM.",
+            "start": 2307.992,
+            "end": 2313.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What we see here is that it's typically within four business days of the event, right?",
+            "start": 2314.292,
+            "end": 2320.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So very short Chris reply.",
+            "start": 2320.192,
+            "end": 2321.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But on the right hand side when we do the conditional check which",
+            "start": 2322.392,
+            "end": 2325.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " and we run it by all the financial features, it not only gives you the four business days, it also gives you the details about which items, which section have some deviation from the four days.",
+            "start": 2325.692,
+            "end": 2338.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And along with that, it also gives you the citations.",
+            "start": 2339.092,
+            "end": 2342.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Citations is something, I mean, you can take a look at the document in detail.",
+            "start": 2342.692,
+            "end": 2346.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So really good output, no hallucination or less hallucination and really grounded one.",
+            "start": 2346.892,
+            "end": 2353.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Okay, so these are a couple of use cases that we have in the paper.",
+            "start": 2355.996,
+            "end": 2360.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, given good response in the paper, given the overall interest in this work of going deeper into the mind of LLM, especially for finance, we are doing or we're continuing the research work.",
+            "start": 2361.096,
+            "end": 2374.596,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, it's more related to the use cases closer to production, actual bigger models, and even fine-tuning or training the toolkit ourselves.",
+            "start": 2375.096,
+            "end": 2385.996,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So one of the use cases is what we are trying is augmenting classical factors.",
+            "start": 2385.996,
+            "end": 2391.396,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is kind of extension of what we talked about in the previous slide, which was related to Warren Buffett AI.",
+            "start": 2392.696,
+            "end": 2400.496,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So in finance, we have been using classical factors for our trading models and factor modeling.",
+            "start": 2401.196,
+            "end": 2406.096,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Some of the classical factors we use are on the bottom left hand side, for example.",
+            "start": 2406.996,
+            "end": 2412.096,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have been using S&P 500, return of the stocks, volatility, the historical data of the stock, even the news sentiment.",
+            "start": 2412.796,
+            "end": 2420.996,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, the point here is, why not we augment those with the features we get from LLMs?",
+            "start": 2421.896,
+            "end": 2429.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So, some of the features, for example, on the right hand side, if you see, insider buying, that's one feature in one of the LLMs for that.",
+            "start": 2429.996,
+            "end": 2439.396,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we have earning misses, analyst blog, commentary, and M&A.",
+            "start": 2439.396,
+            "end": 2443.196,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "deal them out.",
+            "start": 2444.496,
+            "end": 2445.196,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this augmentation is really powerful because when we moved from rule-based modeling to statistical technique, we augmented it with statistical and machine learning technique.",
+            "start": 2445.796,
+            "end": 2455.096,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now the idea can be moved to the next step, augmenting those statistical technique with all these features.",
+            "start": 2455.396,
+            "end": 2461.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Using a similar technique we talked about earlier, you can have these feature activation.",
+            "start": 2462.196,
+            "end": 2466.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can model it and have the prediction model for trading, factor modeling, and many other use cases in finance.",
+            "start": 2467.696,
+            "end": 2473.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So here I'll cover another future work that's very important in our view is agentic monitoring.",
+            "start": 2476.748,
+            "end": 2482.348,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So clearly we've moved into a massively agentic usage of AI.",
+            "start": 2482.348,
+            "end": 2487.548,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But I think agents is, you know, if you think about, you know, the high stakes applications of AI, agents even raises more of a stakes because now you're letting AI make decisions.",
+            "start": 2488.448,
+            "end": 2500.248,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what are we doing about it?",
+            "start": 2500.848,
+            "end": 2502.348,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We are looking into the way to monitor agent reasoning during execution of the workflow steps.",
+            "start": 2502.948,
+            "end": 2512.148,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're looking at the signals to predict whether there's a reasoning fault.",
+            "start": 2512.348,
+            "end": 2516.648,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're using feature activations and live diagnostic signal that something might be wrong with an agent or something wrong with execution.",
+            "start": 2517.548,
+            "end": 2525.548,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, we could detect tool called misfires.",
+            "start": 2525.948,
+            "end": 2529.548,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So agents call various tools, you know, they go to the web, they go to internal databases, but that could be, you know, we could be executing the wrong query in the database.",
+            "start": 2529.648,
+            "end": 2538.948,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what we could do, we can actually detect it live and either stop execution or we can actually correct the execution.",
+            "start": 2539.148,
+            "end": 2546.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I think here it's, you know, I think the benefits are enormous.",
+            "start": 2548.448,
+            "end": 2552.548,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's not just monitoring or compliance.",
+            "start": 2552.648,
+            "end": 2555.748,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This is actually about saving costs because agents, as you might be aware, are consuming a lot of tokens.",
+            "start": 2556.148,
+            "end": 2561.448,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what you could be doing is here on a diagram.",
+            "start": 2561.848,
+            "end": 2564.448,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "below, you can be looking at agent execution, looking inside the model, and you could be pausing or adjusting the agents to do the right thing.",
+            "start": 2564.448,
+            "end": 2572.948,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that not only builds confidence in your agentic system, but it also actually potentially saves on compute.",
+            "start": 2573.248,
+            "end": 2580.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So now we're kind of coming to the end of our talk.",
+            "start": 2583.548,
+            "end": 2587.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're going to talk a little bit about what tools we used.",
+            "start": 2587.848,
+            "end": 2590.548,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think we used a fairly common software stack.",
+            "start": 2590.948,
+            "end": 2594.148,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We used PyTorch and NVIDIA CUDA, rich software libraries.",
+            "start": 2594.248,
+            "end": 2599.648,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we used an interesting, going down the software stack, we used NVIDIA Launchpad, which is an amazing remote system where you can...",
+            "start": 2600.248,
+            "end": 2608.448,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " On a lot of different experiments.",
+            "start": 2608.948,
+            "end": 2610.748,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You get access to underlying hardware, which were H100 GPUs.",
+            "start": 2610.748,
+            "end": 2616.548,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " There were eight of them.",
+            "start": 2616.948,
+            "end": 2617.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that allowed us, this stack allowed us to do a lot of experimentation and push our research forward, especially where compute requirements were higher than an average workstation would allow.",
+            "start": 2618.048,
+            "end": 2629.648,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "So let's talk a little bit about limitations.",
+            "start": 2633.096,
+            "end": 2635.396,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I think limitations are, we are still in early days of understanding these models.",
+            "start": 2635.496,
+            "end": 2641.996,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Number one requirement, and I would say it's less of a limitation, more of a requirement, you need to have open wave models.",
+            "start": 2643.096,
+            "end": 2650.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You cannot look inside of the black boxes, not in your control.",
+            "start": 2650.296,
+            "end": 2654.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I think the alternatives are if you don't have access to open weight models or you don't have the hardware, you can always ask your favorite vendor to provide interpretability tools.",
+            "start": 2655.596,
+            "end": 2666.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think it's very fair as a, you know, if you are a large user of LLM models, you should be able to ask for interpretability tools to build confidence in applications you're building.",
+            "start": 2666.496,
+            "end": 2679.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The other limitation of our research is right now, as Hiram alluded to, we're limited to single layers.",
+            "start": 2681.996,
+            "end": 2687.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're looking at particular layers.",
+            "start": 2687.896,
+            "end": 2689.596,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Obviously, circuits, as described, was the future of this space.",
+            "start": 2689.696,
+            "end": 2693.596,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Unfortunately, circuits are still very hard.",
+            "start": 2693.696,
+            "end": 2697.096,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " If you think about it, you have multiple layers and you're putting them together into a circuit.",
+            "start": 2697.096,
+            "end": 2701.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " That's not an obvious or simple task to do.",
+            "start": 2701.596,
+            "end": 2705.096,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But this is obviously a limitation that we're working to address in the future.",
+            "start": 2705.996,
+            "end": 2710.396,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's also very compute heavy.",
+            "start": 2710.596,
+            "end": 2712.196,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The cross coders to train them, order encoder across all layers is very compute intensive.",
+            "start": 2712.496,
+            "end": 2717.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we have...",
+            "start": 2719.196,
+            "end": 2719.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "limited kind of metrics around interpretability.",
+            "start": 2720.096,
+            "end": 2722.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " How do you detect kind of your, you know, what are these features and how do you translate it to metrics that help you evaluate the model?",
+            "start": 2723.396,
+            "end": 2730.396,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This is very much an ongoing research.",
+            "start": 2730.396,
+            "end": 2732.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What are the final thoughts?",
+            "start": 2733.496,
+            "end": 2734.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So still we feel that mechanistic interpretability, looking inside the model, might be underrated, especially in high-stake domain like finance.",
+            "start": 2736.496,
+            "end": 2746.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we think that this is something which should be must-have in finance and also high-stakes domain.",
+            "start": 2747.396,
+            "end": 2753.996,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Why?",
+            "start": 2754.896,
+            "end": 2755.196,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because going back to some of the slides that I talked about earlier, 85% of the use cases are still stuck in POC state, valid state.",
+            "start": 2755.196,
+            "end": 2762.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So knowing deeper or getting insight into the models might unlock and give us confidence so that we are able to even unlock new use cases and scale adoption across our industry.",
+            "start": 2763.196,
+            "end": 2776.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It will definitely build regulator trust because now we can say that, hey, at least we are able to go inside and look and see, understand some part of the model, and which will again allow for wider deployment.",
+            "start": 2777.196,
+            "end": 2788.096,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I talked about the subprime crisis in one of the slides before.",
+            "start": 2788.796,
+            "end": 2791.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If we understand the model really well inside out, it might avoid or it might help us avoid one of the financial crisis going forward.",
+            "start": 2792.296,
+            "end": 2802.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's why, that's one of the reasons we are very much focused on this interpretability research.",
+            "start": 2803.096,
+            "end": 2809.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Thank you.",
+            "start": 2810.396,
+            "end": 2810.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you.",
+            "start": 2812.296,
+            "end": 2812.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        }
+    ],
+    "type": "transcription.done"
+}

@@ -1,0 +1,3515 @@
+{
+    "model": "voxtral-mini-latest",
+    "text": "Hi Savannah. Thanks Ben. Hey Colin. And hi everyone, it's great to be here. Great. Savannah and Serene were one of our participant firms, which we'll get to shortly. But it's kind of strange, a regulator at the NVIDIA GTC, it might feel a bit unexpected for you, but it really shouldn't, because in financial services, AI doesn't just optimise workflows, it shapes the decisions. And increasingly the actions we're seeing in the markets we regulate. And when AI works, we get really much better fraud detection, we get fast support, we get lower cost to serve, and we get smarter risk monitoring. But when it fails, the harm is immediate and it's personal. It could lead to mis-selling and loss of trust. So our posture, our position is really simple. In the regulated markets, the only way to really produce trust is to provide the evidence. And I'll come back to this often today. Trust isn't a slogan for us, it's an output. And in finance, financial services, evidence is how you produce it. So today I'm going to share with you how we've supercharged our responsible AI innovation with three ingredients. We use great compute, we use brilliant synthetic data, and of course regulatory informed design. And that's how this becomes real through a full AI stack powered by NVIDIA. AWS is helping us as well as a partner, and it's all orchestrated through our platform partner, NIO1.So our job as a regulator isn't really to be pro-AI or anti-AI. It's our job to be really pro-outcomes. We're an outcomes-based regulator. We're concerned with consumer protection, market integrity, competition and innovation. And yes, growth and competitiveness are really important while keeping our standards intact. It's really important to us. The shift isn't just more automation. It's a change in how decisions get made and increasingly how actions get taken. We're moving from a model that can predict to systems that recommend, systems that can act. And that's the road to autonomy. So, Serene and Savannah, of course, you know Agent AI very well. You're in the business of this new autonomy. I didn't know whether you wanted to give any impressions at the front end just about what we're doing here. Yeah, absolutely. So I guess just a little bit of a background to myself and to Serene before we get going. So Serene is building the infrastructure for financial care. And what we exist to do is create technology or embed technology that really helps banks, lenders and fintechs act earlier on risk, be that risk, credit deterioration, fraud susceptibility or just general distress in turn. And our mission is really to deliver measurably better outcomes for customers. So it's been a really, really exciting journey collaborating with the FCA and the video and really kind of put.to test our kind of core behavioral insights and start experimenting with a GenTech technology around how do you actually embed our insights into workflows? How do you surface insights at the right time with the right prompts to the right people, really to kind of enable staff, but also ultimately to enable the end consumer? So, yeah, I'm really looking forward kind of a little bit later in this presentation to kind of walking you through some of the work that we did in the supercharged sandbox, the tools that we used and, you know, also some of the challenges and benefits that we experienced during that process. So, yeah, thank you, Colin. Brilliant. Thanks, Savannah. Now, when we talk about our AI lab, people are pretty surprised at the investment that we've made into this. But it shouldn't be any surprise to NVIDIA. We built the AI lab because we kind of kept seeing the same patterns. The firms would come to us, they'd demo something really impressive, and they'd say, yeah, we've tested it. And obviously we'd ask the question, we're a regulator. It kind of changes the conversation. We say, tested how? Give us an example. What have you done? And in many cases, tested really meant, you know, there was a test around model accuracy on a really narrow data set. And it wasn't the behavior of the full system. And in financial services, the model isn't the product. The system is our product. And a production AI system is the whole chain. It's data, it's retrieval, it's grounding, model behavior, orchestration.Human oversight, logging, audit, it's everything. All the controls and fallbacks, monitoring, drift, security, resilience, and really importantly, accountability. So real products include the retrieval and grounding, prompt and policy control. They include tool access. They include orchestration. All of these things have to be there. So it isn't that the firms lack ideas. It's just that many really struggle to generate the kind of evidence that makes AI deployable in the regulated markets. And that's really what it's about. This trust is a runtime property. We've got to keep this real and in real time. And this is what we test in the AI lab. And you'll see on screen, there's a number of areas for our AI lab. We started off with a spotlight and a sprint. Now, the spotlight was really for us to gather information. There was a launch event last year. We went out to the market. We wanted to engage with all of the innovators just to see what they were doing, you know, to start to understand the landscape in front of us. Once we've done that, we moved on to a more policy-orientated element of the AI Lab, which is called the AI Sprint, which is an in-person event. We invited people to come to our headquarters in London. We had a big event launch, a lot of attendees here, and we really worked with policy to start to tease out some of the really important ideas. And then we had an input zone where the ones who couldn't come to the location in London, they could give their online active information to us.And that input zone has continued. Lots of responses, lots of really interesting feedback. But that wasn't really enough for us. That was the beginning. Just to give you a bit of background, we originally already had a digital sandbox. So we've been running a digital sandbox for some years. We were one of the first to have a regulatory sandbox. And then we moved into the actual digital domain and created a platform for our firms to use. And the digital sandbox is a safe, controlled environment where firms can test out new ideas. The real consumer data is protected because we use synthetic data, and I'll cover that a little bit later on. Without that realistic data, of course, you can't really test properly. So we provide simulations and data sets that are useful for firms to really put those difficult, rare events to the test, maybe some of those edge cases, and look at the stress around some of the scenarios. So it's really rich domain-specific data. We replicate real-world financial transactions. We've got customer profiles and so on. As you'd expect, that enables safe development at scale, particularly for things like fraud detection, inclusion, and some of those other valuable use cases that we've used. Because these are hard challenges and we really need to solve them as the system. Now, that sandbox has been very successful. Aligned to that sandbox, we wanted to make sure that we could movemove it forward into the future. And this is where the partnership with NVIDIA really helped us accelerate what we wanted to do. We came to NVIDIA and we asked for some help. You know, we wanted to supercharge this original digital sandbox. And I was delighted that NVIDIA agreed to work with us. As well as a number of our other partners, to start to really improve the sandbox and to provide something that was really special. And this we called the Supercharged Sandbox. Now, I'll move on to the detail of that in just a second, but I just wanted to mention also we have an AI live testing environment. This is after prototype, after synthesized data. We can also look at the actual deployments in the live environment. So that's the live testing. But let's go back to Supercharged Sandbox and let's talk to that in a bit more detail. The Supercharged Sandbox. Exists really because modern gen AI agentic patterns, the bottleneck isn't the ideas from the firms. You're going to hear from Savannah, the firms, I mean, they've got brilliant ideas. We all want to test these ideas, but it's not about ideas. This is about getting real compute, getting the data behind it, and the evaluation discipline to make it work. So we built these three pillars that you can see on screen. We've got this enhanced AI testing infrastructure. Now, this is, of course, where NVIDIA was absolutely critical in what we were putting together.You know, we wanted enriched data sets, synthetic data, which we've used for three, four years now, but we wanted to go to the next level with that. And I'm going to cover that a little bit later on. We wanted the highest performance compute we could access. And of course, NVIDIA unlocked a lot of that for us, as well as critically great developer tools for validation. Now, that plus the dedicated cohort that we put together, that gave us a structured program, which added mentorship, engineering guidance, and that would help us turn these prototypes into real evidence for the future. And then, of course, we've got accelerated development. And this was through strategic partnerships. We had all of this supercharging coming together. So you have this real absolute global first enterprise-grade AI stack, which included the NVIDIA AI Enterprise within the sandbox environment. So experimentation is aligned to production patterns from day one. And then we deliberately leaned into open models alongside enterprise tooling because that combination can deliver portability, efficiency and sovereignty where it matters, while still meeting all of our high assurance expectations. So we don't optimise for demos now, we're optimising for evidence and systems. Evidence and systems are critical for our thinking. Now, when we dive into the architecture of what's behind the sandbox, this is just a very simplified diagram for everyone to be able to understand. But this is the core of the success.The sandbox was never going to be a concept. It's a full stack designed to remove that POC to production gap. You know, we want to be able to pilot things out and get them into production as soon as possible to be able to test. So it's really four tightly integrated layers. You've got number one is the platform itself, which is the tenancy and the governance. You know, that's provided by our partners, NIA1. So NIA1 provides an experimentation layer. It's all governed. You've got tenant isolation. You've got secure workspaces for the firms. You've got role-based access for participants, mentors and observers. And the audit surface you need for regulated experimentation. So for engineers, I guess that means a repeatable environment that's clear with boundaries intact. So that really works for the engineers that were coming in. For business leaders that are coming in, it means that it's experimentation that you can defend. It's got traceability and control. So that's really, I suppose, the substance of the platform. Then you move on to the data layer, which is, as I've mentioned, synthetic, it's privacy preserving, and it's test first. So the data layer is designed for testing and not just training. So synthetic data sets represent real behavior, and they don't expose any sensitive information, but they do have the ability to generate edge cases and all of those rare events deliberately, because we don't want that happy path. We want to be able to stress test so we can repeat the benchmarks and compare approaches.And that's what enables firms to validate their model behavior and fairness, robustness, and the failure models without using consumers as their test subjects. So it's really safe, and that really satisfies us as regulators. The third area is the compute layer. Now, obviously, this is where NVIDIA comes into its own. It's the engine room. GPU-enabled compute on a cloud infrastructure. And this is what turns that kind of one run into an evaluation at scale. Multiple scenarios, multiple prompts, multiple data slices, agents, and repeatable test harnesses. So at that point, you can test latency and cross trade-offs, throughput, underload, all those kind of things that you'd expect. Not as a one-off, but as a routine pipeline, which is that's what we're looking for. We're looking for that resilience that's going to be systemic. Now, the final area is really the services and tooling layer, which is absolutely on the NVIDIA AI Enterprise plus NEMO and the ecosystem falling around it. So this is where it really supercharges from our point of view. NVIDIA AI Enterprise is integrated within the sandbox environment. It gives firms an enterprise class AI software stack. It across the whole AI lifecycle. So from development and training to validation to optimization and deployment patterns. And we're explicitly leaning into NEMO. The usage is perfect for us because the open models are useful where appropriate and the open weight models are tuned and evaluated in a controlled environment. They can be efficient, portable,and align with sovereignty considerations that we have. So that's all while still being governed to the high standards that we expect. Well, I mean, also critical, I think, is NVIDIA's libraries and frameworks. They help firms move beyond LLM as a UI to a complete solution. So you get agent orchestration, you get Gen AI, predictive AI, ML, all in the same workflow. You get data processing at scale. And where relevant, you get simulation and optimization styles, which show up in financial service context. So it's completely brilliant for a firm to get that environment, which is almost entirely unavailable to them elsewhere. Now, the critical point, and I guess one that matters to both us and all the engineers that are in the room, is that most failures in AI systems come from, I guess, the system around the model, not the base model alone. So we might have weak retrieval grounding or permissive tool access, prompt and policy drift. Maybe you've got missing observability, poor evaluation. Maybe you've got weak fallbacks. So the sandbox architecture is designed to force the right engineering questions. Engineering questions that are critical. What's the evaluation harness? You know, what are the guardrails? What's the observability model? What's the fail safe? All of those things are absolutely critical. And this is probably stuff you wouldn't expect a regulator to be very concerned about. You know, but we're deep into this. So we're working with you. We're working with the NVIDIA.to really understand what we can bring to this using the tool sets that we have. So the sandbox uses enterprise-grade stack patterns, validated outcomes. It reduces that kind of POC sandbox gap, accelerating production readiness. Evidence beats reassurance every single time. So I guess what I will say, though, is two practical challenges did come up early. And they're common across any scenario that AI platforms might build. Reproducibility and evaluation consistency. It's easy to demo. It's really harder to produce that repeatable evidence. So we overcame that by standardizing all the test harnesses, evaluation runs, governance expectations. So the results are comparable and auditable. That was our learning from that. Also balancing openness with control. So obviously the firms want flexibility, but regulated markets, they require constraints. So we address that with tenant isolation, role-based access, guardrail first patterns. So innovation is fast and bounded. And often people ask me, how am I going to do that balance between risk and optimization of the innovation? And that's how we do it. The goal was not to maximize freedom. It was to maximize learning under safe constraints. Now, if we talk just for a second about data, synthetic data is artificially generated and it represents the real world patterns. It's the reason we can test responsibility.And pseudo-anonymization and anonymization are complementary techniques that reduce identifiability risk. With pseudo-anonymization keeping identifying information separate. Now technically this matters because it enables edge case testing. It also enables stress testing where we need it and repeatable benchmarks. And from a regulatory perspective, it means that innovation is done without exposing consumers to risk. So responsible AI starts before the model. It starts with the data design. And that's what we're doing with this data.So let's just think about the first cohort. We've only had one cohort go through this new AI lab, but it was absolutely stunning, the response we had. Imagine, we announced at London Tech Week, Jensen was on stage, we had the Prime Minister of the UK. They were really vibing on what we were doing. And the announcement came out that we were going to be doing this work with the NVIDIA support. My LinkedIn went absolutely nuts, to be honest. It was one of the most extraordinary responses to anything I put out there. It was genuinely viral. And the application process was easy and it attracted a huge number of applications. Now, maybe 132 doesn't sound like a big number, but if you consider usually we will get 130 or so coming through our services every year or two. So this was for one cohort, which, you know, we would normally have maybe 20, 25 applications. So clearly the word was out. So we got 132 applications. 62 of them entered the supercharged academy pathway. Now, that's a separate academy for those who weren't accepted into the cohort. We went a little bit further than we expected, actually, because it was so popular. We decided we would spin up a separate academy to really give people that extra bit of advice and help. And of course, we're using our partners to help in.some of the academy work. So again, it's a great thanks to NVIDIA for coming alongside us on some of that work as well. But let's talk about those who were accepted. You know, we had 23 accepted. 19 managed to complete the first cohort, which is a great number. Oftentimes, because of circumstances beyond many controls, people will have to drop out through the cohort because it's a big commitment. But we really knocked it out of the park. And as Savannah will cover some of it from her perspective, because, of course, Serene was one of our members of that accepted cohort. But the split between some of the... Focus areas was really informative as well. We had almost, I suppose, half and half. I mean, we had consumer focused, actually eight use cases. They were tools that help firms understand, they protect and empower customers. But really interestingly, we had 11 that were wholesale, which is really unusual for us because we don't get a huge uptick. In wholesale business. Now, the wholesale use cases are the ones, the really big ones, right? They're strengthening compliance, looking at risk detection, improving operational resilience. So the real nuts and bolts of what we look for in the market. So it was a brilliant balance between the two. And that balance really matters because Responsible AI in finance isn't just a new chatbot. It's that invisible infrastructure risk, the compliance, the surveillance, all the resilience that you need.The plumbing that really makes markets safe while allowing innovation to scale. So before we go a bit further, I'd like to run a video just to give you a flavour of some of those, the days we showcased some of these finalised cohort firms, because they came back to us after the cohort was completed and they showcased the work that they'd done in the months in between starting and completing. I'll just give you a bit of a flavour now with a video and so you can experience it yourself.So the FCA sandboxes are an incredible opportunity for innovators to come into the FCA and get access to our data as well as to each other. For those of us in financial services where it's kind of half expecting, we're going to push the envelope a bit using AI in this regulated industry that we're going to get told, no, you can't do that. So I think it's great to open it up and allow us to explore and experiment early on before investing too much time and money. The idea is you have a sandbox environment where people can come in, build, test, experiment, and they can bring their solutions to life in real world and doing that in a safe and responsible way. What excited me about what I saw in the Supercharged Sandbox today was the bringing together of so many innovators with different products and services that they're using AI with.Being able to test safely, responsibly, using access to data sets to compute, to software development skills, and then to that mentorship, all in that one place is very unique and very powerful. One of the solutions that have gone from our digital sandbox environment, coming into the supercharged sandbox environment, and then getting launched live on stage. It shows the impact that we are having within the financial service industry. The presentations have been fantastic. The quality of the solutions have been fantastic. What I'm seeing from the solutions here give me that reassurance that the people behind it, the founders, the innovators, are the ones who are truly trying to understand both the technical realities and the operational realities that follow it.I think AI is going to revolutionize financial services. By 2030, we'll see AI right the way across embedded in all aspects of financial services. And for consumers in particular, that will be the front end of engagement with your financial services. Well, I mean, hopefully that gives you a little bit of the energy and the interest in the building that came through because it was such a positive and successful event. We had a great time. So I know that the firm's got so much out of it. And I'm going to close just this part because one of the things I did on that event was have a conversation with my own agent, if you like, my own avatar. I was doing a fireside chat with one of my colleagues. And one of the highlights for me was I actually went up against my own agent, which I trained to answer the questions in the way I would do. And I gave the audience the chance to vote who was the most convincing. Fortunately, I still won. I got a pretty high percentage vote. I think it was about 95 or 96 percent. So I'm pretty pleased I still got a job. But it was a really interesting experiment in its own right because we want to always try to challenge.the conception or the assumptions that we have when we go in. We want to really push those barriers, push those boundaries. And I guess I'll close where I started right at the beginning. You know, for us, trust isn't a slogan. Trust is the output from what we do. We are absolutely dedicated to creating a system of trust. And it's done with the firms around us. You know, yes, it's the compute. It's the synthetic data. It's the enterprise grade evaluation. That's how we produce it. But what really counts is that firms come to us, apply and come into our world, working with us and trusting us. To get to those outputs. And I guess I'd like to, at that kind of point, really bring Savannah back in. I know that's been a real whistle-stop tour of the background and the context of what we do, Savannah, but I really want, you know, I want to, and I'm sure the audience want to hear from you because you're the ones that experience it, you're the ones that were there, You've got your own views. I'd love to hear them. I'm going to hand the mic over to you, Savannah, and hear the Serene story. Great. Thank you so much, Colin. And yeah, it's great getting that overview. And also kind of given that we've been through that whole process and really actually we went through the digital sandbox as well as now going through the supercharged sandbox. So actually really being able to experience both. It's been great having that opportunity. But I guess kind of starting or taking a step back andkind of gave a bit of a brief intro, but what I'm going to do is give the overview of Serene, kind of where we're up to to date, and then also really talk about kind of what we did in the sandbox, kind of how the sandbox and the input that we had from NVIDIA and the tooling, the mentors, and also from the FCA really kind of changed our approach. Almost midway through this once we'd had a chance to experiment and then also give a bit of a demo in terms of what did we actually create during our time in the Supercharge Sandbox. So kind of starting at the beginning and where we sit is we are this behavioral intelligence platform which as I said, is designed to deliver better customer outcomes at scale. So we look at anonymized transactional data and what we're looking for is the early signs of instability, of emotional stress and of behavioral disruption that the signals that actually sit outside traditional credit risk or fraud models. And really what we want to do is create four outcomes that banks care about. It's about responsible growth. It's about reducing arrears and reducing losses. But it's also around regulatory confidence as well as delivering those good customer outcomes. So in the sandbox, we focused on a very specific challenge. And what we wanted to do is we wanted to turn our early behavioral signals. Into real-time contextual frontline guidance with the right controls and also with full auditability. So think of what Sereneis as an early warning layer that translates those behavioral signals into supervised, expendable guidance for frontline teams. And our goal wasn't ever to automate decisions. It was really to help firms intervene earlier, more proportionately, and also with better customer outcomes at the fore. Kind of what you see on the screen essentially is our behavioral intelligence engine. And you can kind of see the core of what we already have in the market today, which is around the detection of financial risk and resilience, being able to predict outcomes like credit deterioration, fraud or general customer churn, but also kind of recommendations of how firms can act on that. And what we really wanted to do in the sandbox was kind of build that agentic orchestration layer on top of our existing data. So what we were able to do is we actually built this and also tested it. And really its role was to decide whether a signal should be surfaced, when it should surface, how it should be framed. And also, when should it escalate so that teams receive the right action at the right time with the right controls? So for us, accuracy really wasn't enough. And particularly because we are selling into regulated, highly regulated institutions, we needed a system that was always explainable, always auditable, and also had the opportunity or at least had that human in the loop supervision system. And that's really what we were able to create.in the sandbox. So in order to make this work, and we very, very quickly realized, is that there wasn't one tool or one organization. It was really the combination of the environment, the infrastructure, as well as the regulatory collaboration. So kind of three key areas for us. The NIA1 environment was what gave us the secure synthetic environment where we could test the system behavior rather than just our model performance. And what this enabled us to do is we could vary thresholds, introduce conflicting signals, also observe how escalation logic responded under pressure without actually exposing real customers. So what we were able to use this environment for was really validate the orchestration decisions safely, repeatedly. And also, you know, that orchestration layer really is where most governance risk actually sits. The second benefit from the sandbox for us was really the NVIDIA tooling. So using CUDA-enabled GPU instances with containerized runtimes and local inference pipelines meant that we could stand up reproducible environments for each session and also run Nemo workflows end-to-end. So what this enabled us to do was very much evaluate the multi-agent reasoning parts, confidence calibration, and also full audit trace generation under load. So running locally on the GPU kept orchestration.latency within a live conversation window, even with multiple specialized agents operating in parallel. So we could test this real-time decision support rather than just using batch outputs. And then finally, you know, being able to build this, test this with the FCA viewpoint or the regulator's viewpoint. So the kind of mentorship that we received throughout this process meant that we were able to adjust how we were building. Essentially, we were using regulation as a design input, not necessarily just as something that we needed to try and comply with afterwards. So the government's requirements really were able to shape our architecture from the very beginning. So what we were designing for was case level explainability, human decision checkpoints, policy grounded outputs, and also full audit logging as core system features rather than add-ons. So what this actually meant for us is it reduced rework, it clarified our design choices early, and it also brought the system much closer to being operationally deployable. And this for us was incredibly important as well, given the nature of our client base, given the fact that we are constantly asked, you know, How is this governed? You know, is it auditable? Is it explainable? How have you built this with the kind of the regulation in mind, particularly as an unregulated institution as we are today? So I'll give you a bit more of a flavor around what it actually looked in practice. So this.is our architecture. This is really kind of where, you know, for us, the architecture matters because in a regulated environment, risk is created by our signal is used, not just by the signal itself. So the change that I mentioned earlier is where we started with a single generalized agent, We found it very hard to explain control and to audit. So what we did instead was we moved to explicit agent roles, created clear responsibility as well as control boundaries between detection, context, policy, tone and escalation. And so what this meant for us was that guidance is already policy aligned. It's timed to the interaction. It's fully explainable while the human remains the core decision maker. So for us, it was really important that the system could recommend, but never decided. So as well, you know, every step for us is logged, escalation is enforced by design, and frontline teams see fewer higher quality prompts. So I think for us, it was really that separation of responsibilities that makes the AI deployable, governable, rather than just accurate. So now, kind of the fruit of our... Efforts and in the next kind of slide we'll show you end to end what we created in the sandbox. So I want you all to imagine that you're a customer service agent and the person calling you right now is SirYou don't know what he's about to say. You have a few minutes to either help or accidentally make things worse. Before you even say hello, Serene's behavioral intelligence is quietly surfacing customer context in the background. As you can see, we have surfaced signs of financial strain with a high risk of arrears. But what matters much more is why. So we're seeing strong loneliness indicators, which are often linked to reduced resilience and decision fatigue. Patterns of compulsive spending, often a coping response, not recklessness. And some income volatility adding to background pressure. Individually, any one of these indicators might be missed, and together they tell a very human story. From a systems point of view, Sergei is high risk, but from a human point of view, this is someone at a very fragile moment, where the way the conversation is handled really matters. Most systems stop here. They flag risk and leave the agent to figure out the rest. My Serene doesn't. As an agent, the hardest part isn't policy. It's knowing how to start. So this is where we step in, quietly, in the background. Rather than scripts, we provide calm, proportionate guidance on tone, pacing and language. Warm, empathetic, unrushed.If you look to the center panel, these breadcrumbs anchor the conversation to a compliance structure aligned to internal policy and QA frameworks. This ensures that conversations stay focused and stay human. And directly below this, you can see the support coach. Conversational prompts you see are deliberately calm, helping you navigate the conversation with Sergey without diagnosing, leading, or escalating too early.Advisors can choose, adapt, or free type, so they're always in control. So what this does is it reduces cognitive load and improves consistency at scale. Notice how the guidance updates as the conversation evolves. This is not a static flow. It's agentic reasoning in real time. Because Sergey isn't a script and support shouldn't be either. So while the agent is focused on Sergey, MySerene captures structured notes automatically. This strengthens auditability, QA, and post-interaction review while reducing wrap-up time. It protects the customer, the agent, and the organization. So here we have an activity log. Every recommendation is explainable. You can see confidence, uncertainty, and rationale. Nothing is hidden. The system can recommend, but it never decides. Different agents handle different responsibilities. An agent for context, tone, escalation, and signposting. That separation is what allows the same system to support servicing, collections, fraud or onboarding without rebuilding any part of the product. Everything you've seen here also works without this interface.MySerene slots seamlessly into existing CRMs, servicing platforms, and decision systems. One intelligence layer powering multiple teams. No replatforming. Developers can also integrate in the language of their choice with no bespoke build required. Sergey never sees any of this. What he experiences is a calmer conversation, clearer support, and a sense that he's being understood, not assessed. I'm going to thank Savannah there for that, because, you know, whenever I see that, and obviously I've seen your demo, I saw it live. In the playback, it's just wonderful. It's just wonderful to see the kind of use of AI as an empathetic tool, which is giving the user the guidance it needs. I mean, and I love your notion of going away from script because there is... Nothing more irritating than thinking you're in a script loop and you're not getting the kind of service or care that you actually need. And that's for someone like me. If you're in a vulnerable position, then it's a nightmare. But I mean, it's just a brilliant demo, Savannah. Oh, no, thank you. Thank you so much, Colin. And I think just to add to it, I think one of the, when we're thinking about the Sagentic layer and the Sagentic piece, I think there's the direct application around actual, you know, empowering the human.agents in the front lines, but increasingly thinking about how, you know, how are agentic systems actually going to reshape the financial services landscape? And I think one of the key bits for us, you know, one of our learnings, again, from this process is being able to actually create something that human agents can use, but equally, how do you start building for the agentic system? So even thinking about how do we plug and play this as just one of the systems or one of the agents that a bigger system can call upon as firms are thinking about building this into their frameworks. I think it was a great thought experiment and also for us a really essential way to start future-proofing and thinking and taking bets as well around, you know, how do you make this seamless and easy, but how do you start plugging and playing in a completely changed landscape? Yeah. Yeah. I think that's a key message for those who are watching, because I think what we're doing is we're working this out. We're working this out together. And you're not often here a regulator step up and say, look, you know, we want to learn with you, with the industry. And I'm talking the industry broadly. So both fintech industry and big tech and obviously the AI industry is leaning into this with us. And that's why it's really exciting because this is the beginning. This is the beginning of that journey. And I'm around people who are desperately struggling to understand how to apply a lot of this.rapidly evolving technology into a system that's regulated and to an extent, you know, it has fragility if you apply new technologies in. So understanding how you can apply the technology to benefit the system and to strengthen it is kind of a, it's almost a magic power, it's some kind of superpower. And as well as it being a supercharged sandbox, it seems to give us superpowers when it comes to actually developing these concepts, getting them ready to go to the customer and understand that that system is going to work for them. Because when you're replicating in a synthetic twin, for want of a better word, some kind of environment that's really systemically very similar. I think the synthetic data sets we have, we've got 30,000 individual customer personas, 6,000 individual small business personas, as well as 4 million lines of the data itself. And a huge amount of flags, API calls. It's a complex environment. So hopefully, I think what we're doing is trying to figure out a way to present that complexity to a firm that can engage with it in the most effective way possible to give customer outcomes that we all can be proud of. So that's what I think what we're trying to achieve together, isn't it? No, absolutely. And yeah, I think the flexibility of the sandbox equally, you know, having that synthetic data, but, you know, for us, in our case, you know,We had a huge, we had our own rich data, which we could also bring along as well, which, you know, being able to kind of play with that, using the synthetic, getting to a certain point and then starting to stress test with our existing data was also a huge value. No, that's a great prompt because, of course, you bring in your own data sets as well. So it's kind of the best of both worlds, which is great. Well, I hope it's been helpful. For me, it's been a pleasure just to share a stage with you again. And it's always a delight to hear your journey. So thank you. Yeah, thanks. Thanks for that. I'm going to wish everyone that's watching a great time in the GTC. I think it's the most amazing privilege for us to be here and share our stories with you. Savannah, I'm going to leave the last word with you because I'm a true English gentleman. Well, thank you, Colin. No, just to echo what Colin says, it's really great to share a stage or share a presentation slot with you. And also, I think to the, you know, from the NVIDIA side, I know, and speaking on behalf of my CTO, who really was the one vibe coding, experimenting, learning on that steep learning curve, I think the input, the tooling, the, you know, access, it made a huge difference for him. And I know he feels, you know, incredibly pleased to have been a part of, you know, his learning curve as well. So thank you. Thank you, everyone.",
+    "usage": {
+        "prompt_tokens": 224,
+        "completion_tokens": 12905,
+        "total_tokens": 13129,
+        "prompt_audio_seconds": 2582,
+        "request_count": 32
+    },
+    "language": null,
+    "segments": [
+        {
+            "text": "Hi Savannah.",
+            "start": 0.3,
+            "end": 0.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thanks Ben.",
+            "start": 0.9,
+            "end": 1.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Hey Colin.",
+            "start": 1.7,
+            "end": 2.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And hi everyone, it's great to be here.",
+            "start": 2.9,
+            "end": 4.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Great.",
+            "start": 5.6,
+            "end": 5.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Savannah and Serene were one of our participant firms, which we'll get to shortly.",
+            "start": 6.4,
+            "end": 11.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But it's kind of strange, a regulator at the NVIDIA GTC, it might feel a bit unexpected for you, but it really shouldn't, because in financial services, AI doesn't just optimise workflows, it shapes the decisions.",
+            "start": 12.5,
+            "end": 25.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And increasingly the actions we're seeing in the markets we regulate.",
+            "start": 25.8,
+            "end": 29.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And when AI works, we get really much better fraud detection, we get fast support, we get lower cost to serve, and we get smarter risk monitoring.",
+            "start": 29.8,
+            "end": 38.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But when it fails, the harm is immediate and it's personal.",
+            "start": 38.5,
+            "end": 41.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It could lead to mis-selling and loss of trust.",
+            "start": 42.2,
+            "end": 45.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So our posture, our position is really simple.",
+            "start": 45.8,
+            "end": 48.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In the regulated markets, the only way to really produce trust is to provide the evidence.",
+            "start": 48.7,
+            "end": 53.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'll come back to this often today.",
+            "start": 54.1,
+            "end": 55.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Trust isn't a slogan for us, it's an output.",
+            "start": 56.2,
+            "end": 58.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And in finance, financial services, evidence is how you produce it.",
+            "start": 59.0,
+            "end": 63.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So today I'm going to share with you how we've supercharged our responsible AI innovation with three ingredients.",
+            "start": 63.5,
+            "end": 71.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We use great compute, we use brilliant synthetic data, and of course regulatory informed design.",
+            "start": 71.4,
+            "end": 78.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's how this becomes real through a full AI stack powered by NVIDIA.",
+            "start": 78.6,
+            "end": 83.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " AWS is helping us as well as a partner, and it's all orchestrated through our platform partner, NIO1.",
+            "start": 83.6,
+            "end": 89.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "So our job as a regulator isn't really to be pro-AI or anti-AI.",
+            "start": 90.4,
+            "end": 95.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's our job to be really pro-outcomes.",
+            "start": 95.8,
+            "end": 98.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're an outcomes-based regulator.",
+            "start": 98.9,
+            "end": 101.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're concerned with consumer protection, market integrity, competition and innovation.",
+            "start": 101.8,
+            "end": 106.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And yes, growth and competitiveness are really important while keeping our standards intact.",
+            "start": 107.4,
+            "end": 112.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's really important to us.",
+            "start": 112.3,
+            "end": 113.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The shift isn't just more automation.",
+            "start": 114.4,
+            "end": 116.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a change in how decisions get made and increasingly how actions get taken.",
+            "start": 116.7,
+            "end": 120.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're moving from a model that can predict to systems that recommend, systems that can act.",
+            "start": 121.3,
+            "end": 126.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's the road to autonomy.",
+            "start": 126.7,
+            "end": 128.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So, Serene and Savannah, of course, you know Agent AI very well.",
+            "start": 129.0,
+            "end": 134.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You're in the business of this new autonomy.",
+            "start": 134.6,
+            "end": 137.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I didn't know whether you wanted to give any impressions at the front end just about what we're doing here.",
+            "start": 138.0,
+            "end": 142.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Yeah, absolutely.",
+            "start": 143.5,
+            "end": 144.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So I guess just a little bit of a background to myself and to Serene before we get going.",
+            "start": 144.4,
+            "end": 149.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So Serene is building the infrastructure for financial care.",
+            "start": 149.5,
+            "end": 153.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And what we exist to do is create technology or embed technology that really helps banks, lenders and fintechs act earlier on risk, be that risk, credit deterioration, fraud susceptibility or just general distress in turn.",
+            "start": 153.5,
+            "end": 168.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And our mission is really to deliver measurably better outcomes for customers.",
+            "start": 168.9,
+            "end": 173.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So it's been a really, really exciting journey collaborating with the FCA and the video and really kind of put.",
+            "start": 174.0,
+            "end": 179.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "to test our kind of core behavioral insights and start experimenting with a GenTech technology around how do you actually embed our insights into workflows?",
+            "start": 180.1,
+            "end": 190.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " How do you surface insights at the right time with the right prompts to the right people, really to kind of enable staff, but also ultimately to enable the end consumer?",
+            "start": 190.7,
+            "end": 199.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So, yeah, I'm really looking forward kind of a little bit later in this presentation to kind of walking you through some of the work that we did in the supercharged sandbox, the tools that we used and, you know, also some of the challenges and benefits that we experienced",
+            "start": 200.4,
+            "end": 214.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " during that process.",
+            "start": 215.0,
+            "end": 215.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So, yeah, thank you, Colin.",
+            "start": 216.0,
+            "end": 217.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Brilliant.",
+            "start": 217.9,
+            "end": 218.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thanks, Savannah.",
+            "start": 218.9,
+            "end": 219.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, when we talk about our AI lab, people are pretty surprised at the investment that we've made into this.",
+            "start": 221.2,
+            "end": 227.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But it shouldn't be any surprise to NVIDIA.",
+            "start": 227.9,
+            "end": 230.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We built the AI lab because we kind of kept seeing the same patterns.",
+            "start": 231.1,
+            "end": 234.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The firms would come to us, they'd demo something really impressive, and they'd say, yeah, we've tested it.",
+            "start": 235.0,
+            "end": 239.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And obviously we'd ask the question, we're a regulator.",
+            "start": 240.5,
+            "end": 242.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It kind of changes the conversation.",
+            "start": 243.5,
+            "end": 245.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We say, tested how?",
+            "start": 245.1,
+            "end": 246.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Give us an example.",
+            "start": 247.0,
+            "end": 247.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What have you done?",
+            "start": 247.7,
+            "end": 248.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And in many cases, tested really meant, you know, there was a test around model accuracy on a really narrow data set.",
+            "start": 249.1,
+            "end": 254.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it wasn't the behavior of the full system.",
+            "start": 255.8,
+            "end": 257.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And in financial services, the model isn't the product.",
+            "start": 258.3,
+            "end": 260.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The system is our product.",
+            "start": 260.5,
+            "end": 261.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And a production AI system is the whole chain.",
+            "start": 262.4,
+            "end": 264.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's data, it's retrieval, it's grounding, model behavior, orchestration.",
+            "start": 265.2,
+            "end": 269.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "Human oversight, logging, audit, it's everything.",
+            "start": 270.1,
+            "end": 273.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " All the controls and fallbacks, monitoring, drift, security, resilience, and really importantly, accountability.",
+            "start": 273.3,
+            "end": 280.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So real products include the retrieval and grounding, prompt and policy control.",
+            "start": 280.5,
+            "end": 285.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They include tool access.",
+            "start": 285.4,
+            "end": 286.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They include orchestration.",
+            "start": 286.8,
+            "end": 288.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " All of these things have to be there.",
+            "start": 288.5,
+            "end": 290.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it isn't that the firms lack ideas.",
+            "start": 290.9,
+            "end": 293.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's just that many really struggle to generate the kind of evidence that makes AI deployable in the regulated markets.",
+            "start": 293.7,
+            "end": 299.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's really what it's about.",
+            "start": 300.6,
+            "end": 302.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This trust is a runtime property.",
+            "start": 302.1,
+            "end": 303.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got to keep this real and in real time.",
+            "start": 303.9,
+            "end": 306.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this is what we test in the AI lab.",
+            "start": 307.2,
+            "end": 308.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you'll see on screen, there's a number of areas for our AI lab.",
+            "start": 309.0,
+            "end": 313.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We started off with a spotlight and a sprint.",
+            "start": 313.4,
+            "end": 315.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, the spotlight was really for us to gather information.",
+            "start": 315.8,
+            "end": 318.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " There was a launch event last year.",
+            "start": 319.1,
+            "end": 320.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We went out to the market.",
+            "start": 321.0,
+            "end": 322.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We wanted to engage with all of the innovators just to see what they were doing, you know, to start to understand the landscape in front of us.",
+            "start": 322.3,
+            "end": 329.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Once we've done that, we moved on to a more policy-orientated element of the AI Lab, which is called the AI Sprint, which is an in-person event.",
+            "start": 330.5,
+            "end": 339.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We invited people to come to our headquarters in London.",
+            "start": 339.6,
+            "end": 342.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We had a big event launch, a lot of attendees here, and we really worked with policy to start to tease out some of the really important ideas.",
+            "start": 343.1,
+            "end": 351.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we had an input zone where the ones who couldn't come to the location in London, they could give their online active information to us.",
+            "start": 352.3,
+            "end": 360.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "And that input zone has continued.",
+            "start": 361.0,
+            "end": 362.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Lots of responses, lots of really interesting feedback.",
+            "start": 363.1,
+            "end": 365.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But that wasn't really enough for us.",
+            "start": 366.8,
+            "end": 368.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " That was the beginning.",
+            "start": 368.1,
+            "end": 369.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Just to give you a bit of background, we originally already had a digital sandbox.",
+            "start": 370.1,
+            "end": 375.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we've been running a digital sandbox for some years.",
+            "start": 375.2,
+            "end": 377.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We were one of the first to have a regulatory sandbox.",
+            "start": 378.1,
+            "end": 380.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we moved into the actual digital domain and created a platform for our firms to use.",
+            "start": 380.7,
+            "end": 386.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the digital sandbox is a safe, controlled environment where firms can test out new ideas.",
+            "start": 386.8,
+            "end": 391.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The real consumer data is protected because we use synthetic data, and I'll cover that a little bit later on.",
+            "start": 392.9,
+            "end": 398.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Without that realistic data, of course, you can't really test properly.",
+            "start": 400.5,
+            "end": 403.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we provide simulations and data sets that are useful for firms to really put those difficult, rare events to the test, maybe some of those edge cases, and look at the stress around some of the scenarios.",
+            "start": 403.8,
+            "end": 416.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it's really rich domain-specific data.",
+            "start": 417.2,
+            "end": 419.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We replicate real-world financial transactions.",
+            "start": 420.5,
+            "end": 422.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got customer profiles and so on.",
+            "start": 423.3,
+            "end": 425.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " As you'd expect, that enables safe development at scale, particularly for things like fraud detection, inclusion, and some of those other valuable use cases that we've used.",
+            "start": 425.5,
+            "end": 435.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Because these are hard challenges and we really need to solve them as the system.",
+            "start": 436.7,
+            "end": 441.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, that sandbox has been very successful.",
+            "start": 442.1,
+            "end": 444.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Aligned to that sandbox, we wanted to make sure that we could move",
+            "start": 446.2,
+            "end": 449.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "move it forward into the future.",
+            "start": 450.0,
+            "end": 451.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this is where the partnership with NVIDIA really helped us accelerate what we wanted to do.",
+            "start": 451.8,
+            "end": 457.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We came to NVIDIA and we asked for some help.",
+            "start": 457.6,
+            "end": 460.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, we wanted to supercharge this original digital sandbox.",
+            "start": 460.5,
+            "end": 464.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I was delighted that NVIDIA agreed to work with us.",
+            "start": 465.0,
+            "end": 469.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " As well as a number of our other partners, to start to really improve the sandbox and to provide something that was really special.",
+            "start": 469.5,
+            "end": 476.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this we called the Supercharged Sandbox.",
+            "start": 477.5,
+            "end": 479.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, I'll move on to the detail of that in just a second, but I just wanted to mention also we have an AI live testing environment.",
+            "start": 480.7,
+            "end": 487.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This is after prototype, after synthesized data.",
+            "start": 487.6,
+            "end": 491.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can also look at the actual deployments in the live environment.",
+            "start": 491.3,
+            "end": 495.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's the live testing.",
+            "start": 495.7,
+            "end": 497.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But let's go back to Supercharged Sandbox and let's talk to that in a bit more detail.",
+            "start": 497.2,
+            "end": 503.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The Supercharged Sandbox.",
+            "start": 504.2,
+            "end": 505.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Exists really because modern gen AI agentic patterns, the bottleneck isn't the ideas from the firms.",
+            "start": 505.6,
+            "end": 511.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You're going to hear from Savannah, the firms, I mean, they've got brilliant ideas.",
+            "start": 511.6,
+            "end": 516.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We all want to test these ideas, but it's not about ideas.",
+            "start": 517.2,
+            "end": 521.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This is about getting real compute, getting the data behind it,",
+            "start": 521.1,
+            "end": 525.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and the evaluation discipline to make it work.",
+            "start": 525.3,
+            "end": 528.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we built these three pillars that you can see on screen.",
+            "start": 528.4,
+            "end": 531.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got this enhanced AI testing infrastructure.",
+            "start": 532.0,
+            "end": 534.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, this is, of course, where NVIDIA was absolutely critical in what we were putting together.",
+            "start": 534.0,
+            "end": 539.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "You know, we wanted enriched data sets, synthetic data, which we've used for three, four years now, but we wanted to go to the next level with that.",
+            "start": 540.4,
+            "end": 547.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'm going to cover that a little bit later on.",
+            "start": 547.6,
+            "end": 549.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We wanted the highest performance compute we could access.",
+            "start": 549.8,
+            "end": 552.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And of course, NVIDIA unlocked a lot of that for us, as well as critically great developer tools for validation.",
+            "start": 552.7,
+            "end": 559.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, that plus the dedicated cohort that we put together, that gave us a structured program, which added mentorship, engineering guidance, and that would help us turn these prototypes into real evidence for the future.",
+            "start": 560.7,
+            "end": 574.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then, of course, we've got accelerated development.",
+            "start": 574.7,
+            "end": 576.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this was through strategic partnerships.",
+            "start": 577.4,
+            "end": 579.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We had all of this supercharging coming together.",
+            "start": 579.9,
+            "end": 582.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you have this real absolute global first enterprise-grade AI stack, which included the NVIDIA AI Enterprise within the sandbox environment.",
+            "start": 582.7,
+            "end": 592.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So experimentation is aligned to production patterns from day one.",
+            "start": 592.6,
+            "end": 597.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we deliberately leaned into open models alongside enterprise tooling because that combination can deliver portability, efficiency and sovereignty where it matters, while still meeting all of our high assurance expectations.",
+            "start": 598.2,
+            "end": 611.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we don't optimise for demos now, we're optimising for evidence and systems.",
+            "start": 611.7,
+            "end": 616.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Evidence and systems are critical for our thinking.",
+            "start": 616.5,
+            "end": 619.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, when we dive into the architecture of what's behind the sandbox, this is just a very simplified diagram for everyone to be able to understand.",
+            "start": 619.9,
+            "end": 627.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But this is the core of the success.",
+            "start": 627.7,
+            "end": 629.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "The sandbox was never going to be a concept.",
+            "start": 630.1,
+            "end": 632.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a full stack designed to remove that POC to production gap.",
+            "start": 632.9,
+            "end": 637.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, we want to be able to pilot things out and get them into production as soon as possible to be able to test.",
+            "start": 637.3,
+            "end": 643.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it's really four tightly integrated layers.",
+            "start": 643.7,
+            "end": 646.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got number one is the platform itself, which is the tenancy and the governance.",
+            "start": 646.9,
+            "end": 651.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, that's provided by our partners, NIA1.",
+            "start": 651.6,
+            "end": 654.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So NIA1 provides an experimentation layer.",
+            "start": 654.5,
+            "end": 657.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's all governed.",
+            "start": 657.8,
+            "end": 658.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got tenant isolation.",
+            "start": 658.9,
+            "end": 660.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got secure workspaces for the firms.",
+            "start": 660.7,
+            "end": 663.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got role-based access for participants, mentors and observers.",
+            "start": 663.3,
+            "end": 667.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the audit surface you need for regulated experimentation.",
+            "start": 668.1,
+            "end": 670.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So for engineers, I guess that means a repeatable environment that's clear with boundaries intact.",
+            "start": 671.0,
+            "end": 676.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that really works for the engineers that were coming in.",
+            "start": 676.2,
+            "end": 679.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For business leaders that are coming in, it means that it's experimentation that you can defend.",
+            "start": 679.7,
+            "end": 685.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's got traceability and control.",
+            "start": 685.6,
+            "end": 687.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's really, I suppose, the substance of the platform.",
+            "start": 687.8,
+            "end": 691.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then you move on to the data layer, which is, as I've mentioned, synthetic, it's privacy preserving, and it's test first.",
+            "start": 691.4,
+            "end": 697.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the data layer is designed for testing and not just training.",
+            "start": 697.6,
+            "end": 701.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So synthetic data sets represent real behavior, and they don't expose any sensitive information, but they do have the ability to generate edge cases and all of those rare events deliberately, because we don't want that happy path.",
+            "start": 702.2,
+            "end": 715.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want to be able to stress test so we can repeat the benchmarks and compare approaches.",
+            "start": 715.3,
+            "end": 720.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "And that's what enables firms to validate their model behavior and fairness, robustness, and the failure models without using consumers as their test subjects.",
+            "start": 721.5,
+            "end": 730.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it's really safe, and that really satisfies us as regulators.",
+            "start": 730.0,
+            "end": 733.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The third area is the compute layer.",
+            "start": 734.0,
+            "end": 735.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, obviously, this is where NVIDIA comes into its own.",
+            "start": 735.9,
+            "end": 738.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's the engine room.",
+            "start": 739.0,
+            "end": 739.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " GPU-enabled compute on a cloud infrastructure.",
+            "start": 740.7,
+            "end": 742.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this is what turns that kind of one run into an evaluation at scale.",
+            "start": 743.9,
+            "end": 747.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Multiple scenarios, multiple prompts, multiple data slices, agents, and repeatable test harnesses.",
+            "start": 748.0,
+            "end": 754.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So at that point, you can test latency and cross trade-offs, throughput, underload, all those kind of things that you'd expect.",
+            "start": 754.8,
+            "end": 761.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Not as a one-off, but as a routine pipeline, which is that's what we're looking for.",
+            "start": 761.6,
+            "end": 765.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're looking for that resilience that's going to be systemic.",
+            "start": 765.6,
+            "end": 768.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, the final area is really the services and tooling layer, which is absolutely on the NVIDIA AI Enterprise plus NEMO and the ecosystem falling around it.",
+            "start": 769.5,
+            "end": 779.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So this is where it really supercharges from our point of view.",
+            "start": 779.1,
+            "end": 782.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " NVIDIA AI Enterprise is integrated within the sandbox environment.",
+            "start": 783.1,
+            "end": 786.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It gives firms an enterprise class AI software stack.",
+            "start": 786.5,
+            "end": 789.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It across the whole AI lifecycle.",
+            "start": 790.0,
+            "end": 792.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So from development and training to validation to optimization and deployment patterns.",
+            "start": 792.1,
+            "end": 796.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we're explicitly leaning into NEMO.",
+            "start": 797.3,
+            "end": 799.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The usage is perfect for us because the open models are useful where appropriate and the open weight models are tuned and evaluated in a controlled environment.",
+            "start": 799.8,
+            "end": 807.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They can be efficient, portable,",
+            "start": 807.7,
+            "end": 809.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "and align with sovereignty considerations that we have.",
+            "start": 810.0,
+            "end": 812.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's all while still being governed to the high standards that we expect.",
+            "start": 813.0,
+            "end": 816.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Well, I mean, also critical, I think, is NVIDIA's libraries and frameworks.",
+            "start": 817.6,
+            "end": 820.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They help firms move beyond LLM as a UI to a complete solution.",
+            "start": 821.1,
+            "end": 826.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you get agent orchestration, you get Gen AI, predictive AI, ML, all in the same workflow.",
+            "start": 826.4,
+            "end": 832.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You get data processing at scale.",
+            "start": 832.7,
+            "end": 834.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And where relevant, you get simulation and optimization styles, which show up in financial service context.",
+            "start": 835.0,
+            "end": 841.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it's completely brilliant for a firm to get that environment, which is almost entirely unavailable to them elsewhere.",
+            "start": 841.0,
+            "end": 848.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, the critical point, and I guess one that matters to both us and all the engineers that are in the room, is that most failures in AI systems come from, I guess, the system around the model, not the base model alone.",
+            "start": 849.4,
+            "end": 861.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we might have weak retrieval grounding or permissive tool access, prompt and policy drift.",
+            "start": 862.1,
+            "end": 867.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Maybe you've got missing observability, poor evaluation.",
+            "start": 867.9,
+            "end": 871.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Maybe you've got weak fallbacks.",
+            "start": 871.8,
+            "end": 873.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the sandbox architecture is designed to force the right engineering questions.",
+            "start": 873.3,
+            "end": 877.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Engineering questions that are critical.",
+            "start": 877.9,
+            "end": 879.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What's the evaluation harness?",
+            "start": 879.7,
+            "end": 881.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, what are the guardrails?",
+            "start": 881.5,
+            "end": 882.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What's the observability model?",
+            "start": 883.8,
+            "end": 885.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What's the fail safe?",
+            "start": 886.0,
+            "end": 886.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " All of those things are absolutely critical.",
+            "start": 886.8,
+            "end": 889.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this is probably stuff you wouldn't expect a regulator to be very concerned about.",
+            "start": 889.4,
+            "end": 894.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, but we're deep into this.",
+            "start": 895.1,
+            "end": 896.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we're working with you.",
+            "start": 896.6,
+            "end": 898.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're working with the NVIDIA.",
+            "start": 898.8,
+            "end": 900.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "to really understand what we can bring to this using the tool sets that we have.",
+            "start": 900.8,
+            "end": 904.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the sandbox uses enterprise-grade stack patterns, validated outcomes.",
+            "start": 904.4,
+            "end": 909.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It reduces that kind of POC sandbox gap, accelerating production readiness.",
+            "start": 909.7,
+            "end": 915.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Evidence beats reassurance every single time.",
+            "start": 915.9,
+            "end": 918.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I guess what I will say, though, is two practical challenges did come up early.",
+            "start": 918.9,
+            "end": 924.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And they're common across any scenario that AI platforms might build.",
+            "start": 925.1,
+            "end": 928.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Reproducibility and evaluation consistency.",
+            "start": 929.1,
+            "end": 931.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's easy to demo.",
+            "start": 932.6,
+            "end": 933.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's really harder to produce that repeatable evidence.",
+            "start": 933.9,
+            "end": 936.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we overcame that by standardizing all the test harnesses, evaluation runs, governance expectations.",
+            "start": 937.0,
+            "end": 943.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the results are comparable and auditable.",
+            "start": 943.4,
+            "end": 945.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " That was our learning from that.",
+            "start": 946.0,
+            "end": 948.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Also balancing openness with control.",
+            "start": 948.8,
+            "end": 950.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So obviously the firms want flexibility, but regulated markets, they require constraints.",
+            "start": 951.3,
+            "end": 957.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we address that with tenant isolation, role-based access, guardrail first patterns.",
+            "start": 957.4,
+            "end": 963.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So innovation is fast and bounded.",
+            "start": 963.6,
+            "end": 966.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And often people ask me, how am I going to do that balance between risk and optimization of the innovation?",
+            "start": 966.6,
+            "end": 973.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's how we do it.",
+            "start": 973.8,
+            "end": 974.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The goal was not to maximize freedom.",
+            "start": 975.0,
+            "end": 976.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It was to maximize learning under safe constraints.",
+            "start": 977.1,
+            "end": 979.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, if we talk just for a second about data, synthetic data is artificially generated and it represents the real world patterns.",
+            "start": 980.8,
+            "end": 986.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's the reason we can test responsibility.",
+            "start": 987.8,
+            "end": 989.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "And pseudo-anonymization and anonymization are complementary techniques that reduce identifiability risk.",
+            "start": 990.9,
+            "end": 996.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " With pseudo-anonymization keeping identifying information separate.",
+            "start": 997.2,
+            "end": 1000.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now technically this matters because it enables edge case testing.",
+            "start": 1000.9,
+            "end": 1004.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It also enables stress testing where we need it and repeatable benchmarks.",
+            "start": 1005.2,
+            "end": 1009.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And from a regulatory perspective, it means that innovation is done without exposing consumers to risk.",
+            "start": 1009.2,
+            "end": 1015.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So responsible AI starts before the model.",
+            "start": 1015.4,
+            "end": 1017.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It starts with the data design.",
+            "start": 1017.9,
+            "end": 1019.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's what we're doing with this data.",
+            "start": 1020.2,
+            "end": 1021.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "So let's just think about the first cohort.",
+            "start": 1024.556,
+            "end": 1026.256,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've only had one cohort go through this new AI lab, but it was absolutely stunning, the response we had.",
+            "start": 1026.356,
+            "end": 1033.656,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Imagine, we announced at London Tech Week, Jensen was on stage, we had the Prime Minister of the UK.",
+            "start": 1033.956,
+            "end": 1040.756,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They were really vibing on what we were doing.",
+            "start": 1041.656,
+            "end": 1044.656,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the announcement came out that we were going to be doing this work with the NVIDIA support.",
+            "start": 1045.056,
+            "end": 1049.856,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " My LinkedIn went absolutely nuts, to be honest.",
+            "start": 1051.156,
+            "end": 1054.156,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It was one of the most extraordinary responses to anything I put out there.",
+            "start": 1054.656,
+            "end": 1058.456,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It was genuinely viral.",
+            "start": 1058.456,
+            "end": 1060.156,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the application process was easy and it attracted a huge number of applications.",
+            "start": 1061.256,
+            "end": 1067.956,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, maybe 132 doesn't sound like a big number, but if you consider usually we will get 130 or so coming through our services every year or two.",
+            "start": 1067.956,
+            "end": 1077.356,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So this was for one cohort, which, you know, we would normally have maybe 20, 25 applications.",
+            "start": 1077.856,
+            "end": 1083.556,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So clearly the word was out.",
+            "start": 1083.856,
+            "end": 1086.756,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we got 132 applications.",
+            "start": 1087.056,
+            "end": 1088.956,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " 62 of them entered the supercharged academy pathway.",
+            "start": 1089.356,
+            "end": 1093.056,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, that's a separate academy for those who weren't accepted into the cohort.",
+            "start": 1093.456,
+            "end": 1097.356,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We went a little bit further than we expected, actually, because it was so popular.",
+            "start": 1097.356,
+            "end": 1101.856,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We decided we would spin up a separate academy to really give people that extra bit of advice and help.",
+            "start": 1102.256,
+            "end": 1108.456,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And of course, we're using our partners to help in.",
+            "start": 1108.956,
+            "end": 1112.156,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "some of the academy work.",
+            "start": 1112.456,
+            "end": 1113.556,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So again, it's a great thanks to NVIDIA for coming alongside us on some of that work as well.",
+            "start": 1113.556,
+            "end": 1118.756,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But let's talk about those who were accepted.",
+            "start": 1119.756,
+            "end": 1121.456,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, we had 23 accepted.",
+            "start": 1122.156,
+            "end": 1124.056,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " 19 managed to complete the first cohort, which is a great number.",
+            "start": 1125.056,
+            "end": 1129.056,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Oftentimes, because of",
+            "start": 1129.656,
+            "end": 1131.456,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " circumstances beyond many controls, people will have to drop out through the cohort because it's a big commitment.",
+            "start": 1132.156,
+            "end": 1137.556,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But we really knocked it out of the park.",
+            "start": 1138.456,
+            "end": 1140.256,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And as Savannah will cover some of it from her perspective, because, of course, Serene was one of our members of that accepted cohort.",
+            "start": 1140.256,
+            "end": 1147.556,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But the split between some of the...",
+            "start": 1148.856,
+            "end": 1151.656,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Focus areas was really informative as well.",
+            "start": 1151.856,
+            "end": 1153.956,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We had almost, I suppose, half and half.",
+            "start": 1154.456,
+            "end": 1157.356,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I mean, we had consumer focused, actually eight use cases.",
+            "start": 1157.356,
+            "end": 1160.956,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They were tools that help firms understand, they protect and empower customers.",
+            "start": 1161.556,
+            "end": 1165.256,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But really interestingly, we had 11 that were wholesale, which is really unusual for us because we don't get a huge uptick.",
+            "start": 1165.756,
+            "end": 1171.556,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In wholesale business.",
+            "start": 1171.856,
+            "end": 1173.656,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Now, the wholesale use cases are the ones, the really big ones, right?",
+            "start": 1173.656,
+            "end": 1177.156,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They're strengthening compliance, looking at risk detection, improving operational resilience.",
+            "start": 1177.156,
+            "end": 1181.956,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the real nuts and bolts of what we look for in the market.",
+            "start": 1181.956,
+            "end": 1185.756,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it was a brilliant balance between the two.",
+            "start": 1185.856,
+            "end": 1188.756,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that balance really matters because",
+            "start": 1189.156,
+            "end": 1190.856,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Responsible AI in finance isn't just a new chatbot.",
+            "start": 1191.256,
+            "end": 1194.756,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's that invisible infrastructure risk, the compliance, the surveillance, all the resilience that you need.",
+            "start": 1195.556,
+            "end": 1202.256,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "The plumbing that really makes markets safe while allowing innovation to scale.",
+            "start": 1202.556,
+            "end": 1205.856,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So before we go a bit further, I'd like to run a video just to give you a flavour of some of those, the days we showcased some of these",
+            "start": 1206.656,
+            "end": 1215.556,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " finalised cohort firms, because they came back to us after the cohort was completed and they showcased the work that they'd done in the months in between starting and completing.",
+            "start": 1216.456,
+            "end": 1228.056,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'll just give you a bit of a flavour now with a video and so you can experience it yourself.",
+            "start": 1228.656,
+            "end": 1232.156,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "So the FCA sandboxes are an incredible opportunity for innovators to come into the FCA and get access to our data as well as to each other.",
+            "start": 1243.664,
+            "end": 1255.464,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " For those of us in financial services where it's kind of half expecting, we're going to push the envelope a bit using AI in this regulated industry that we're going to get told, no, you can't do that.",
+            "start": 1257.764,
+            "end": 1268.164,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_5"
+        },
+        {
+            "text": " So I think it's great to open it up and allow us to explore and experiment early on before investing too much time and money.",
+            "start": 1268.264,
+            "end": 1276.364,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_5"
+        },
+        {
+            "text": " The idea is you have a sandbox environment where people can come in, build, test, experiment, and they can bring their solutions to life in real world and doing that in a safe and responsible way.",
+            "start": 1280.264,
+            "end": 1292.864,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_6"
+        },
+        {
+            "text": " What excited me about what I saw in the Supercharged Sandbox today was the bringing together of so many innovators with different products and services that they're using AI with.",
+            "start": 1295.264,
+            "end": 1306.164,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_7"
+        },
+        {
+            "text": "Being able to test safely, responsibly, using access to data sets to compute, to software development skills, and then to that mentorship, all in that one place is very unique and very powerful.",
+            "start": 1310.116,
+            "end": 1324.116,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_8"
+        },
+        {
+            "text": " One of the solutions that have gone from our digital sandbox environment, coming into the supercharged sandbox environment, and then getting launched live on stage.",
+            "start": 1325.816,
+            "end": 1332.616,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_6"
+        },
+        {
+            "text": " It shows the impact that we are having within the financial service industry.",
+            "start": 1332.716,
+            "end": 1335.916,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_6"
+        },
+        {
+            "text": " The presentations have been fantastic.",
+            "start": 1336.616,
+            "end": 1338.716,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_6"
+        },
+        {
+            "text": " The quality of the solutions have been fantastic.",
+            "start": 1339.116,
+            "end": 1341.616,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_6"
+        },
+        {
+            "text": " What I'm seeing from the solutions here give me that reassurance that the people behind it, the founders, the innovators, are the ones who are truly trying to understand both the technical realities and the operational realities that follow it.",
+            "start": 1342.716,
+            "end": 1354.816,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_8"
+        },
+        {
+            "text": "I think AI is going to revolutionize financial services.",
+            "start": 1358.8,
+            "end": 1361.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_7"
+        },
+        {
+            "text": " By 2030, we'll see AI right the way across embedded in all aspects of financial services.",
+            "start": 1363.0,
+            "end": 1370.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_7"
+        },
+        {
+            "text": " And for consumers in particular, that will be the front end of engagement with your financial services.",
+            "start": 1371.1,
+            "end": 1376.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_7"
+        },
+        {
+            "text": " Well, I mean, hopefully that gives you a little bit of the energy and the interest in the building that came through because it was such a positive and successful event.",
+            "start": 1386.6,
+            "end": 1395.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We had a great time.",
+            "start": 1396.1,
+            "end": 1396.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I know that the firm's got so much out of it.",
+            "start": 1396.9,
+            "end": 1400.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'm going to close just this part because one of the things I did on that event was have a conversation with my own agent, if you like, my own avatar.",
+            "start": 1400.6,
+            "end": 1411.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I was doing a fireside chat with one of my colleagues.",
+            "start": 1411.8,
+            "end": 1415.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And one of the highlights for me was I actually went up against my own agent, which I trained to answer the questions in the way I would do.",
+            "start": 1415.0,
+            "end": 1423.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I gave the audience the chance to vote who was the most convincing.",
+            "start": 1424.3,
+            "end": 1427.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Fortunately, I still won.",
+            "start": 1428.4,
+            "end": 1429.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I got a pretty high percentage vote.",
+            "start": 1431.1,
+            "end": 1432.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think it was about 95 or 96 percent.",
+            "start": 1432.6,
+            "end": 1435.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I'm pretty pleased I still got a job.",
+            "start": 1435.4,
+            "end": 1437.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But it was a really interesting experiment in its own right because we want to always try to challenge.",
+            "start": 1438.5,
+            "end": 1445.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "the conception or the assumptions that we have when we go in.",
+            "start": 1445.8,
+            "end": 1448.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want to really push those barriers, push those boundaries.",
+            "start": 1449.0,
+            "end": 1451.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I guess I'll close where I started right at the beginning.",
+            "start": 1453.2,
+            "end": 1456.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, for us, trust isn't a slogan.",
+            "start": 1457.2,
+            "end": 1458.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Trust is the output from what we do.",
+            "start": 1459.7,
+            "end": 1461.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We are absolutely dedicated to creating a system of trust.",
+            "start": 1461.8,
+            "end": 1465.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it's done with the firms around us.",
+            "start": 1465.9,
+            "end": 1467.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, yes, it's the compute.",
+            "start": 1468.2,
+            "end": 1469.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's the synthetic data.",
+            "start": 1470.2,
+            "end": 1471.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's the enterprise grade evaluation.",
+            "start": 1471.3,
+            "end": 1473.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " That's how we produce it.",
+            "start": 1473.6,
+            "end": 1474.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But what really counts is that firms come to us, apply and come into our world, working with us and trusting us.",
+            "start": 1475.2,
+            "end": 1485.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To get to those outputs.",
+            "start": 1485.3,
+            "end": 1486.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I guess I'd like to, at that kind of point, really bring Savannah back in.",
+            "start": 1486.6,
+            "end": 1492.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I know that's been a real whistle-stop tour of the background and the context of what we do, Savannah, but I really want, you know, I want to, and I'm sure the audience want to hear from you because you're the ones that experience it, you're the ones that were there,",
+            "start": 1492.5,
+            "end": 1505.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got your own views.",
+            "start": 1506.5,
+            "end": 1508.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'd love to hear them.",
+            "start": 1508.1,
+            "end": 1509.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm going to hand the mic over to you, Savannah, and hear the Serene story.",
+            "start": 1509.6,
+            "end": 1513.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Great.",
+            "start": 1513.5,
+            "end": 1513.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Thank you so much, Colin.",
+            "start": 1514.0,
+            "end": 1515.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And yeah, it's great getting that overview.",
+            "start": 1515.9,
+            "end": 1517.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And also kind of given that we've been through that whole process and really actually we went through the digital sandbox as well as now going through the supercharged sandbox.",
+            "start": 1517.6,
+            "end": 1525.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So actually really being able to experience both.",
+            "start": 1525.4,
+            "end": 1528.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's been great having that opportunity.",
+            "start": 1529.2,
+            "end": 1531.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But I guess kind of starting or taking a step back and",
+            "start": 1533.1,
+            "end": 1535.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "kind of gave a bit of a brief intro, but what I'm going to do is give the overview of Serene, kind of where we're up to to date, and then also really talk about kind of what we did in the sandbox,",
+            "start": 1535.8,
+            "end": 1545.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " kind of how the sandbox and the input that we had from NVIDIA and the tooling, the mentors, and also from the FCA really kind of changed our approach.",
+            "start": 1546.9,
+            "end": 1554.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Almost midway through this once we'd had a chance to experiment and then also give a bit of a demo in terms of what did we actually create during our time in the Supercharge Sandbox.",
+            "start": 1554.7,
+            "end": 1565.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So kind of starting at the beginning and where we sit is we are this behavioral intelligence platform which",
+            "start": 1565.6,
+            "end": 1573.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " as I said, is designed to deliver better customer outcomes at scale.",
+            "start": 1574.0,
+            "end": 1577.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So we look at anonymized transactional data and what we're looking for is the early signs of instability, of emotional stress and of behavioral disruption that",
+            "start": 1577.2,
+            "end": 1587.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " the signals that actually sit outside traditional credit risk or fraud models.",
+            "start": 1588.0,
+            "end": 1592.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And really what we want to do is create four outcomes that banks care about.",
+            "start": 1592.9,
+            "end": 1596.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's about responsible growth.",
+            "start": 1596.8,
+            "end": 1598.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's about reducing arrears and reducing losses.",
+            "start": 1599.0,
+            "end": 1602.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But it's also around regulatory confidence as well as delivering those good customer outcomes.",
+            "start": 1602.6,
+            "end": 1606.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So in the sandbox, we focused on a very specific challenge.",
+            "start": 1608.2,
+            "end": 1611.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And what we wanted to do is we wanted to turn our early behavioral signals.",
+            "start": 1611.9,
+            "end": 1616.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Into real-time contextual frontline guidance with the right controls and also with full auditability.",
+            "start": 1616.6,
+            "end": 1622.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So think of what Serene",
+            "start": 1623.4,
+            "end": 1625.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "is as an early warning layer that translates those behavioral signals into supervised, expendable guidance for frontline teams.",
+            "start": 1625.6,
+            "end": 1632.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And our goal wasn't ever to automate decisions.",
+            "start": 1632.6,
+            "end": 1635.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It was really to help firms intervene earlier, more proportionately, and also with better customer outcomes at the fore.",
+            "start": 1635.3,
+            "end": 1641.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Kind of what you see on the screen essentially is our behavioral intelligence engine.",
+            "start": 1642.5,
+            "end": 1647.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And you can kind of see the core of what we already have in the market today, which is around the detection of financial risk and resilience, being able to predict outcomes like credit deterioration, fraud or general customer churn,",
+            "start": 1648.2,
+            "end": 1662.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " but also kind of recommendations of how firms can act on that.",
+            "start": 1662.8,
+            "end": 1666.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And what we really wanted to do in the sandbox was kind of build that agentic orchestration layer on top of our existing data.",
+            "start": 1667.0,
+            "end": 1675.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what we were able to do is we actually built this and also tested it.",
+            "start": 1675.8,
+            "end": 1680.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And really its role was to decide whether a signal should be surfaced, when it should surface, how it should be framed.",
+            "start": 1681.4,
+            "end": 1688.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And also, when should it escalate so that teams receive the right action at the right time with the right controls?",
+            "start": 1688.8,
+            "end": 1694.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So for us, accuracy really wasn't enough.",
+            "start": 1695.1,
+            "end": 1697.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And particularly because we are selling into regulated, highly regulated institutions, we needed a system that was always explainable, always auditable, and also had the opportunity or at least had that human in the loop supervision system.",
+            "start": 1698.5,
+            "end": 1712.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And that's really what we were able to create.",
+            "start": 1713.7,
+            "end": 1715.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "in the sandbox.",
+            "start": 1715.7,
+            "end": 1716.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So in order to make this work, and we very, very quickly realized, is that there wasn't one tool or one organization.",
+            "start": 1717.3,
+            "end": 1724.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It was really the combination of the environment, the infrastructure, as well as the regulatory collaboration.",
+            "start": 1724.7,
+            "end": 1730.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So kind of three key areas for us.",
+            "start": 1731.4,
+            "end": 1734.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The NIA1 environment was what gave us the secure synthetic environment where we could test the system behavior rather than just our model performance.",
+            "start": 1734.6,
+            "end": 1743.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And what this enabled us to do is we could vary thresholds, introduce conflicting signals, also observe how escalation logic responded under pressure without actually exposing real customers.",
+            "start": 1744.0,
+            "end": 1754.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what we were able to use this environment for was really validate the orchestration decisions safely, repeatedly.",
+            "start": 1755.4,
+            "end": 1762.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And also, you know, that orchestration layer really is where most governance risk actually sits.",
+            "start": 1763.4,
+            "end": 1768.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The second benefit from the sandbox for us was really the NVIDIA tooling.",
+            "start": 1770.6,
+            "end": 1775.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So using CUDA-enabled GPU instances with containerized runtimes and local inference pipelines meant that we could stand up reproducible environments for each session and also run Nemo workflows end-to-end.",
+            "start": 1775.6,
+            "end": 1790.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what this enabled us to do was very much evaluate the multi-agent reasoning parts, confidence calibration, and also full audit trace generation under load.",
+            "start": 1790.6,
+            "end": 1802.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So running locally on the GPU kept orchestration.",
+            "start": 1802.7,
+            "end": 1805.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "latency within a live conversation window, even with multiple specialized agents operating in parallel.",
+            "start": 1805.8,
+            "end": 1812.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So we could test this real-time decision support rather than just using batch outputs.",
+            "start": 1812.4,
+            "end": 1816.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And then finally, you know, being able to build this, test this with the FCA viewpoint or the regulator's viewpoint.",
+            "start": 1818.3,
+            "end": 1825.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So the kind of mentorship that we received throughout this process meant that we were able to adjust how we were building.",
+            "start": 1826.5,
+            "end": 1833.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Essentially, we were using regulation as a design input, not necessarily just as something that we needed to try and comply with afterwards.",
+            "start": 1833.8,
+            "end": 1841.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So the government's requirements really were able to shape our architecture from the very beginning.",
+            "start": 1841.9,
+            "end": 1847.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what we were designing for was case level explainability, human decision checkpoints, policy grounded outputs, and also full audit logging as core system features rather than add-ons.",
+            "start": 1847.6,
+            "end": 1859.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what this actually meant for us is it reduced rework, it clarified our design choices early, and it also brought the system much closer to being operationally deployable.",
+            "start": 1860.5,
+            "end": 1869.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And this for us was incredibly important as well, given the nature of our client base, given the fact that we are constantly asked, you know,",
+            "start": 1870.3,
+            "end": 1878.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " How is this governed?",
+            "start": 1879.3,
+            "end": 1880.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You know, is it auditable?",
+            "start": 1880.5,
+            "end": 1881.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Is it explainable?",
+            "start": 1881.6,
+            "end": 1882.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " How have you built this with the kind of the regulation in mind, particularly as an unregulated institution as we are today?",
+            "start": 1882.9,
+            "end": 1889.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So I'll give you a bit more of a flavor around what it actually looked in practice.",
+            "start": 1890.9,
+            "end": 1894.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So this.",
+            "start": 1895.1,
+            "end": 1895.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "is our architecture.",
+            "start": 1895.7,
+            "end": 1897.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This is really kind of where, you know, for us, the architecture matters because in a regulated environment, risk is created by our signal is used, not just by the signal itself.",
+            "start": 1897.0,
+            "end": 1909.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So the change that I mentioned earlier is where we started with a single generalized agent,",
+            "start": 1910.0,
+            "end": 1915.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " We found it very hard to explain control and to audit.",
+            "start": 1916.0,
+            "end": 1919.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what we did instead was we moved to explicit agent roles, created clear responsibility as well as control boundaries between detection, context, policy, tone and escalation.",
+            "start": 1919.9,
+            "end": 1931.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so what this meant for us was that guidance is already policy aligned.",
+            "start": 1932.6,
+            "end": 1936.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's timed to the interaction.",
+            "start": 1936.8,
+            "end": 1938.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's fully explainable while the human remains the core decision maker.",
+            "start": 1938.6,
+            "end": 1943.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So for us, it was really important that the system could recommend, but never decided.",
+            "start": 1943.2,
+            "end": 1949.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So as well, you know, every step for us is logged, escalation is enforced by design, and frontline teams see fewer higher quality prompts.",
+            "start": 1950.9,
+            "end": 1958.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So I think for us, it was really that separation of responsibilities that makes the AI deployable, governable, rather than just accurate.",
+            "start": 1959.6,
+            "end": 1967.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So now, kind of the fruit of our...",
+            "start": 1968.5,
+            "end": 1971.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Efforts and in the next kind of slide we'll show you end to end what we created in the sandbox.",
+            "start": 1972.1,
+            "end": 1979.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So I want you all to imagine that you're a customer service agent and the person calling you right now is Sir",
+            "start": 1979.9,
+            "end": 1985.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "You don't know what he's about to say.",
+            "start": 1986.9,
+            "end": 1988.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You have a few minutes to either help or accidentally make things worse.",
+            "start": 1989.1,
+            "end": 1993.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Before you even say hello, Serene's behavioral intelligence is quietly surfacing customer context in the background.",
+            "start": 1994.9,
+            "end": 2001.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " As you can see, we have surfaced signs of financial strain with a high risk of arrears.",
+            "start": 2002.7,
+            "end": 2008.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But what matters much more is why.",
+            "start": 2009.3,
+            "end": 2011.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So we're seeing strong loneliness indicators, which are often linked to reduced resilience and decision fatigue.",
+            "start": 2012.6,
+            "end": 2018.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Patterns of compulsive spending, often a coping response, not recklessness.",
+            "start": 2019.0,
+            "end": 2023.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And some income volatility adding to background pressure.",
+            "start": 2024.1,
+            "end": 2027.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Individually, any one of these indicators might be missed, and together they tell a very human story.",
+            "start": 2028.1,
+            "end": 2034.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " From a systems point of view, Sergei is high risk, but from a human point of view, this is someone at a very fragile moment, where the way the conversation is handled really matters.",
+            "start": 2036.2,
+            "end": 2046.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Most systems stop here.",
+            "start": 2047.7,
+            "end": 2049.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " They flag risk and leave the agent to figure out the rest.",
+            "start": 2049.3,
+            "end": 2052.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " My Serene doesn't.",
+            "start": 2052.7,
+            "end": 2054.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " As an agent, the hardest part isn't policy.",
+            "start": 2055.3,
+            "end": 2057.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's knowing how to start.",
+            "start": 2058.7,
+            "end": 2060.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So this is where we step in, quietly, in the background.",
+            "start": 2061.4,
+            "end": 2064.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Rather than scripts, we provide calm, proportionate guidance on tone, pacing and language.",
+            "start": 2066.7,
+            "end": 2072.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Warm, empathetic, unrushed.",
+            "start": 2073.6,
+            "end": 2075.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "If you look to the center panel, these breadcrumbs anchor the conversation to a compliance structure aligned to internal policy and QA frameworks.",
+            "start": 2077.2,
+            "end": 2086.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This ensures that conversations stay focused and stay human.",
+            "start": 2087.7,
+            "end": 2091.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And directly below this, you can see the support coach.",
+            "start": 2092.5,
+            "end": 2095.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Conversational prompts you see are deliberately calm, helping you navigate the conversation with Sergey without diagnosing, leading, or escalating too early.",
+            "start": 2097.0,
+            "end": 2106.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Advisors can choose, adapt, or free type, so they're always in control.",
+            "start": 2108.312,
+            "end": 2113.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what this does is it reduces cognitive load and improves consistency at scale.",
+            "start": 2121.412,
+            "end": 2125.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Notice how the guidance updates as the conversation evolves.",
+            "start": 2127.412,
+            "end": 2130.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This is not a static flow.",
+            "start": 2131.112,
+            "end": 2132.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's agentic reasoning in real time.",
+            "start": 2133.212,
+            "end": 2135.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Because Sergey isn't a script and support shouldn't be either.",
+            "start": 2136.412,
+            "end": 2139.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So while the agent is focused on Sergey, MySerene captures structured notes automatically.",
+            "start": 2140.812,
+            "end": 2145.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This strengthens auditability, QA, and post-interaction review while reducing wrap-up time.",
+            "start": 2146.512,
+            "end": 2152.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It protects the customer, the agent, and the organization.",
+            "start": 2153.212,
+            "end": 2157.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So here we have an activity log.",
+            "start": 2159.312,
+            "end": 2161.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Every recommendation is explainable.",
+            "start": 2162.912,
+            "end": 2164.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You can see confidence, uncertainty, and rationale.",
+            "start": 2165.112,
+            "end": 2168.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Nothing is hidden.",
+            "start": 2168.312,
+            "end": 2169.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The system can recommend, but it never decides.",
+            "start": 2170.112,
+            "end": 2173.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Different agents handle different responsibilities.",
+            "start": 2174.712,
+            "end": 2177.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " An agent for context, tone, escalation, and signposting.",
+            "start": 2177.612,
+            "end": 2181.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " That separation is what allows the same system to support servicing, collections, fraud or onboarding without rebuilding any part of the product.",
+            "start": 2182.512,
+            "end": 2191.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Everything you've seen here also works without this interface.",
+            "start": 2192.812,
+            "end": 2196.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "MySerene slots seamlessly into existing CRMs, servicing platforms, and decision systems.",
+            "start": 2197.312,
+            "end": 2202.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " One intelligence layer powering multiple teams.",
+            "start": 2203.112,
+            "end": 2206.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " No replatforming.",
+            "start": 2206.512,
+            "end": 2207.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Developers can also integrate in the language of their choice with no bespoke build required.",
+            "start": 2209.312,
+            "end": 2214.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Sergey never sees any of this.",
+            "start": 2216.212,
+            "end": 2217.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " What he experiences is a calmer conversation, clearer support, and a sense that he's being understood, not assessed.",
+            "start": 2218.912,
+            "end": 2226.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I'm going to thank Savannah there for that, because, you know, whenever I see that, and obviously I've seen your demo, I saw it live.",
+            "start": 2227.412,
+            "end": 2236.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In the playback, it's just wonderful.",
+            "start": 2236.912,
+            "end": 2239.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's just wonderful to see the kind of use of AI as an empathetic tool, which is giving the user the guidance it needs.",
+            "start": 2239.712,
+            "end": 2249.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I mean, and I love your notion of going away from script because there is...",
+            "start": 2249.712,
+            "end": 2255.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Nothing more irritating than thinking you're in a script loop and you're not getting the kind of service or care that you actually need.",
+            "start": 2255.812,
+            "end": 2263.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's for someone like me.",
+            "start": 2264.212,
+            "end": 2265.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " If you're in a vulnerable position, then it's a nightmare.",
+            "start": 2265.612,
+            "end": 2269.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But I mean, it's just a brilliant demo, Savannah.",
+            "start": 2269.912,
+            "end": 2273.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Oh, no, thank you.",
+            "start": 2273.512,
+            "end": 2274.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Thank you so much, Colin.",
+            "start": 2274.612,
+            "end": 2275.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And I think just to add to it, I think one of the, when we're thinking about the Sagentic layer and the Sagentic piece, I think there's the direct application around actual, you know, empowering the human.",
+            "start": 2275.512,
+            "end": 2286.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "agents in the front lines, but increasingly thinking about how, you know, how are agentic systems actually going to reshape the financial services landscape?",
+            "start": 2286.612,
+            "end": 2295.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And I think one of the key bits for us, you know, one of our learnings, again, from this process is being able to actually create something that human agents can use, but equally, how do you start building for the agentic system?",
+            "start": 2295.012,
+            "end": 2308.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So even thinking about how do we plug and play this as just one of the systems or one of the agents that a bigger system",
+            "start": 2308.512,
+            "end": 2314.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " can call upon as firms are thinking about building this into their frameworks.",
+            "start": 2315.612,
+            "end": 2319.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I think it was a great thought experiment and also for us a really essential way to start future-proofing and thinking and taking bets as well around, you know, how do you make this seamless and easy, but how do you start plugging and playing in a completely changed landscape?",
+            "start": 2319.712,
+            "end": 2333.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Yeah.",
+            "start": 2335.012,
+            "end": 2335.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Yeah.",
+            "start": 2336.312,
+            "end": 2336.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think that's a key message for those who are watching, because I think what we're doing is we're working this out.",
+            "start": 2337.512,
+            "end": 2345.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're working this out together.",
+            "start": 2345.412,
+            "end": 2346.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you're not often here a regulator step up and say, look, you know, we want to learn with you, with the industry.",
+            "start": 2347.912,
+            "end": 2353.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'm talking the industry broadly.",
+            "start": 2354.512,
+            "end": 2356.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So both fintech industry and big tech and obviously the AI industry is leaning into this with us.",
+            "start": 2356.912,
+            "end": 2364.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that's why it's really exciting because this is the beginning.",
+            "start": 2365.812,
+            "end": 2368.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This is the beginning of that journey.",
+            "start": 2368.512,
+            "end": 2370.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And I'm around people who are desperately struggling to understand how to apply a lot of this.",
+            "start": 2370.812,
+            "end": 2376.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "rapidly evolving technology into a system that's regulated and to an extent, you know, it has fragility if you apply new technologies in.",
+            "start": 2376.512,
+            "end": 2385.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So understanding how you can apply the technology to benefit the system and to strengthen it is kind of a, it's almost a magic power, it's some kind of superpower.",
+            "start": 2386.312,
+            "end": 2394.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And as well as it being a supercharged sandbox, it seems to give us superpowers when it comes to actually developing these concepts, getting them ready to go to the customer and understand that that system is going to work for them.",
+            "start": 2396.212,
+            "end": 2407.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Because when you're replicating in a synthetic twin,",
+            "start": 2408.412,
+            "end": 2413.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " for want of a better word, some kind of environment that's really systemically very similar.",
+            "start": 2413.912,
+            "end": 2420.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think the synthetic data sets we have, we've got 30,000 individual customer personas, 6,000 individual small business personas, as well as 4 million lines of the data itself.",
+            "start": 2421.712,
+            "end": 2436.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And a huge amount of flags, API calls.",
+            "start": 2436.612,
+            "end": 2439.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a complex environment.",
+            "start": 2439.812,
+            "end": 2441.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So hopefully, I think what we're doing is trying to figure out a way to present that complexity to a firm that can engage with it in the most effective way possible to give customer outcomes that we all can be proud of.",
+            "start": 2442.012,
+            "end": 2453.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's what I think what we're trying to achieve together, isn't it?",
+            "start": 2454.012,
+            "end": 2456.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " No, absolutely.",
+            "start": 2457.712,
+            "end": 2458.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And yeah, I think the flexibility of the sandbox equally, you know, having that synthetic data, but, you know, for us, in our case, you know,",
+            "start": 2459.912,
+            "end": 2466.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "We had a huge, we had our own rich data, which we could also bring along as well, which, you know, being able to kind of play with that, using the synthetic, getting to a certain point and then starting to stress test with our existing data was also a huge value.",
+            "start": 2466.612,
+            "end": 2479.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " No, that's a great prompt because, of course, you bring in your own data sets as well.",
+            "start": 2480.612,
+            "end": 2485.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So it's kind of the best of both worlds, which is great.",
+            "start": 2485.312,
+            "end": 2488.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Well, I hope it's been helpful.",
+            "start": 2488.912,
+            "end": 2490.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For me, it's been a pleasure just to share a stage with you again.",
+            "start": 2491.612,
+            "end": 2494.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it's always a delight to hear your journey.",
+            "start": 2494.312,
+            "end": 2497.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So thank you.",
+            "start": 2497.912,
+            "end": 2498.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Yeah, thanks.",
+            "start": 2498.412,
+            "end": 2498.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thanks for that.",
+            "start": 2499.012,
+            "end": 2499.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm going to wish everyone that's watching a great time in the GTC.",
+            "start": 2500.712,
+            "end": 2506.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think it's the most amazing privilege for us to be here and share our stories with you.",
+            "start": 2506.312,
+            "end": 2511.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Savannah, I'm going to leave the last word with you because I'm a true English gentleman.",
+            "start": 2511.812,
+            "end": 2515.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Well, thank you, Colin.",
+            "start": 2517.112,
+            "end": 2517.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " No, just to echo what Colin says, it's really great to share a stage or share a presentation slot with you.",
+            "start": 2517.812,
+            "end": 2524.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And also, I think to the, you know, from the NVIDIA side, I know, and speaking on behalf of my CTO, who really was the one vibe coding, experimenting, learning on that steep learning curve, I think",
+            "start": 2525.412,
+            "end": 2536.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " the input, the tooling, the, you know, access, it made a huge difference for him.",
+            "start": 2536.712,
+            "end": 2541.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And I know he feels, you know, incredibly pleased to have been a part of, you know, his learning curve as well.",
+            "start": 2541.612,
+            "end": 2547.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So thank you.",
+            "start": 2547.112,
+            "end": 2547.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Thank you, everyone.",
+            "start": 2548.112,
+            "end": 2548.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        }
+    ],
+    "type": "transcription.done"
+}
