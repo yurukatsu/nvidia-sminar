@@ -1,0 +1,2500 @@
+{
+    "model": "voxtral-mini-latest",
+    "text": "and payments as well my mandate and we are very excited to join for day two of GTC here and I'll be chairing the morning rung of the sessions we have and what we have seen yesterday from Jensen's keynote is the whole idea of AI factories and the culmination of hardware, software, networking all coming together. So the chunk of the sessions today will touch upon the AI factories today, AI factories, both from a software perspective as well as from an application perspective. And for the first session, we have Martin Mehringer, who will be talking about how to optimize deep learning, training, and inference applications on the latest and the greatest NVIDIA factory stack. So Martin comes from an organization at NVIDIA. We call it DevTechs, aka we also call them QDA Ninjas. So you'll hear all of the best practices when it comes to squeezing out maximum performance coming out of these applications. So I'm super excited to welcome Martin on stage and the next 40 minutes will be a great relationship here. Thank you. Welcome.Thank you very much for the kind introduction. So, yeah, welcome everyone. I'm glad so many of you made it to this first session of today. I'm going to be presenting joint work with Nikolai Markovsky. He's unfortunately not able to be here today, so I'll present the entire session. And we'll be talking about how to build high performance financial AI. So we want to achieve microsecond latency on deep learning models and scalable element inference. Quick intro. As you know, AI is reshaping capital markets. Influence so many domains of this area. It helps us to deal with complex data, it helps us to predict markets, to predict price moves in markets, and it helps us to improve our execution strategies in financial markets, and so many more domains. But today, What I would like to focus on are our implementations of two well-known benchmarks in the financial industry. These benchmarks are StackML. This is a benchmark on LSTM inference. And then there is a second half of the talk that will be StackAI. And I'll be talking about... RAG infriends workloads. So, stack ML. As I said, it is about LSTM inference, and you can think of that as a workload that models time series forecasting, price forecasting in financial markets. But first, who is Stack? I'm very glad that we have the head of AI of Stack, James Cochran, sitting here in this. Audience, welcome James to GTC. Glad to have you here. And STAC stands for Strategic Technology Analysis Center. STAC is an organization that helps with technology discovery in the finance industry. And typically when STAG defines a benchmark, we have a council of vendors, but also of course financial clients, banks, trading companies who come together to define a benchmark. And then STAG defines the exact benchmark rules and conducts the audit. And vendors like us, we submit our implementation of these benchmarks. If you are curious to learn more, I encourage you to sign up for a Stacks newsletter where all the benchmark results are published regularly. Good. The Stack ML benchmark. ML for machine learning. We want to runinference, ML inference on real-time financial data. You can think of that data as prices, volumes, time differences, the typical market data we would expect. And then we want to run inference in low latency, so for high frequency trading, or The other application is that you use this for optimizing your models or risk and model simulations, so in high throughput scenarios as well. So key performance indicators are latency in the high frequency trading setup or throughput if you are running simulations. And yeah, we, as NVIDIA, we participated originally also in specifying the benchmark.A little bit of notation, just a bit of introduction so that we clearly understand what goes into the benchmark and what it computes and what is being measured. So the input to... The LSTM inference network is a series of k vectors of data. So think you have a time window of k time steps. In each time step you supply a vector of n input values, say n floats. And you feed those k time steps, all of these vectors, into an LSTM network, which computes an output vector yt. And then as part of the benchmark, we compute a weighted sum of that vector and just output a single scalar. And so the benchmark harness will then validate that your implementation is correct and computes this scalar in high precision. So that's the setup for the benchmark. This is what we want to measure. K vectors go in, one scalar goes out, and in between we have a multilayer LSTM network.The LSTM models are of varying sizes. So we have three LSTM models, a small model, which has about 160,000 parameters. And if you evaluate, just count the number of floating point operations to evaluate everything, the input until you compute that scalar, you will count 16.1 million floating point operations. Then similarly in the medium sized network LSTM-B we have 1 million parameters and it takes 200 million flops to evaluate inference on that network and on the largest example LSTM-C we have 30 million parameters and 6 billion of billion flops in that so giga flops in in the evaluation we have two different variants of the benchmark so we have a suite that is called sumaco which assumes that all of the inputs are completely new every time just random inputs And so there's no sliding window assumption here. And then there's Takana, which here uses a slide.sliding window so it always assumes that you are given k input vectors but each time then on the next inference the oldest input will be removed and a new one will be added but everything in between stays the same And today we'll focus on this sliding window implementation of the benchmark. A little bit more just to make sure that we have at least a rough understanding what it means, so what kind of mathematical operations are involved when we run LSTM inference. So we need to understand a little bit about the LSTM cell that was invented a long time ago. And I'm sure that many of you have seen this, so I won't dwell too long on that. In an LSTM cell, we have as parameters two matrices, a W matrix and a U matrix. The W matrix deals with new inputs. The U matrix is applied to the previous hidden state. So LSTMs are a form of recurrent neural networks where the old output is fed back into the cell.C we have XT from the bottom as a new input and HT-1 denoting the previous hidden state. And the mathematical operations inside the cell is we apply W to XT, we apply U to HT-1, so the previous hidden state, and then there is something like a cell state. Which we don't need to get into for this talk today. Plus, so all of these parameters then are used to compute the final output, the new hidden state. And so the function f here around these matrix multiplication, this denotes element-wise operations, which for contribute only very very little to the floating point operation. So the dominant operations here that we want to speed up, that we want to accelerate, are of course the matrix vector multiplications. In particular the matrix vector multiplication between W and XT And so we'll see later why we don't need to worry so much about the matrix multiplication of the previous hidden state. The reason for this is that we can pre-compute this. It is already known at the time when we receive new input.We know what the previous hidden state was. Good, and then when you have one LSTM cell, how do we combine LSTM cells to deep LSTM networks? Here, I'm going to explain this on the example of a two-layer LSTM network. So we have one LSTM cell per layer. So we have different weight matrices for layer 0, different weight matrices for layer 1. And then when we evaluate this for an input of k time steps, we unroll these cells over time. Meaning we start with the... With the oldest input, xt minus k plus 1, and we assume, so the zeros that are fed in from the left, this is the previous hidden state. So we assume we start with a hidden state of all zeros. And then we feed the output, so the new hidden states. We start with the cell at the bottom left. We compute the new hidden state, and the new hidden state is then propagated to the top and to the right.These two LSTM cells define a two-layer LSTM network. And then on the top right, we will receive the hidden state that we regard as our output YT. So the standard algorithm... If you evaluate LSTM networks on K input vectors is you start at the bottom left and then it's like a wavefront so you propagate hidden states always to the top and the right and eventually you arrive at the top right and you have computed your output vector which in the benchmark we will then convert to a scalar by a weighted sum.So this is... If you don't assume anything about your input data, this is how you would have to evaluate that LSTM inference. But we know, as I mentioned before, this is the Takana suite and we have sliding window inputs. So we know that On the next time step, we'll receive a new input vector, xd plus 1, and we'll remove the oldest input from the computation. And now, ideally, we want to reuse some of the computations that we did along the way. Think of this as a moving average. If you want to compute a moving average over a time series, you wouldn't recompute the entire sum. You would just subtract the oldest value and add the newest in. So we do something very similar that was one of the... Key techniques that we introduced in the first submission of the benchmark is how we can deal with the issue that Well, if we remove the oldest value, Things are unfortunately a bit more complicated than in a moving average because according to the benchmark rules we have to now assume that the oldest hidden state that we feed now into XT minus K plus 2 so thatnow the oldest value at the very left, we have to feed in zeros. And this makes things a bit more complicated. But what you can do is, so assume you get your newest input, XT. And at that moment, you know that this input will contribute not only to the LSTM inference that you want to compute now, but also to the window that will follow next and the window after that. So XT will have contributions to K. Sliding windows and we can compute these contributions for XT already at the time when we receive XT. So we compute the contributions of XT not just to the current window but in a batched way we can compute these contributions to all window all windows in the future, which helps us because then this becomes a batched operation, which is of course great for GPUs. We transform matrix vector. Multiplications to matrix matrix multiplication which is always nice because we can use all of the compute on our device Good, and so here is a bit of history. This is not a complete history of the StackML benchmarks. There might be some submissions here.that I didn't mention, but the ones that are most important for our context here. So Grok and Myrtle submitted for Sumaco, so the non-sliding window suite in 2022. In the same year, we also submitted our first implementation of the benchmark And for both, for the Sumaco and Takana suites, so for sliding windows and the non-sliding window version. And you can see our first submission results in terms of latency in the first column here of the table. So we had a latency of 29 microseconds. For LSTMA, 58 microseconds for LSTM-B and 620 microseconds for LSTM-C. And this was the Takanas suite. So this is the submission from 22. I should also mention that in this benchmark, the benchmark also includes the timing of the benchmark. It says you receive input on the host, new input is on the host, you have to send it to your device, you run the computation, and once you receive the output value back, you can stop the timer. So this is what's included in those 99th percentile numbers quoted here. And then in 2023, another vendor, FPGA,vendor Myrtle I submitted for Takana and they reused the same technique that we had introduced to have those matrix matrix multiplications they used that but the numbers were substantially faster than what we had submitted And the reason for that was that this pre-computation that I described on the slide before was done outside of timed regions. So the timer was started, just everything that didn't require pre-computation was run and timed. And the value was sent over and then there was outside of timed region there is a pre-computation so you get everything ready for the next inference and that wasn't timed. So we also re-implemented then recently and the results were published last year at the end of last year. We implemented this in this measuring the inference the same way and also improving the implementation of our inference stack using a persistent kernel that I will explain also in a few moments. And then we received numbers that were comparable and most times even better than what was submitted by theFPGA competitor. So on LSTM-A with our latest implementation we have latencies as low as 4.7 microseconds running the full inference. On sliding windows LSTM-B is roughly the same with 7.1 and on LSTM-C which is the largest network not very surprisingly we are much faster than an FPGA because on a large network you need a lot of compute and we can leverage the full compute available on today's GH200 GPU. So this was submitted, the first submission was on A100s still and the last submission was on the Grace Hopper Super Chip.So, yeah, just to summarize, we had for the last network, we were almost twice as fast in terms of latency. We had very low latencies, which is often surprising that you can get these low latencies on GPUs. This is not something that people typically expect. Also, what we could show in this benchmark is that the maximum, so if you looked at the outliers, those were very, we had much smaller outliers than the competition. It was very predictable, the workload, and very stable. Lower inference errors and very energy efficient. All the details are in the report. You can subscribe to Stack and then you'll be able to see those reports in detail.Good. Just to give you an idea also about what we should expect as a lower bound in these benchmarks. Because I mentioned that we have to transfer the data back and forth to the device. So we measured just this wire-to-wire latency to have an idea what a lower bound we would have for small LSTM networks. And it depends a bit on the setup you have for an x86, h200. Configuration you have roughly three microseconds wire-to-wire latency that can be improved if you use GDR copy so this is a GPU direct driver which allows you to write into device memory directly and that helps to reduce latency and on GH200 systems we have the fast chip-to-chip connection which also helps with latency so it's roughly 2.3 microseconds on average. So if you recall the numbers we had for LSTMA, 4.7 microseconds, almost more than half of this is just the communication over the PCI bus.So we implemented this on the Grace Hopper Superchip. It is a great offering still for these kind of workloads because it has a lot of fast memory. I'll show you in the implementation of our kernel later how we leverage the shared memory. It has a lot of shared memory. And this helped us greatly to achieve those latencies. And this is paired with the Grace CPU. So if your workload also has CPU, Yeah, it runs parts on the CPU. You will always also benefit from having our ARM CPU on the chip. You can get these configured, for instance, as NVL2 designs where you have two Grace Hopper systems in one server, which can even be deployed in data centers with power and space constraints, often even in co-location.And so now let me tell you a little bit more about how we implemented this and how you achieve those low latency results on modern GPUs. We have actually released the code and we are very grateful for Stack that we could find a way without revealing too many things about the benchmark, which is of course proprietary. So we have on GitHub, you will find an NVIDIA DL low latency. You'll see the implementation of this particular. Workload and we have we have redesigned it and we run it the models that we have used for this benchmarking and for the open source implementation of that were designed so that they fit well to one of our latest offerings the RTX Pro 6000 Blackwell GPU which is also something that is interesting for inference workloads in say co-location. Here are the instructions we have. You can run this through Docker. It will build everything and if you have a Blackwell GPU you can run all of ourmodel so we also have a small medium and a large model and you can you can time those yourself on on your RTX Pro 6k GPU you can run many of these even on older architectures so you can run the small model on Ampere The medium-sized model will use thread block clusters, which are only available on Hopper. And for the large one, yeah, you'll need a Blackwall CPU. It did diffuse. Excuse me. Good. Now, so this is the slide explaining how we achieved, so how our kernel works to achieve those low latency results on LSTM inference. So we focus here. I mentioned before we can pre-compute a lot. When we run a sliding window inference, we know all the hidden inputs from before, we know the previous time steps, all we need to run in the time section is a matrix vector multiplication, a fast matrix vector multiplication, and some element-wise operations. And what we do to achieve low latency is we preload the weights for the matrix for W into shared memory.of the GPU. So you have to avoid loading anything from device memory if you want to achieve that low latency results. And here is an example for a three layer LSTM network. So we assume we use six streaming multiprocesses here and we scatter the W matrices for each layer W0, W1, W2 onto these SMs. So everyone, every SM gets a portion. Then we run We receive a new input XT. We have to broadcast that input to all the SMs. And then we compute a local matrix vector multiplication with the slice of each matrix. Then we have to... Apply the elementwise operation and send all the bits, distribute all the parts of that resulting vector among all SMs. So we have a gather operation. And that is one of the most costly operations that we run here because it requires to synchronize all the SMs that are part of this workload. And then, yeah, so once we have evaluated the first layer, we do the same. Now with the heat.in output of layer 0 and layer 1. Again, we do piecewise matrix vector multiplication and we gather all data to then compute in the same way the final output. So this is really the essence of low latency implementation. We have one kernel that keeps spinning, a persistent kernel is running, we have all the weights preloaded, every pre-computation is already in, usually in registers of this kernel, and then this is a way to implement fast matrix vector multiplication. In a low latency fashion. So of course you need a lot of shared memory for this. You need a device that offers enough shared memory so that you can preload your weights from your LSTM. And we havethree different kernels actually for each of the model variants. So the small model variant will require just one single SM because it has so, the small models has very few weights and the fastest way to implement this is just you use one streaming multiprocessor, you run the matrix vector multiplication locally so that you avoid those costly syncs. So you need to sync only within one SM, this is fairly cheap. Oh, sorry. For LSTM, for the medium LSTM, we will run this in thread block cluster, which exists on Hopper, and that allows you to sync across shared memory. So you have distributed shared memory, and this is still a fairly cheap sync. But for the large... Model we need all the SMs, almost all the SMs, so I think we need 184 of the SMs, you have 188 SMs on RTX 6K Pro and we use 184 of them and the syncs are through global memory and that takes a considerable amount of time, about 2 microseconds from our measurements just for the syncs.So just a few words about RTX 6K Pro. You can get this in varying configurations. This is a water-cooled 8 GPU server. You have also variants with air-cooled GPUs, also 8. Here's a smaller server with two RTX Pro servers and GPUs in one two-unit server. So depending on your space constraints, these could be interesting offerings for running inference at co-location. And with that, I will spend a few minutes still on Stack AI, the second workload that we have optimized. This is a RAG inference workload, so I'm not going to repeat a lot about RAG. As you know, this is a way of... Feeding more recent information into LLMs that have been trained a while ago. So you add data from a database into the context so that the LLM is able to answer questions about more recent events or data. And we'll accelerate transformers. This is the original transformer architecture. I won't go.into this very much but what we will use is an inference framework for LLMs and the most popular inference engines are today TensorRT LLM which is the offering of Nvidia and this is also something that my team has contributed a lot to But also VLLM and SGLM are very popular and of course NVIDIA is also making contributions there so that your workloads run just as performant as possible on these inference engines when you use our hardware. All of these inference engines offer advanced features. Like page detection, KB cache management, various forms of attention implementation, and so forth. And they offer you, most importantly, to run large, really large language models, which require not just a single device, but they will allow you to distribute it over multiple devices. And with Stack AI, in that benchmark, we are focusing only on the inference part. So this is here a picture of a typical RAG pipeline. And the sixth stage is only the inference workload. So for instance, In this testing framework, we consider two open source models, Lama 3.1 8b and Lama 3.1 8b.3.170 billion and we have two distinct workloads. We use Edgar filings Edgar 4 and Edgar 5 which will define workloads of roughly 2,000 tokens input and 250 tokens out or 60,000 tokens in and 500 tokens out. These are the requests that we measure in that benchmark. So here's an example. Yeah, a typical question and then the LLM will produce an answer for this question on that Edgar filing. And we have benchmark this on different hardware. We have used the Grace Hopper Superchip, the one that we've also used for the submission of the StackML benchmark. We've benchmarked on Grace Blackwall and right now we have an audit going on actually as we speak these numbers are audited on RTX Pro 6000 Blackwall server.These are an overview of the results. The gray bars show the number of requests per second processed by GH200. So this is our baseline, the GH200 submission, and this is a fully audited benchmark, a fully audited submission. We have the four combinations of Lama 8B with Edgar 4, Lama 8B with Edgar 5, then we have Lama 70B, a larger model with Edgar 4, the small data set, and then the most complex setup where we have Lama 70B with Edgar 5. So we see that of course the blue bars are the projected, not yet officially audited RTX 6K Pro numbers, but this is what we have seen in our lab environments and hopefully what STAG will confirm in a few days.On RTX 6K Pro you will see lower throughput just because the memory, mostly it's the memory that you have on these devices, it's just not as fast as the HBM memory you get on Dataglass devices. But then when you go to Blackwell, and I should also put a disclaimer here, these are not officially audited results. These were results that we have submitted to the so-called Stack Vault, but Stack didn't validate these. You see roughly twice the performance compared to Grace Hopper. And this is all, of course, per GPU. Because Blackwell comes with a typical GPU setup. You have two B200 GPUs. So this is per GPU throughput. It's still twice as fast. And the gains here come mostly from using MBFP4, which is available on Blackwell but not on Hopper.And here, this is, on the previous results, we saw the maximum throughput numbers. And these graphs show you, give you more insight if you want to consider interactive workloads and have a certain latency budget. So these graphs show you how throughput varies with... With load. So the vertical bars mark the maximum throughput that you can achieve on each of these devices and you see that the ideal point would be at the bottom in the left corner, sorry, in the right corner of course. And with Grace Blackwell you get the lowest curve and so the highest throughput at the lowest latency.Again, GH200 results that we've presented here, these were from the audits with HPE. So this is the third column here. They were fully audited. You can find on the STAG website, you can also find some GH200 results that we've submitted to the vault and also those GB200 results that were conducted together with Nebius. And right now we are running an audit with Red Hat and Supermicro where we've implemented the benchmark on RTX 6K Pro with OpenShift.And for the implementation, we've used TensorRT LLM, because this is the framework we know best. And we will release a block. So once the results from RTX 6K Pro from the last audit are available, we'll release a block explaining exactly how you can just use TensorRT LLM, you take the image from NGC, you take our model optimizer, model opt framework, which helps you to quantize the models and then to generate synthetic data for the calibration and to run the benchmark and reproduce the numbers that we've seen here for the maximum throughput. Case and I'll close with this slide where I said like I said we we developed tensor TLOM at Nvidia but everything is like especially the contributions also from DevTech are very often fast kernels for operations that then go into a framework called Flash and Fur and these are then distributed to all open source inference frameworks as wellThank you very much. I'm happy to take questions. Thanks so much, Martin. It was a great session. We take a lot of pride in Stack, and all the work that comes from Martin's team contributes to it. We're almost out of time, so we'll be taking the questions offline, if that works for you. But really appreciate it. I'll be here, so if you have any questions, just approach me. Yeah, we can take questions down the podium. So I appreciate everyone's time and lovely results. I mean, what stood out for me was 6x lower outliers. So that speaks to stability. And it was lovely to see how we think about rolling windows and batching. Matrix of matrix multiplication. So super exciting. And hopefully you'll have a lot more questions for Martin to engage him. Thank you, Martin.Thank you for joining.",
+    "usage": {
+        "prompt_tokens": 238,
+        "completion_tokens": 9167,
+        "total_tokens": 9405,
+        "prompt_audio_seconds": 2524,
+        "request_count": 34
+    },
+    "language": null,
+    "segments": [
+        {
+            "text": "and payments as well my mandate and we are very excited to join",
+            "start": 0.7,
+            "end": 6.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " for day two of GTC here and I'll be chairing the morning rung of the sessions we have",
+            "start": 7.3,
+            "end": 13.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and what we have seen yesterday from Jensen's keynote is the whole idea of AI factories and the culmination of hardware, software, networking all coming together.",
+            "start": 14.3,
+            "end": 26.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the chunk of the sessions today will touch upon the AI factories today, AI factories, both from a software perspective as well as from an application perspective.",
+            "start": 27.7,
+            "end": 37.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And for the first session, we have Martin Mehringer, who will be talking about how to optimize",
+            "start": 37.6,
+            "end": 45.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " deep learning, training, and inference applications on the latest and the greatest NVIDIA factory stack.",
+            "start": 45.9,
+            "end": 52.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So Martin comes from an organization at NVIDIA.",
+            "start": 53.2,
+            "end": 55.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We call it DevTechs, aka we also call them QDA Ninjas.",
+            "start": 56.4,
+            "end": 60.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you'll hear all of the best practices when it comes to squeezing out maximum performance coming out of these applications.",
+            "start": 60.5,
+            "end": 68.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I'm super excited to welcome Martin on stage and the next 40 minutes will be a great relationship here.",
+            "start": 69.0,
+            "end": 75.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you.",
+            "start": 75.8,
+            "end": 76.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Welcome.",
+            "start": 77.6,
+            "end": 77.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "Thank you very much for the kind introduction.",
+            "start": 82.684,
+            "end": 84.684,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So, yeah, welcome everyone.",
+            "start": 85.984,
+            "end": 87.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'm glad so many of you made it to this first session of today.",
+            "start": 87.284,
+            "end": 90.584,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'm going to be presenting joint work with Nikolai Markovsky.",
+            "start": 91.584,
+            "end": 95.384,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " He's unfortunately not able to be here today, so I'll present the entire session.",
+            "start": 95.984,
+            "end": 101.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we'll be talking about how to build high performance financial AI.",
+            "start": 102.384,
+            "end": 106.884,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we want to achieve microsecond latency on deep learning models and scalable element inference.",
+            "start": 107.184,
+            "end": 115.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Quick intro.",
+            "start": 116.384,
+            "end": 117.084,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " As you know, AI is reshaping capital markets.",
+            "start": 118.384,
+            "end": 120.884,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Influence so many domains of this area.",
+            "start": 123.784,
+            "end": 125.884,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It helps us to deal with complex data, it helps us to predict markets,",
+            "start": 125.984,
+            "end": 131.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " to predict price moves in markets, and it helps us to improve our execution strategies in financial markets, and so many more domains.",
+            "start": 132.284,
+            "end": 143.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But today,",
+            "start": 143.184,
+            "end": 143.784,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What I would like to focus on are our implementations of two well-known benchmarks in the financial industry.",
+            "start": 144.284,
+            "end": 153.584,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " These benchmarks are StackML.",
+            "start": 153.884,
+            "end": 155.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is a benchmark on LSTM inference.",
+            "start": 156.784,
+            "end": 160.584,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then there is a second half of the talk that will be StackAI.",
+            "start": 160.784,
+            "end": 165.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I'll be talking about...",
+            "start": 165.484,
+            "end": 166.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " RAG in",
+            "start": 167.684,
+            "end": 168.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "friends workloads.",
+            "start": 168.384,
+            "end": 169.484,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So, stack ML.",
+            "start": 170.184,
+            "end": 172.084,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " As I said, it is about LSTM inference, and you can think of that as a workload that models time series forecasting, price forecasting in financial markets.",
+            "start": 176.084,
+            "end": 187.484,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But first, who is Stack?",
+            "start": 188.084,
+            "end": 189.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'm very glad that we have the head of AI of Stack, James Cochran, sitting here in this.",
+            "start": 189.784,
+            "end": 196.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Audience, welcome James to GTC.",
+            "start": 196.584,
+            "end": 199.084,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Glad to have you here.",
+            "start": 199.384,
+            "end": 200.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And STAC stands for Strategic Technology Analysis Center.",
+            "start": 201.184,
+            "end": 205.884,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " STAC is an organization that helps with technology discovery in the finance industry.",
+            "start": 207.084,
+            "end": 213.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And typically when STAG defines a benchmark, we have a council of vendors, but also of course financial clients, banks, trading companies who come together to define a benchmark.",
+            "start": 214.184,
+            "end": 228.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then STAG defines the exact benchmark rules and conducts the audit.",
+            "start": 229.484,
+            "end": 234.484,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And vendors like us, we submit our implementation of these benchmarks.",
+            "start": 234.984,
+            "end": 239.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you are curious to learn more, I encourage you to sign up for a Stacks newsletter where all the benchmark results are published regularly.",
+            "start": 240.884,
+            "end": 249.584,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Good.",
+            "start": 250.684,
+            "end": 250.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The Stack ML benchmark.",
+            "start": 251.584,
+            "end": 253.684,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " ML for machine learning.",
+            "start": 254.784,
+            "end": 256.084,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We want to run",
+            "start": 256.984,
+            "end": 258.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "inference, ML inference on real-time financial data.",
+            "start": 258.484,
+            "end": 261.484,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can think of that data as prices, volumes, time differences, the typical market data we would expect.",
+            "start": 261.984,
+            "end": 269.084,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we want to run inference in low latency, so for high frequency trading, or",
+            "start": 269.684,
+            "end": 277.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The other application is that you use this for optimizing your models or risk and model simulations, so in high throughput scenarios as well.",
+            "start": 278.884,
+            "end": 289.084,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So key performance indicators are latency in the high frequency trading setup or throughput if you are running simulations.",
+            "start": 289.784,
+            "end": 298.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And yeah, we, as NVIDIA, we participated originally also in specifying the benchmark.",
+            "start": 298.884,
+            "end": 305.784,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "A little bit of notation, just a bit of introduction so that we clearly understand what goes into the benchmark and what it computes and what is being measured.",
+            "start": 308.192,
+            "end": 321.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the input to...",
+            "start": 322.092,
+            "end": 325.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The LSTM inference network is a series of k vectors of data.",
+            "start": 325.892,
+            "end": 334.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So think you have a time window of k time steps.",
+            "start": 334.392,
+            "end": 338.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In each time step you supply a vector of n input values, say n floats.",
+            "start": 338.992,
+            "end": 347.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you feed those k time steps, all of these vectors, into an LSTM network, which computes an output vector yt.",
+            "start": 347.992,
+            "end": 358.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then as part of the benchmark, we compute a weighted sum of that vector and just output a single scalar.",
+            "start": 358.992,
+            "end": 366.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so the benchmark harness will then validate that your implementation is correct and computes this scalar in high precision.",
+            "start": 367.792,
+            "end": 379.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So that's the setup for the benchmark.",
+            "start": 380.092,
+            "end": 382.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is what we want to measure.",
+            "start": 383.092,
+            "end": 384.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " K vectors go in, one scalar goes out, and in between we have a multilayer LSTM network.",
+            "start": 385.292,
+            "end": 392.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "The LSTM models are of varying sizes.",
+            "start": 397.012,
+            "end": 401.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we have three LSTM models, a small model, which has about 160,000 parameters.",
+            "start": 401.612,
+            "end": 410.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And if you evaluate, just count the number of floating point operations to evaluate everything, the input until you compute that scalar, you will count 16.1 million floating point operations.",
+            "start": 410.812,
+            "end": 424.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then similarly in the medium sized",
+            "start": 425.012,
+            "end": 428.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " network LSTM-B we have 1 million parameters and it takes 200 million flops to evaluate inference on that network and on the",
+            "start": 429.212,
+            "end": 440.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " largest example LSTM-C we have 30 million parameters and 6",
+            "start": 443.312,
+            "end": 448.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " billion of billion flops in that so giga flops in in the evaluation we have two different",
+            "start": 450.412,
+            "end": 460.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " variants of the benchmark so we have a suite that is called sumaco which assumes that all of the inputs are completely new every time just random inputs",
+            "start": 461.012,
+            "end": 473.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so there's no sliding window assumption here.",
+            "start": 474.212,
+            "end": 477.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then there's Takana, which here uses a slide.",
+            "start": 478.212,
+            "end": 482.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "sliding window so it always assumes that you are given k input vectors but each time then on the next inference the oldest",
+            "start": 482.912,
+            "end": 493.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " input will be removed and a new one will be added but everything in between stays the same",
+            "start": 495.112,
+            "end": 500.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And today we'll focus on this sliding window implementation of the benchmark.",
+            "start": 501.212,
+            "end": 509.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " A little bit more just to make sure that we have at least a rough understanding what it means, so what kind of mathematical operations are involved",
+            "start": 511.812,
+            "end": 525.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " when we run LSTM inference.",
+            "start": 525.712,
+            "end": 528.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we need to understand a little bit",
+            "start": 528.312,
+            "end": 530.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " about the LSTM cell that was invented a long time ago.",
+            "start": 531.312,
+            "end": 535.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I'm sure that many of you have seen this, so I won't dwell too long on that.",
+            "start": 537.512,
+            "end": 542.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In an LSTM cell, we have as parameters two matrices, a W matrix and a U matrix.",
+            "start": 544.312,
+            "end": 551.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The W matrix deals with new inputs.",
+            "start": 552.212,
+            "end": 555.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The U matrix is applied to the previous hidden state.",
+            "start": 556.212,
+            "end": 560.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So LSTMs are a form of recurrent neural networks where the old output is fed back into the cell.",
+            "start": 560.912,
+            "end": 572.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "C we have XT from the bottom as a new input and HT-1 denoting the previous hidden state.",
+            "start": 572.912,
+            "end": 582.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the mathematical operations inside the cell is we apply W to XT, we apply",
+            "start": 583.112,
+            "end": 590.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " U to HT-1, so the previous hidden state, and then there is something like a cell state.",
+            "start": 591.812,
+            "end": 598.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Which we don't need to get into for this talk today.",
+            "start": 599.012,
+            "end": 603.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Plus, so all of these parameters then are",
+            "start": 604.712,
+            "end": 608.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " used to compute the final output, the new hidden state.",
+            "start": 611.012,
+            "end": 614.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so the function f here around these matrix multiplication, this denotes element-wise operations, which for",
+            "start": 615.412,
+            "end": 626.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " contribute only very very little to the floating point operation.",
+            "start": 627.812,
+            "end": 631.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the dominant operations here that we want to speed up, that we want to accelerate, are of course the matrix vector multiplications.",
+            "start": 631.312,
+            "end": 640.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In particular the matrix vector multiplication between W and XT",
+            "start": 641.412,
+            "end": 648.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so we'll see later why we don't need to worry so much about the matrix multiplication of the previous hidden state.",
+            "start": 649.712,
+            "end": 657.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The reason for this is that we can pre-compute this.",
+            "start": 657.712,
+            "end": 659.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It is already known at the time when we receive new input.",
+            "start": 659.812,
+            "end": 662.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "We know what the previous hidden state was.",
+            "start": 662.912,
+            "end": 665.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Good, and then when you have one LSTM cell, how do we combine LSTM cells to deep LSTM networks?",
+            "start": 667.412,
+            "end": 678.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here, I'm going to explain this on the example of a two-layer LSTM network.",
+            "start": 678.412,
+            "end": 686.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we have one LSTM cell per layer.",
+            "start": 688.112,
+            "end": 692.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we have different weight matrices for layer 0, different weight matrices for layer 1.",
+            "start": 692.912,
+            "end": 699.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then when we evaluate this for an input of k time steps, we unroll these cells over time.",
+            "start": 700.012,
+            "end": 709.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Meaning we start with the...",
+            "start": 709.312,
+            "end": 711.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " With the oldest input, xt minus k plus 1, and we assume, so the zeros that are fed in from the left, this is the previous hidden state.",
+            "start": 712.312,
+            "end": 725.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we assume we start with a hidden state of all zeros.",
+            "start": 725.612,
+            "end": 729.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we feed the output, so the new hidden states.",
+            "start": 731.412,
+            "end": 736.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We start with the cell at the bottom left.",
+            "start": 736.212,
+            "end": 740.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We compute the new hidden state, and the new hidden state is then propagated to the top and to the right.",
+            "start": 741.412,
+            "end": 748.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "These two LSTM cells define a two-layer LSTM network.",
+            "start": 753.212,
+            "end": 759.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then on the top right, we will receive the hidden state that we regard as our output YT.",
+            "start": 760.012,
+            "end": 769.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the standard algorithm...",
+            "start": 770.812,
+            "end": 772.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you evaluate LSTM networks on K input vectors is you start at the bottom left",
+            "start": 773.012,
+            "end": 781.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " and then it's like a wavefront so you propagate hidden states always to the top and the right and eventually",
+            "start": 782.612,
+            "end": 790.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " you arrive at the top right and you have computed your output vector which in the benchmark we will then convert to a scalar by a weighted sum.",
+            "start": 792.012,
+            "end": 805.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So this is...",
+            "start": 808.076,
+            "end": 810.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you don't assume anything about your input data, this is how you would have to evaluate that LSTM inference.",
+            "start": 811.076,
+            "end": 818.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But we know, as I mentioned before, this is the Takana suite and we have sliding window inputs.",
+            "start": 819.076,
+            "end": 825.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we know that",
+            "start": 826.176,
+            "end": 827.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On the next time step, we'll receive a new input vector, xd plus 1, and we'll remove the oldest input from the computation.",
+            "start": 829.876,
+            "end": 843.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And now, ideally, we want to reuse some of the computations that we did along the way.",
+            "start": 844.176,
+            "end": 850.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Think of this as a moving average.",
+            "start": 850.976,
+            "end": 853.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you want to compute a moving average over a time series, you wouldn't recompute the entire sum.",
+            "start": 853.076,
+            "end": 858.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You would just subtract the oldest value and add the newest in.",
+            "start": 858.376,
+            "end": 861.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we do something very similar that was one of the...",
+            "start": 862.376,
+            "end": 866.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Key techniques that we introduced in the first submission of the benchmark is how we can deal with the issue that",
+            "start": 867.076,
+            "end": 874.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Well, if we remove the oldest value,",
+            "start": 875.276,
+            "end": 879.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Things are unfortunately a bit more complicated than in a moving average because according to the benchmark rules we have to now",
+            "start": 880.276,
+            "end": 886.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " assume that the oldest hidden state that we feed now into XT minus K plus 2 so that",
+            "start": 887.976,
+            "end": 895.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "now the oldest value at the very left, we have to feed in zeros.",
+            "start": 895.876,
+            "end": 900.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this makes things a bit more complicated.",
+            "start": 900.576,
+            "end": 903.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But what you can do is, so assume you get your newest input, XT.",
+            "start": 904.076,
+            "end": 911.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And at that moment,",
+            "start": 912.976,
+            "end": 915.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " you know that this input will contribute not only to the LSTM inference that you want to",
+            "start": 915.976,
+            "end": 923.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " compute now, but also to the window that will follow next and the window after that.",
+            "start": 925.276,
+            "end": 931.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So XT will have contributions to K.",
+            "start": 931.776,
+            "end": 935.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Sliding windows and we can compute these contributions for XT already at the time when we receive XT.",
+            "start": 936.276,
+            "end": 945.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we compute the contributions of XT not just to the current window but in a batched way we can compute these contributions to all window",
+            "start": 945.776,
+            "end": 954.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " all windows in the future, which helps us because then this becomes a batched operation, which is of course great for GPUs.",
+            "start": 955.976,
+            "end": 962.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We transform matrix vector.",
+            "start": 963.476,
+            "end": 965.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Multiplications to matrix matrix multiplication which is always nice because we can use all of the compute on our device",
+            "start": 966.776,
+            "end": 973.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Good, and so here is a bit of history.",
+            "start": 975.776,
+            "end": 979.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is not a complete history of the StackML benchmarks.",
+            "start": 979.376,
+            "end": 983.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There might be some submissions here.",
+            "start": 983.476,
+            "end": 985.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "that I didn't mention, but the ones that are most important for our context here.",
+            "start": 985.776,
+            "end": 991.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So Grok and Myrtle submitted for Sumaco, so the non-sliding window suite in 2022.",
+            "start": 992.276,
+            "end": 999.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In the same year, we also submitted our first implementation of the benchmark",
+            "start": 1000.276,
+            "end": 1006.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And for both, for the Sumaco and Takana suites, so for sliding windows and the non-sliding window version.",
+            "start": 1007.676,
+            "end": 1013.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you can see our first submission results in terms of latency in the first column here of the table.",
+            "start": 1014.476,
+            "end": 1021.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we had a latency of 29 microseconds.",
+            "start": 1022.376,
+            "end": 1026.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " For LSTMA, 58 microseconds for LSTM-B and 620 microseconds for LSTM-C.",
+            "start": 1027.576,
+            "end": 1036.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this was the Takanas suite.",
+            "start": 1037.076,
+            "end": 1039.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is the submission from 22.",
+            "start": 1039.076,
+            "end": 1041.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I should also mention that in this benchmark, the benchmark also includes the timing of the benchmark.",
+            "start": 1043.676,
+            "end": 1048.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It says you receive input on the host, new input is on the host, you have to send it to your device, you run the computation, and once you receive the output value back, you can stop the timer.",
+            "start": 1048.976,
+            "end": 1061.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is what's included in those 99th percentile numbers quoted here.",
+            "start": 1062.476,
+            "end": 1068.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then in 2023, another vendor, FPGA,",
+            "start": 1069.576,
+            "end": 1075.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "vendor Myrtle I submitted for Takana and they reused the same technique that we had introduced to",
+            "start": 1077.176,
+            "end": 1085.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " have those matrix matrix multiplications they used that but the numbers were substantially faster than what we had submitted",
+            "start": 1087.676,
+            "end": 1097.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the reason for that was that this pre-computation that I described on the slide before was done outside of timed regions.",
+            "start": 1097.976,
+            "end": 1107.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the timer was started, just everything that didn't require pre-computation was run and timed.",
+            "start": 1107.776,
+            "end": 1116.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the value was sent over and then there was outside of timed region there is a pre-computation so you get everything ready for the next inference and that wasn't timed.",
+            "start": 1117.376,
+            "end": 1127.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we also re-implemented then recently and the results were",
+            "start": 1128.376,
+            "end": 1135.176,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " published last year at the end of last year.",
+            "start": 1135.976,
+            "end": 1138.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We implemented this in this measuring the inference the same way and also improving the implementation of our",
+            "start": 1139.976,
+            "end": 1149.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " inference stack using a persistent kernel that I will explain also in a few moments.",
+            "start": 1150.276,
+            "end": 1156.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we received numbers that were comparable and most times even better than what was submitted by the",
+            "start": 1156.976,
+            "end": 1165.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "FPGA competitor.",
+            "start": 1165.876,
+            "end": 1169.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So on LSTM-A with our latest implementation we have latencies as low as 4.7 microseconds running the full inference.",
+            "start": 1170.176,
+            "end": 1180.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On sliding windows LSTM-B is roughly the same with 7.1 and on LSTM-C which is the largest network",
+            "start": 1181.076,
+            "end": 1188.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " not very surprisingly we are much faster than an FPGA because on a large network you need a lot of compute and we can leverage the full compute available on today's GH200 GPU.",
+            "start": 1188.976,
+            "end": 1201.176,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this was submitted, the first submission was on A100s still and the last submission was on the Grace Hopper Super Chip.",
+            "start": 1201.276,
+            "end": 1209.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So, yeah, just to summarize, we had for the last network, we were almost twice as fast in terms of latency.",
+            "start": 1212.792,
+            "end": 1221.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We had very low latencies, which is often surprising that you can get these low latencies on GPUs.",
+            "start": 1222.092,
+            "end": 1228.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is not something that people typically expect.",
+            "start": 1228.192,
+            "end": 1230.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Also, what we could show in this benchmark is that the maximum, so if you looked at the outliers, those were very, we had much smaller outliers than the competition.",
+            "start": 1232.392,
+            "end": 1243.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It was very predictable, the workload, and very stable.",
+            "start": 1243.792,
+            "end": 1246.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Lower inference errors and very energy efficient.",
+            "start": 1247.592,
+            "end": 1250.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " All the details are in the report.",
+            "start": 1251.392,
+            "end": 1253.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can subscribe to Stack and then you'll be able to see those reports in detail.",
+            "start": 1253.492,
+            "end": 1259.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Good.",
+            "start": 1261.508,
+            "end": 1261.708,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Just to give you an idea also about what we should expect as a lower bound in these benchmarks.",
+            "start": 1262.308,
+            "end": 1271.508,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because I mentioned that we have to transfer the data back and forth to the device.",
+            "start": 1271.608,
+            "end": 1278.008,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we measured just this wire-to-wire latency to have an idea what a lower bound we would have for small LSTM networks.",
+            "start": 1279.508,
+            "end": 1290.408,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it depends a bit on the setup you have for an x86, h200.",
+            "start": 1290.908,
+            "end": 1296.808,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Configuration you have roughly three microseconds wire-to-wire latency that can be improved if you use GDR copy so this is",
+            "start": 1297.308,
+            "end": 1307.408,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " a GPU direct driver which allows you to write into device memory directly",
+            "start": 1308.208,
+            "end": 1313.208,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " and that helps to reduce latency and on GH200 systems we have the fast chip-to-chip connection which also helps with latency so it's roughly 2.3",
+            "start": 1313.708,
+            "end": 1325.608,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " microseconds on average.",
+            "start": 1326.908,
+            "end": 1328.208,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if you recall the numbers we had for LSTMA, 4.7 microseconds, almost more than half of this is just the communication over the PCI bus.",
+            "start": 1328.708,
+            "end": 1341.408,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So we implemented this on the Grace Hopper Superchip.",
+            "start": 1344.904,
+            "end": 1347.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It is a great offering still for these kind of workloads because it has a lot of fast memory.",
+            "start": 1347.604,
+            "end": 1358.804,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'll show you in the implementation of our kernel later how we leverage the shared memory.",
+            "start": 1359.204,
+            "end": 1365.204,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It has a lot of shared memory.",
+            "start": 1365.204,
+            "end": 1366.504,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this helped us greatly to achieve those latencies.",
+            "start": 1367.304,
+            "end": 1371.604,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this is paired with the Grace CPU.",
+            "start": 1371.604,
+            "end": 1376.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if your workload also has CPU,",
+            "start": 1376.704,
+            "end": 1382.004,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yeah, it runs parts on the CPU.",
+            "start": 1383.404,
+            "end": 1386.104,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You will always also benefit from having our ARM CPU on the chip.",
+            "start": 1386.204,
+            "end": 1392.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can get these configured, for instance, as NVL2 designs where you have two Grace Hopper systems in one server, which can even be deployed in",
+            "start": 1393.304,
+            "end": 1406.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " data centers with power and space constraints, often even in co-location.",
+            "start": 1407.304,
+            "end": 1413.704,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And so now let me tell you a little bit more about how we implemented this and how you achieve those low latency results on modern GPUs.",
+            "start": 1416.492,
+            "end": 1430.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have actually released the code and we are very grateful for Stack that we could find a way without revealing too many things about the benchmark, which is of course proprietary.",
+            "start": 1431.092,
+            "end": 1443.492,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we have on GitHub, you will find an NVIDIA DL low latency.",
+            "start": 1444.292,
+            "end": 1449.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You'll see the implementation of this particular.",
+            "start": 1450.192,
+            "end": 1453.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Workload and we have we have redesigned it and we run it",
+            "start": 1455.192,
+            "end": 1461.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " the models that we have used for this benchmarking and for the open source implementation of that were designed so that they fit well to one of our latest offerings the RTX Pro",
+            "start": 1462.892,
+            "end": 1474.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " 6000 Blackwell GPU which is also something that is interesting for",
+            "start": 1475.592,
+            "end": 1481.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " inference workloads in say co-location.",
+            "start": 1482.892,
+            "end": 1485.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here are the instructions we have.",
+            "start": 1486.392,
+            "end": 1490.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can run this through Docker.",
+            "start": 1491.692,
+            "end": 1493.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It will build everything and if you have a Blackwell GPU you can run all of our",
+            "start": 1493.692,
+            "end": 1501.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "model so we also have a small medium and a large model and you can you can time those yourself on on your",
+            "start": 1504.192,
+            "end": 1511.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " RTX Pro 6k GPU you can run many of these even on older architectures so you can run the small model on Ampere",
+            "start": 1512.092,
+            "end": 1522.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The medium-sized model will use thread block clusters, which are only available on Hopper.",
+            "start": 1524.192,
+            "end": 1529.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And for the large one, yeah, you'll need a Blackwall CPU.",
+            "start": 1529.992,
+            "end": 1533.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It did diffuse.",
+            "start": 1535.392,
+            "end": 1536.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Excuse me.",
+            "start": 1536.592,
+            "end": 1537.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Good.",
+            "start": 1538.092,
+            "end": 1538.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, so this is the slide explaining how we achieved, so how our kernel works to achieve those low latency results on LSTM inference.",
+            "start": 1539.392,
+            "end": 1552.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we focus here.",
+            "start": 1552.792,
+            "end": 1554.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I mentioned before we can pre-compute a lot.",
+            "start": 1555.292,
+            "end": 1557.392,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " When we run a sliding window inference, we know all the hidden inputs from before, we know the previous time steps, all we need to",
+            "start": 1557.892,
+            "end": 1570.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " run in the time section is a matrix vector multiplication, a fast matrix vector multiplication, and some element-wise operations.",
+            "start": 1571.992,
+            "end": 1580.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And what we do to achieve low latency is",
+            "start": 1581.392,
+            "end": 1585.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " we preload the weights for the matrix for W into shared memory.",
+            "start": 1588.092,
+            "end": 1593.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "of the GPU.",
+            "start": 1594.392,
+            "end": 1595.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So you have to avoid loading anything from device memory if you want to achieve that low latency results.",
+            "start": 1595.592,
+            "end": 1604.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And here is an example for a three layer LSTM network.",
+            "start": 1604.592,
+            "end": 1610.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we assume we use six streaming multiprocesses here and we scatter the W matrices for each layer W0, W1, W2 onto these SMs.",
+            "start": 1611.292,
+            "end": 1624.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So everyone, every SM gets a portion.",
+            "start": 1624.692,
+            "end": 1627.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we run",
+            "start": 1628.592,
+            "end": 1630.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We receive a new input XT.",
+            "start": 1631.692,
+            "end": 1633.692,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have to broadcast that input to all the SMs.",
+            "start": 1633.992,
+            "end": 1637.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then we compute a local matrix vector multiplication with the slice of each matrix.",
+            "start": 1638.092,
+            "end": 1646.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then we have to...",
+            "start": 1648.492,
+            "end": 1650.792,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Apply the elementwise operation and send all the bits, distribute all the parts of that resulting vector among all SMs.",
+            "start": 1651.492,
+            "end": 1662.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we have a gather operation.",
+            "start": 1662.292,
+            "end": 1663.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that is one of the most costly operations that we run here because it requires to synchronize all the SMs that are part of this workload.",
+            "start": 1664.092,
+            "end": 1675.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then, yeah, so once we have evaluated the first layer, we do the same.",
+            "start": 1676.092,
+            "end": 1682.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now with the heat.",
+            "start": 1683.492,
+            "end": 1684.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "in output of layer 0 and layer 1.",
+            "start": 1684.292,
+            "end": 1687.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Again, we do piecewise matrix vector multiplication and we gather all data to then compute in the same way",
+            "start": 1688.792,
+            "end": 1700.092,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " the final output.",
+            "start": 1701.992,
+            "end": 1702.992,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is really the essence of low latency implementation.",
+            "start": 1703.492,
+            "end": 1707.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have one kernel that keeps spinning, a persistent kernel is running, we have all the weights preloaded,",
+            "start": 1708.392,
+            "end": 1715.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " every pre-computation is already in, usually in registers of this kernel, and then this is a way to implement fast matrix vector multiplication.",
+            "start": 1717.092,
+            "end": 1727.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In a low latency fashion.",
+            "start": 1730.192,
+            "end": 1732.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So of course you need a lot of shared memory for this.",
+            "start": 1733.192,
+            "end": 1735.592,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You need a device that offers enough shared memory so that you can preload your weights from your LSTM.",
+            "start": 1736.992,
+            "end": 1745.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we have",
+            "start": 1746.392,
+            "end": 1748.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "three different kernels actually for each of the model variants.",
+            "start": 1751.112,
+            "end": 1756.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the small model variant will require just one single SM because it has so, the small models has very few weights and the fastest way to implement this is just you use one streaming multiprocessor, you run the matrix vector",
+            "start": 1756.012,
+            "end": 1770.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " multiplication locally so that you avoid those costly syncs.",
+            "start": 1770.712,
+            "end": 1775.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So you need to sync only within one SM, this is fairly cheap.",
+            "start": 1775.312,
+            "end": 1779.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Oh, sorry.",
+            "start": 1780.312,
+            "end": 1780.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " For LSTM, for the medium LSTM, we will run this in thread block cluster, which exists on Hopper, and that allows you to sync across shared memory.",
+            "start": 1782.112,
+            "end": 1793.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So you have distributed shared memory, and this is still a fairly cheap sync.",
+            "start": 1794.512,
+            "end": 1798.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But for the large...",
+            "start": 1799.112,
+            "end": 1800.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Model we need all the SMs, almost all the SMs, so I think we need",
+            "start": 1801.012,
+            "end": 1806.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " 184 of the SMs, you have 188 SMs on RTX 6K Pro and we use 184 of them and the syncs are",
+            "start": 1807.812,
+            "end": 1816.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " through global memory and that takes a considerable amount of time, about 2 microseconds from our measurements just for the syncs.",
+            "start": 1816.812,
+            "end": 1824.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So just a few words about RTX 6K Pro.",
+            "start": 1828.024,
+            "end": 1831.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can get this in varying configurations.",
+            "start": 1831.524,
+            "end": 1834.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is a water-cooled 8 GPU server.",
+            "start": 1834.524,
+            "end": 1838.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You have also variants with air-cooled GPUs, also 8.",
+            "start": 1839.524,
+            "end": 1844.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here's a smaller server with two RTX Pro servers and GPUs in one two-unit server.",
+            "start": 1847.124,
+            "end": 1855.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So depending on your space constraints, these could be interesting offerings for running inference at co-location.",
+            "start": 1855.524,
+            "end": 1864.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And with that, I will spend a few minutes still on Stack AI, the second workload that we have optimized.",
+            "start": 1866.124,
+            "end": 1877.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is a RAG inference workload, so I'm not going to repeat a lot about RAG.",
+            "start": 1877.824,
+            "end": 1885.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " As you know, this is a way of...",
+            "start": 1885.624,
+            "end": 1888.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Feeding more recent information into LLMs that have been trained a while ago.",
+            "start": 1888.524,
+            "end": 1894.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So you add data from a database into the context so that the LLM is able to answer questions about more recent events or data.",
+            "start": 1895.024,
+            "end": 1907.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we'll accelerate transformers.",
+            "start": 1908.524,
+            "end": 1910.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is the original transformer architecture.",
+            "start": 1910.724,
+            "end": 1913.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I won't go.",
+            "start": 1914.424,
+            "end": 1915.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "into this very much but what we will use is an inference framework for LLMs",
+            "start": 1915.624,
+            "end": 1923.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " and the most popular inference engines are today TensorRT LLM which is the offering of Nvidia and this is also something that my team has contributed a lot to",
+            "start": 1923.924,
+            "end": 1935.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But also VLLM and SGLM are very popular and of course NVIDIA is also making contributions there so that your workloads run",
+            "start": 1936.124,
+            "end": 1944.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " just as performant as possible on these inference engines when you use our hardware.",
+            "start": 1946.724,
+            "end": 1952.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " All of these inference engines offer advanced features.",
+            "start": 1953.224,
+            "end": 1956.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like page detection, KB cache management, various forms of attention implementation, and so forth.",
+            "start": 1956.724,
+            "end": 1964.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And they offer you, most importantly, to run large, really large language models, which require not just a single device, but they will allow you to distribute it over multiple devices.",
+            "start": 1964.824,
+            "end": 1978.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And with Stack AI, in that benchmark, we are focusing only on the inference part.",
+            "start": 1980.224,
+            "end": 1986.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is here a picture of a typical RAG pipeline.",
+            "start": 1986.224,
+            "end": 1991.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the sixth stage is only the inference workload.",
+            "start": 1991.324,
+            "end": 1995.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So for instance,",
+            "start": 1995.324,
+            "end": 1996.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In this testing framework, we consider two open source models, Lama 3.1 8b and Lama 3.1 8b.",
+            "start": 1998.224,
+            "end": 2005.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "3.170 billion and we have two distinct workloads.",
+            "start": 2005.424,
+            "end": 2010.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We use Edgar filings Edgar 4 and Edgar 5 which will define workloads of roughly",
+            "start": 2010.524,
+            "end": 2019.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " 2,000 tokens input and 250 tokens out or 60,000 tokens in and 500 tokens out.",
+            "start": 2020.024,
+            "end": 2028.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " These are the requests that we measure in that benchmark.",
+            "start": 2028.624,
+            "end": 2032.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So here's an example.",
+            "start": 2033.324,
+            "end": 2034.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yeah, a typical question and then the LLM will produce an answer for this question on that Edgar filing.",
+            "start": 2036.724,
+            "end": 2046.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we have",
+            "start": 2047.724,
+            "end": 2048.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " benchmark this on different hardware.",
+            "start": 2049.924,
+            "end": 2052.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have used the Grace Hopper Superchip, the one that we've also used for the submission of the StackML benchmark.",
+            "start": 2053.224,
+            "end": 2060.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We've benchmarked on Grace Blackwall and right now we have an audit going on actually as we speak these numbers are audited on RTX Pro 6000 Blackwall server.",
+            "start": 2060.724,
+            "end": 2074.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "These are an overview of the results.",
+            "start": 2077.916,
+            "end": 2081.116,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The gray bars show the number of requests per second processed by GH200.",
+            "start": 2085.616,
+            "end": 2093.616,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is our baseline, the GH200 submission, and this is a fully audited benchmark, a fully audited submission.",
+            "start": 2095.416,
+            "end": 2104.616,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We have the four combinations of Lama 8B with Edgar 4, Lama 8B with Edgar 5, then we have Lama 70B, a larger model with Edgar 4, the small data set, and then the most complex",
+            "start": 2106.416,
+            "end": 2120.616,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " setup where we have Lama 70B with Edgar 5.",
+            "start": 2121.316,
+            "end": 2124.916,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we see that of course the blue bars",
+            "start": 2126.016,
+            "end": 2131.816,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " are the projected, not yet officially audited RTX 6K Pro numbers, but this is what we have seen in our lab environments and hopefully what STAG will confirm in a few days.",
+            "start": 2132.416,
+            "end": 2145.016,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "On RTX 6K Pro you will see lower throughput just because the memory, mostly it's the memory that you have on these devices, it's just not as fast as the HBM memory you get on Dataglass devices.",
+            "start": 2147.92,
+            "end": 2160.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But then when you go to Blackwell, and I should also put a disclaimer here, these are not officially audited results.",
+            "start": 2161.92,
+            "end": 2168.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " These were results that we have submitted to the so-called Stack Vault, but Stack didn't validate these.",
+            "start": 2168.72,
+            "end": 2175.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You see roughly twice the performance compared to Grace Hopper.",
+            "start": 2175.92,
+            "end": 2181.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this is all, of course, per GPU.",
+            "start": 2181.22,
+            "end": 2183.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because Blackwell comes with a typical GPU setup.",
+            "start": 2184.32,
+            "end": 2188.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You have two B200 GPUs.",
+            "start": 2188.22,
+            "end": 2193.32,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is per GPU throughput.",
+            "start": 2193.32,
+            "end": 2195.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's still twice as fast.",
+            "start": 2196.32,
+            "end": 2197.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the gains here come mostly from using MBFP4, which is available on Blackwell but not on Hopper.",
+            "start": 2197.92,
+            "end": 2204.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And here, this is, on the previous results, we saw the maximum throughput numbers.",
+            "start": 2206.9,
+            "end": 2215.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And these graphs show you, give you more insight if you want to consider interactive workloads and have a certain latency budget.",
+            "start": 2215.7,
+            "end": 2228.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So these graphs show you how throughput varies with...",
+            "start": 2228.4,
+            "end": 2235.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " With load.",
+            "start": 2235.9,
+            "end": 2236.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the vertical bars mark the maximum throughput that you can achieve on each of these devices and you see that",
+            "start": 2236.9,
+            "end": 2246.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " the ideal point would be at the bottom in the left corner, sorry, in the right corner of course.",
+            "start": 2248.4,
+            "end": 2255.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And with Grace Blackwell you get the lowest curve and so the highest throughput at the lowest latency.",
+            "start": 2256.6,
+            "end": 2267.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Again, GH200 results that we've presented here, these were from the audits with HPE.",
+            "start": 2269.236,
+            "end": 2278.936,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is the third column here.",
+            "start": 2279.536,
+            "end": 2281.336,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They were fully audited.",
+            "start": 2281.436,
+            "end": 2282.936,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can find on the STAG website, you can also find some GH200 results that we've submitted to the vault and also those GB200 results that were conducted together with Nebius.",
+            "start": 2283.536,
+            "end": 2296.136,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And right now we are running an audit with Red Hat and Supermicro where we've implemented the benchmark on RTX 6K Pro with OpenShift.",
+            "start": 2296.136,
+            "end": 2307.936,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And for the implementation, we've used TensorRT LLM, because this is the framework we know best.",
+            "start": 2311.332,
+            "end": 2321.232,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we will release a block.",
+            "start": 2321.732,
+            "end": 2324.332,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So once the results from RTX 6K Pro from the last audit are available, we'll release a block explaining exactly how you can just use",
+            "start": 2324.332,
+            "end": 2334.832,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " TensorRT LLM, you take the image from NGC, you take our model optimizer, model opt framework, which helps you to quantize",
+            "start": 2336.432,
+            "end": 2345.132,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " the models and then to generate synthetic data for the calibration and to run the benchmark and reproduce the numbers that we've seen here for the maximum throughput.",
+            "start": 2346.032,
+            "end": 2357.632,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Case and I'll close with this slide where I said like I said we we developed tensor TLOM at Nvidia but everything is like",
+            "start": 2359.432,
+            "end": 2368.932,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " especially the contributions also from DevTech are very often fast kernels for operations that then go into a framework called Flash and Fur and these are then distributed to all open source inference frameworks as well",
+            "start": 2369.832,
+            "end": 2383.532,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Thank you very much.",
+            "start": 2386.048,
+            "end": 2386.748,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'm happy to take questions.",
+            "start": 2387.548,
+            "end": 2388.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thanks so much, Martin.",
+            "start": 2392.248,
+            "end": 2393.348,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It was a great session.",
+            "start": 2394.148,
+            "end": 2395.148,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We take a lot of pride in Stack, and all the work that comes from Martin's team contributes to it.",
+            "start": 2395.148,
+            "end": 2401.448,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're almost out of time, so we'll be taking the questions offline, if that works for you.",
+            "start": 2401.748,
+            "end": 2406.648,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But really appreciate it.",
+            "start": 2407.748,
+            "end": 2409.348,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'll be here, so if you have any questions, just approach me.",
+            "start": 2409.548,
+            "end": 2413.048,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yeah, we can take questions down the podium.",
+            "start": 2413.548,
+            "end": 2415.448,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I appreciate everyone's time and lovely results.",
+            "start": 2415.748,
+            "end": 2418.948,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I mean, what stood out for me was 6x lower outliers.",
+            "start": 2419.348,
+            "end": 2425.148,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that speaks to stability.",
+            "start": 2425.148,
+            "end": 2426.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it was lovely to see how we think about rolling windows and batching.",
+            "start": 2427.148,
+            "end": 2431.048,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Matrix of matrix multiplication.",
+            "start": 2431.348,
+            "end": 2432.948,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So super exciting.",
+            "start": 2432.948,
+            "end": 2434.348,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And hopefully you'll have a lot more questions for Martin to engage him.",
+            "start": 2434.448,
+            "end": 2438.648,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you, Martin.",
+            "start": 2439.248,
+            "end": 2439.848,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "Thank you for joining.",
+            "start": 2443.552,
+            "end": 2444.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        }
+    ],
+    "type": "transcription.done"
+}
