@@ -1,0 +1,3459 @@
+{
+    "model": "voxtral-mini-latest",
+    "text": "And I'm one of our principal AI PMs at Agile. I'm really excited to talk to you guys at NVIDIA GTC about some of our work in reinforcement learning and also our journey in building foundational models for payments. I'm going to walk you through some of the challenges we've faced, how we've solved them, and some of the learnings we've had in this journey. So here's a brief agenda. I'm going to introduce Adyen and payments. Then I'm going to walk through the product that I work on, which is called Adyen Uplift, which essentially improves performance for our customers through our payment stack. Then I'm going to talk through contextual bandits and reinforcement learning at Adyen. Then I'm going to talk through our foundational model journey, what we try to build there. And then I'm going to talk a little bit about our vision and how the system might look in the future and our North Star. And then finally, we're going to wrap up and summarize. So let me just use this chance to kind of walk you through payments and how Adyen works. So Adyen is one of the largest payment providers in the world. We're trusted by some of the largest brands, including Adidas, Uber, McDonald's, Spotify, Just Eat, Etsy, Microsoft, just to name a few. Last year, our net revenue climbed to about 2.3 billion euros, which is about an 18% increase year-on-year. We're based in Amsterdam, but we have a really strong global footprint. We've got about 28 different offices and about 4,000 employees.So we also have teams in San Francisco and Chicago as well. Payments is really complex. I'm going to walk you through generally how it works. In a payment flow, one has a mix of payment processors, card issuers, card schemes, rails, and their systems, issuer banks, address verification schemes, network token schemes, POS terminals, checkout screens, and so much more. The cool benefit of Adyen is that we do everything in this stack end-to-end with one pipeline, which is really difficult and it requires thousands of integration types, card scheme partnerships, merchant relationships connected to each other, issuing bank relationships, and much more. To bring this together into one platform that can do all of your payments in one customizable way. For example, sometimes we acquire a payment and process it, sometimes we just offer these payment rails. We handle billing, reconciliation, POS terminals, even actual physical hardware, and a lot more. The major unlock of Adyen is this massive data set we have because of the size, the amount of merchants that we've actually worked with. Where over 4,000 clients are processing trillions of payments and transactions over many years. So if a shopper shows up at a merchant for the first time, there's an 84% chance that Adyen has seen that shopper before. So how does the payment flow actually work, right?receives a payment request through an API or embedded checkout or post terminal from a merchant. A bunch of agile services then kick in. Depending on the integration, we can personalize the checkout screens. We can perform tokenization depending on the business model of the merchant and the payment instrument. We can perform fraud risk checks. We can perform authentication in case it's required for fraud or regulatory reasons. And then we optimize the payment where possible with techniques such as routing. Behind the scenes, there's typically a payment request with the appropriate ISO message for the designated payment method. Which is either to a card scheme or a local payment method. So all of this is happening in real time, where Adjin is ultimately looking to receive an authorization from the cardholder's issuing bank. After this entire authorization operation, we start moving money in the background so that our merchants receive the funds for goods and services provided as soon as possible. So merchants kind of face three main objectives with this. So they face a complex challenge, right? And they have these three main goals. One of them is basically maximize successful payments. They want to ensure a smooth, reliable checkout process to reduce failed payments and customer drop-offs. They also want to minimize costs. So many merchants kind of view payments as a cost center.and they want to seek the lowest possible transaction fees to protect their profit margins. And finally, we want to prevent fraud and disputes. So at the same time, we do want to maximize conversion of this payment funnel, but we don't want to have fraudsters coming through making false purchases with fake cards or buying. Items that they never had the intention of buying and they want to return them, sort of exploiting that return mechanism. So given all these complex conflicting requirements from our merchants, in 2025 we launched this payment optimization suite we call Uplift. We've packaged together multiple different modules we've been building for years into one proposition that helps solve this multi-objective payment optimization problem. So, Personalize is our module that ranks the different payment methods shown to users at the merchant checkout page. For example, we can show local payment methods when the merchant wants to have the lowest cost possible, or maybe we can show the payment method at the top which is most likely to convert for that specific user if the merchant wants to maximize conversion. We then have a module called Tokenize, where we can swap the credit card details sent with network tokens sent by card schemes, and we replace them with these network tokens, which are considered safer and therefore more likely to convert. Network tokens are generated per merchant, so that if such a token would leak, the actual card number behind the token is not exposed. We can also applyreal-time account updating to ensure that we basically have the correct card details for a given card, even if that card is expired. Then we have a module called Protect, and if a merchant basically gives us the license, we can apply our own fraud detection systems that understand the risk of fraud. Then we have Authenticate. We can apply, based on that risk score that I mentioned, we can apply a risk-based authentication where we can choose to pick the right challenge to give to the user at payment time. So that means authenticating the transaction, potentially with a bank app, via an SMS, or via Face ID, if we think that this is likely to secure the chance of payment conversion. Obviously weighing up the risk of payment drop-off, right? Because you see a new screen when you're paying. For high-risk transactions, we can choose to apply a challenge rather than block the transaction. And for low-risk transactions, we can actually choose to just allow the payment instead of applying a challenge to that piece to conversion on that. Finally, we have a module called Optimize. Which uses machine learning to analyze real-time signals such as scheme performance, issue of behavior, and cost structures to determine the optimal route and message for each transaction based on conversion and cost. For example, we've invested in lots of direct connections with local debit networks early on in markets like the US and Australia. And for dual-branded debit cards, we can actually route the payment either through global or domestic networks.So the impact of this work across the board has meant that our products deliver really significant conversion uplift for our clients in terms of payments alongside other benefits. So our overall product suite, this product suite has led to about a 1.2% extra uplift on conversion rates. On personalize itself, pilots that we've been running have observed conversion rate improvements up to 6% using this personalized optimization. On fraud detection, using that reduction in rules-based blocking, we've led to an overall about 10% increase in conversion using machine learning and a 41% drop in fraud rates. And for cost optimization in terms of optimize and that routing system, we've led to cost savings of up to 20% in the US and actually an 89 basis point improvement in authorization rates in the US alone. So I'm going to focus just on one of these modules in the coming slides, which is our optimized module, and talk through what we've been doing there. Let's talk through contextual bandits within payments, focusing on that optimized module. So payments optimization is a fundamental contextual bandit problem. Every transaction that we have arises with a really rich high-dimensional state, including the merchant's payment configuration, bank identification number, and associated metadata, such as, for example, if it's a prepaid or standard card, if it's a commercial versus consumer transaction, it's a credit versus debit transaction.the issuing bank involved, that issuer's identity and regulatory region, the amount of retries that transaction has had, and a bunch of different behavioral signals, even at checkout that we know about from the actual shopper. We then choose a structured action consisting of a routing path, an authentication strategy, and a specific ISO message configuration that's sent in the payment. The reward that we have is the CASTIC, right? It's the issuer's authorization decision, and it comes from that issuer's internal risk engine that we don't know about. So this isn't just static prediction, it's about policy learning over interventions. The key things here is that exploration has a direct economic cost, right? Whenever we actually change some of these ISO messages or the routes that we take in an online setting, we are actually affecting the conversion rates of that customer in real time. So we need to be very careful about the level of experimentation that we run. Also, issuer behavior drifts and changes all the time how banks think about different ISO messages and routes. The risk of payments. Also, this action space is constrained, right? We can't change these payment messages all the time. There's regulatory considerations. And so once we frame payments in this way, the key question is, is how can we actually optimize? So what do we actually optimize here? So at the end of the day, payments is a really complex optimization problem. Aiming to maximize the expected approval rate for every transaction, navigating thousands of theseindependent bank risk profiles, right? They're risk models. The primary lever that we have is intelligent routing. So that's kind of consists of two main things. We can do inter-scheme routing. So for dual branded cards, so for example, if you have a card that has MasterCard and a Star logo or Visa or Dancor, We can select the network, either MasterCard or Star, which has the best combination of approval chances and the lowest fees, depending on what you choose to prioritize. Then we can also do intra-acquirer routing, where essentially for a single branded card, we as AdGen, the payment processor, can send that transaction through the same network or scheme, but with different commercial setup, right? So for example, we can change the merchant category code that subtly alters your bank's kind of risk perception of that payment. So that's within Acquire accounts, within AdGym. The second lever is around smart payment messaging. So that's where we can modify the actual data payload, the ISO message that's sent to the issuer. Tweaking these configuration fields and flags to influence the bank's risk model and improve approval rates, we can do that without even changing the routing path. We can still have an impact on these approval rates. Every transaction is treated as a multi-armed bandit problem, where the optimization framework maps the transaction's context, the shopper, the amount, the product, to the joint configuration of these kind of routing and messaging systems thatthat alter and then maximize the approval reward. It's important to say, however, that optimizing approval alone is not sufficient. This is actually a multi-objective problem. As I mentioned before, there are these three main objectives from the merchant, but routing introduces a structural trade-off, just routing itself, between authorization probability and scheme or interchange cost. Different rails lie at different points of the Pareto frontier. And a single global scalar weight between cost and approval doesn't actually generalize. So the optimal trade-off depends on transaction amount, merchant, vertical, issue of behavior, and retry stage. This routing policy that we have has to learn these context-dependent trade-offs dynamically. And so as we scaled the system, complexity increased dramatically. So routing gives us about up to 10 eligible paths in terms of like the schemes or acquire accounts per transaction. While messaging alone, changing the message, introduces more than 30 optimization flags. Each of these flags is governed by regulatory constraints, scheme compatibility, merchant configuration, and internal conflict logic as well. The feasible action space becomes a Cartesian product, a constrained Cartesian product of these routing and flag combinations. And this could produce more than 20,000 different combinations that the model has to score. So we're no longer in this.small multi-armed bandit setting, this is quite a structured combinatorial contextual bandit. We can't treat also actions independently and learning a separate reward model per action becomes statistically infeasible. And so sparse coverage across this combinatorial space becomes the dominant technical problem to solve. So what features do we have to play around with? We've got highly granular data, so we've got sub-merchant level features. We've got eight-digit BIN numbers, eight-digit bank identification numbers, which is a really key high-cardinality categorical feature. We've got really sophisticated time-based features. We've got card-level data, which is kind of like card summaries, token summaries, linked events, recurring transaction details. We've got policy feedback, so that's kind of contextual flags that communicate what was sent to the schemes, which allows the model to learn from policy outcomes. We've got numerical identifiers, so segmented amounts, transaction amount buckets, rolling performance aggregates, which is based on issuer and scheme, and temporal signals, which capture the sequence as well, right? Retry, temp count, time of day, and so on. So I'm going to walk through a little bit of our approach and how that evolved in terms of payment routing and scheme flag messaging. We started off with deterministic rules as everyone else does. Simple safe rules based on aggregate data and static.The problem is that this obviously can't really handle real-world drift, like issuers changing their behavior and their risk models, or complex interactions. And there's a lot of manual tuning of rules, as we all know. So then we shifted into machine learning, typically boosting, which is supervised reward modeling, right? We knew certain flags that had been applied in the past and routes. We used a classification approach to estimate the authorization probability and score thousands of these routing and messaging options based on that training data. The problem is that it learned us to kind of learn the reward for actions that were already taken. Not the optimal policy itself. And also it faced a lot of scaling issues with estimating rewards across this really massive action space. We then shifted into the idea of thinking about this as a contextual bandit with controlled exploration. We extended the action space. We explicitly, you know, obviously, introduce controlled exploration to reduce bias and adapt to that issue of drift that I mentioned. The key problem with all of this is that scaling reward estimation in this vast action space was still a persistent problem. So then data representation became the real problem that we're trying to solve and the new performance bottleneck. The other issue was that using the banded approach, we were finding that, particularly with trees, they're very, very good at finding the rightright features to use. The issue was tree-based models were very good at feature selection, but the features that they were selecting were not actually including the actual flags that were deployed in inference time, which are actually really, really important in terms of building this banded style approach. So the approach of deep learning was kind of trying to learn these complex you know, higher order feature interactions between the issuer, the scheme, the merchant amount, and sort of moving away from manual feature engineering and actually constraining the system to use the flag itself to make a prediction. So we kind of forced the model to rely more heavily on flagging-based features and learn the relevant interaction between the flags themselves rather than just historical merchant, issuer, shopper features. And the key other thing was actually focusing on direct policy optimization and policy learning rather than trying to estimate the reward function. So in that journey of deep learning, first we adopted self-attention deep learning. So that's where the model sort of learns dynamically which feature interactions are important. We left it to itself, right? So our approach was to embed categorical features, use multi-head attention for complex relationship learning. And then use residual connections to retain original feature data. The next step here that we had to solve was unconstrained self-attention becomes unstable in production. And that led us to exploring later.to improve that stability. So, late attention effectively changed the architecture because the raw data tokens in tabular data were too unstable, as I mentioned. So, this new structure of late attention was a little bit better because it forced the model to first create intermediate combined features or cross-representations. Before running the attention mechanism. This made the model really stable and robust using just plain self-attention. But still, late attention had a major flaw, and that was around temporal leakage. It was basically accidentally our model looking into the future. And so we started to look into causal attention to fix that leakage issue and also continue our path of trying to constrain the features that the bandit was sticking through. Payments data has a strict temporal structure, right? So some signals are available just at the moment we take a decision. Things like bin, merchant, amount, historical embeddings. But other signals are just revealed to us after we take the decision on what action we take. So issuer responses, retry outcomes, chargebacks, downstream friction. And if these post-decision signals leak into training, the model can exploit correlations that disappear once you intervene. So offline it looks great, but online it collapses. So standard global self-attention allows every feature to attend to every other feature. That's powerful, but in payments...It's risky because it can allow these post-treatment variables to influence the decision time state representation. So causal attention kind of addresses this directly, right? We basically force the model to not learn what the correct feature is. We forced it to say that the most important feature that should causally affect the outcome the most is the flags itself available to determine the best flags. The multi-head attention mechanism remains unchanged, but the information flow here is controlled within the bandit. Queries can look broadly, but they can't attend to signals that wouldn't have been known at the time of action. And so the system doesn't have to learn what the feature is, we kind of give it to it. And it ensures the learned policy depends only on actionable information. It keeps feature hygiene, it preserves feature hygiene, it keeps off policy evaluation valid, and it stabilizes policy improvement. And in a reinforcement learning setting, that distinction is really important. In the same spirit of constraining our deep learning model to implicitly use the available ISO message flag adaptations as a feature, we move to deep cross networks, deep and cross networks, which perform explicit high order feature crossing before the deep nonlinear layers. Sequential interaction and fusion improve representation efficiency, and this is reallyreally particularly effective when you have sparse categorical domains with repeated interaction motifs. It's also often really more stable and latency efficient than unconstrained attention. And so this provided this complementary architecture for modeling structured combinatorial spaces. We then moved into thinking through structured sparsity and how we include that in. In that same spirit, again, of constraining our deep learning model to implicitly learn interactions only with a flaggy feature, rather than crossing everything, we anchored on primary tokens such as issuer or scheme. We prioritized constrained feature interactions before enabling these broader global crosses. This enforced that structural sparsity I mentioned. It reduced variance in combinatorial ranking, and it improved policy stability in large action spaces. So at this point, the modeling stack here we'd been building up had matured significantly. So through all of this different work, This rigorous experimentation approach that we've been employing has really been core to our success as Adyen in this product. The power of small compounding improvements in payments is really enormous at our scale. In 2025 alone, we ran about 673 experiments across all of our machine learning models. With 287 focused on the main optimization model. This has led to about over a 1% uplift in conversion from these various experiments. And this cultureIt's really widespread. One user learned to start 117 experiments last year. Even fractional improvements, like a 0.1% uplift in authorization, can translate to massive incremental GMV and substantial cost reductions, proving that precision really dominates novelty in high-scale machine learning. Prior systems that I've been talking about, despite that deep interaction modeling, were task-specific, right? There were learning policies over engineering payment summaries, like let's say the average payment amount over 30 days as a payment summary, with transactions treated as independent rows and handcrafted aggregates. But as we know, payments are inherently sequential, they're entity-based, and they are multitask, right? So you've got trajectories of the card through history, you've got different shopper patterns. And so our model at Adyen shifted from exploration and reward modeling that I just talked about to representation learning, which motivated the need for a foundational model. The vision for Adjent's foundational model is that it will power all of our tasks through a rich shared feature backbone. At pre-training, a large-scale transformer encoder adds its entire transaction graph to learn that kind of backbone. So instead of having different teams within Adjent trying to handcraft their own features, effectively losing a lot of information by splitting these different data sets apart. We have a foundational model that kind of puts it into one shared encoder, which all of the different teams can have access to.it collapses and brings all of the context that was lost from splitting back. And every team can kind of access this foundation model to perform the tasks that it needs to do, right? Whether you're doing, and you can adapt, the idea is that we, you know, rapid adaptation. So you can add a simple, every team can add a simple lightweight head layer to this shared backbone and quickly fine tune it for diverse objectives. So if you're the fraud team, you can use this foundation model for fraud detection. If you're doing next step prediction and you're doing intelligent routing, you can use the foundation model as well and use the different components of it that you need. And if you're doing charge book fact forecasting, you can also use the foundation model with a shared backbone. And the key thing is we're using all of the data at AdGen for training our models implicitly rather than different teams trying to effectively find the right features for their use case and often duplicating the features that they're using. The central challenge in our design was determining the right optimal representation for payments. A payment transaction is fundamentally distinct from text or images. It's a complex structured tablet data categorized by high cardinality categorical data. So that's like merchant ID, bid number, issuer. We've got numerical signals, so like transaction amount, transaction amount.transaction velocity, recency. We've got temporal structure, so we've got an inherent time series component payments, right? We've got also even sensitive data like PII. And so we needed to kind of think about a data representation for payments that preserves the intrinsic structure of how payments work and then the integrity of this tabular data, ensure scalability so it can handle billions of events efficiently, and facilitate generalization. So be applicable across various downstream tasks like fraud detection, authorization, optimization, and so on. And so this necessity drove our exploration experimentation with multiple data formats. So this is actually what real payments data looks like. As you can see, it's naturally multi-level. You've got card, shopper, account, device, email identity, which is the entity level. You've got merchant level information, which is merchant policies, customer mix, vertical. You've got market level information, so the country, issue of behavior, obviously implicit in that. And you've got the transaction itself, which is like the amount, the bin, the device, the timestamp. And so you can see that the payments are heterogeneous structured objects defined by these strong temporal dynamics. And so it's important to think about two things. One of them is structured encoding. So you need to capture the data's inherent organization. And then you also have to think about sequence modeling. So you need to think about... You know, leveraging the inherent temporal temporalwithin payment trajectories. Our goal was basically first to start modeling what an individual payment is, right? And do this via an encoder-based approach, build this foundational encoder for payments. We want to treat effectively a transaction as a sentence and these fields as tokens. And learn these contextual embeddings through self-supervision. The initial model that we built was PaymentBERT, right? It was a tabular version of BERT that initially focused on individual payments and no sequences. The input features like bin, merchant ID, amount, you know, treated like words. And categorical features, used embeddings, and these numerical features used projections. And so our goal was to produce this dense payment embedding capturing structural and behavioral context. All of these different features were projected through a shared dimension, stacked with a CLS token, and then passed through a transformer encoder trained with MLF. Mask language modeling. The self-attention mechanism that we all know about learned complex interactions like between the issuer, the regime, and the merchant without need for manual feature engineering. And this work paved the way for us to think about sequence awareness. So then we thought about text-based sequence modeling. We realized that a critical unlock was modeling the history, the full sequence of transactions for an entity to predict things like risk.This led to a radical shift. We started treating the entire payment or sequence of payments not as a collection of numerical or categorical features, but as a single long piece of text. To do this, we serialized the payments into structured token sequences, effectively converting all those structured features, the amount, the merchants, the PRI that was in payment, into special tokens. Within a continuous string. We fed this long string into a Bert Starling coder, trained using the masked language modeling task. The pros of this approach is that there's no information bottleneck, there's end-to-end learning and optimization, we have one unique objective, and there's one vocabulary, right, assuming which is text-friendly. The cons is that it has very high context window inefficiency, so there's the quadratic scaling aspect of the tension. It's a bit of a black box. It's also very, very data hungry. And so it worked to kind of achieve the long range behavioral modeling that we were looking for, but it introduced the new challenge of scale. One key thing to talk about now is also around our view-based approach to our foundation model. It's centered really around creating a universal multi-view representation for every payment. We kind of recognize that a single transaction can be seen from several crucial perspectives, right? The shopper, the card, the merchant, or the broader market. The power of our system is in its single shared backbone encoder. This encoder is trained to simultaneously computecomprehensive set of contextual embeddings, shopper, card, merchant, or more. And this object really simplifies life for our downstream teams. For example, the fraud team might focus on shopper and card views for behavioral anomalies, feeding them into their specialized fraud head, but the authorization optimization team might tap the card and the market embedding to inform their authorization head, the authentication head around the issuer or local success rates. So every team simply selects the specific embeddings they need and attaches a small specialized prediction head ensuring maximum data efficiency and a unified company-wide understanding of payment flows. So at inference time, you're looking at this shopper's behavior, the sequence of how that shopper has interacted. But if you were to only look at just the shopper, how they compare to different shoppers, you might have a situation where, for example, that particular shopper might be just shopping and using Spotify and Uber, but all of a sudden there's a birthday and they buy a watch. If you were just looking at shopper behavior, that would be deep. Anomalous and fraudulent. But actually if you were to combine it with these priors that we've built, for example, on the merchant's view, you can know that actually buying a watch for that specific merchant was not going to be an anomaly at all. So the idea here is to kind of like allow different teams to use these different priors as and when they need. To make sure that they get accuratelypredicting and solving the problems that they have. In 2026, we're going to be looking very deeply at thinking through a hierarchical foundation model. So hierarchical architecture for the foundation model. Payments data is naturally multi-level. So you have your transaction, as I mentioned, which is your amount, the bin, the device, the timestamp. You then have your entity, which is the shopper, the car, the account, the email ID. You have the merchant, which is the policies of that merchant, customer mix, the vertical. And then you've got the market that it's operating in, the country, the issue of behavior, or the network rules. And so, as we mentioned before, the encoder should output representations at these multiple levels. But the key thing is we want to build a system that essentially... Moves beyond single transaction analysis to incorporate priors from sequences and entities, so shopper, merchant, and market. The architecture of such an approach is that we want to take inputs, so take these inputs and turn these raw heterogeneous features, numerical, categorical, high commonality IDs, into type tokens for this common embedding space. We then use a lean transformer on these current event tokens and small context, very, very small context, like issuer, merchant, device, to quickly produce representations of transactions. And then we also have prior encoders, so that's the merchant and the market. But we learn merchant encoders from merchant sequences, and all of these actors like Bayesian priors, right? We then...want to think about hierarchical fusion. So how do we combine all of these summary embeddings, transaction shopper, card merchant, and market, and fuse them together using a small attention block to produce this final universal representation? The pros of this approach is interpretability, right? We have embeddings for different levels of the hierarchy of payment. We also have context window efficiency, so we use summaries rather than the full sequence that I mentioned. We also deploy this domain knowledge prior, so explicitly modeling hierarchies with a really strong prior for payments. The negatives are there's an information bottleneck, right? Summaries lose detail. There's also joint objectives. So when we're training this, obviously we have an objective of the individual hierarchical levels that we're trying to encode, as well as how they fuse together. So these two different joint objectives can lead to model collapse and also risks of optimizing for different goals. And also text is not really as welcome here, right? This approach is designed for tabulated data and struggles with open text fields. The also negative is the fact that we have a domain knowledge prior. If that prior is wrong, it can actually mislead the model. So to summarize very briefly, 2024 we focused on transaction level payment transformers and payment birth. 2025 we focused on text-based sequence modeling and the idea of multi-view embeddings in the beginning of that journey. And this year we're really focusing on hierarchicalsequence modeling for our foundation model. Each iteration that we've had removed a bottleneck and exposed these deeper representation challenges that we're trying to solve. I'm going to talk a little bit about pre-training this foundation model. Our foundation model uses an encoder-only architecture and is trained using self-supervision, right? So we don't really need initial labels. The primary objective is mass language modeling applied across billions of transactions, very common for foundation models. The core idea is to effectively mass structure tokens within payment trajectories, specifically quantized numerical bins and categorical tokens, and then predict them for the surrounding context. This forces the model to learn the inherent structure of payments and how they work, encouraging strong contextual understanding and feature interaction learning as well. Beyond MLM, other self-supervised tasks have been used to further enhance representation learning, such as next event prediction. You've got a payment trajectory, you need to see what would happen next to that, or even to a shopper, right? You've got a set of shoppers, a shopper doing a sequence of payments, what would be their next payment? You've got contrastive learning to distinguish between same and different shoppers, so that's why we're trying to make these embeddings and encodings really, really powerful and splitting different shoppers. apart, cohort discrimination, and temporal consistency as well. So after this extensive self-supervised pre-training, the models are better.are adapted hopefully and lightly fine-tuned for the downstream tasks like fraud, authorization, and chargeback prediction. We evaluate our embedding quality on clustering effectiveness, neighborhood consistency, and linear separability. And then for the downstream classification tasks, the key thing is we try to freeze these embeddings and train simple MLPs or logistic regressions. To optimize for things like AUROC or log loss as well. So we can actually see how well do these embeddings actually use, how well do they actually work on downstream tasks, real downstream tasks of our teams. Do they actually improve performance? So the pre-training task is really, really complex. Our embeddings are trained on around 200 billion payments, which amounts to about 50 trillion tokens. And to give you a sense of that scale, Lama 4 was only trained on 22 trillion tokens. And this scale is really due to high card and now T vocabularies, really long sequence contexts, and multiple identity groupings with a risk of shortcut learning and leakage if you actually drop any of this information. Training at this scale is required distributed training, sharding and careful memory optimization. And model scaling introduced infrastructure constraints we really hadn't seen before at Adyen. So at peak, to give you a sense, we had to hit about 3,000 transactions per second in inference. Adyen has about 120 million transactions per day. One of our clients is a really large...social media giant only has about 30 million transactions per day. One of the largest social media giants in the world. Basically, payments require millisecond level decisioning. Our SLAs require us to hit below 30 milliseconds almost 100% of the time. Full sequence transformers can't run per request. We have to pre-compute entity embeddings offline and cache them. And then we have these lightweight online adapters that can combine new transaction or shopper context that we're looking at, trying to predict. And so this hybrid architecture balances quality with latency. So let's talk a little bit about NVIDIA. This has really only been possible because of NVIDIA. We use, in terms of hardware, we use NVIDIA A100 GPUs for training these foundational models. The choice is non-negotiable because of the A100's really immense VRAM, which is essential for filling model weights and data. And really fast speed, which basically cut our interaction time, our iteration time from days to hours. We chose the A100 for its large VRAM, viewing it as a kind of a future-proof resource that can be flexibly partitioned later. Beyond just the raw power of the hardware, The A100 has a really mature ecosystem, enabling out-of-the-box integration for us with things like PyTorch, flash attention, and gradient checkpointing as well.And so, you know, given the high cost of hardware, we prioritize maximum utilization. We've invested a lot in low-level monitoring to immediately surface and address any drop in MFU. And to overcome physical limits like network bottlenecks using intense training, we've implemented really advanced techniques like RDMA for optimal GPU to GPU communication. Then we have resilience and scaling, right? Training foundational models requires robust systems. To handle the inevitable failures, just like GPO time, time, machine downtime, we've utilized automated detection and fencing for failed machines, with future plans for auto recovery as well. For managing complex sharding and scaling, we've leveraged Ray. And increasingly, we deploy smart, like topology-aware orchestrators to distribute our jobs on optimized formations, ensuring high utilization by understanding the physical layout of our cluster. We also adapt the A100s for diverse internal teams using Kubernetes. The NVIDIA GPU operator for Kubernetes automates driver management, device plugins, and automated node, automatic node labeling. And a key part of our strategy is also the heavy use of multi-instance GPUs, which securely partitions this.single A100 into about seven isolated instances. This allows us to divide it into a standard unit size, offer right-sized resources for smaller jobs, maximize utilization, and democratize access to these powerful resources. So this is what embeddings actually look like in latent space. Just by inspecting the embeddings, you can kind of see the beautifully separate clusters of payments between unique things that we don't even know about. For example, fast food restaurants versus non-fast food restaurants, different types of merchant or geography clusters, and even approval rates. They look different when you actually look at these embeddings. Once the payment and entity embeddings are pre-trained, we're evaluating various ways to integrate these into downstream systems. The lowest complexity approach is using embeddings as dense feature augmentations. So in this setting, embeddings are treated as fixed representations and concatenated into existing deep models. This isolates the representation learning from task-specific optimization. So that's kind of using embeddings as features. The second approach is on ensembling, right? So that's where the foundational model outputs an auxiliary prediction or score that's blended into existing model stacks. This preserves legacy architectures while injecting representation-level signal. And then the final, most tightly coupled approach is fine-tuning.This regime, we can actually update the pre-trained backbone jointly with a task-specific head. This maximizes task alignment, but increases the computational and ownership complexity. The key insight here is that representation learning can be decoupled from policy learning to different degrees, and it allows us to have controlled experimentation across the system without forcing architectural rewrites. So I'm going to walk you through a case study of how embeddings have actually, and this foundational model has actually helped us in production. We had an experiment, we basically evaluated whether payment embeddings improved shopper linking. In this task, we've seen about 1.5 billion individuals on earth, and we need to kind of see patterns in We want to establish patterns about their identities given the footprint they have in the platform. And so the task that we had was pairwise linkage. So given two transactions, predict whether they belong to the same shopper. And so we evaluated using precision recall. So precision is measured as resistance to overlinking, so avoiding false mergers. And recall measured as resistance to underlinking, which is avoiding fragmented profiles. We compared three approaches, so a greedy identifier, base matcher, a one-hot plus. We compared three approaches, a greedy identifier-based matcher, a one-hot plus,and hot plus hashing model on explicit features and learn payment embeddings. And the embeddings basically dominated the precision recall curve across the entire range. At 80% recall, we observed roughly a 20% precision improvement on this task. And on synthetic shopper disentangled, we found actually 170% increase in ARI. The embeddings themselves capture latent behavioral structure rather than relying on surface identifiers. And this reduced our variance in sparse merchant and issuer interactions. And it demonstrated really for us that improved upstream representations translated into more robust entity resolution downstream. What's next? Where is this all headed? We began with contextual bandits, so optimizing individual decisions under uncertainty. We then moved to foundation models, learning shared representations of payment behavior. Bandits optimize actions, foundation models learn structure. And now the next step is coordinating these layers into a unified system. So we don't have isolated optimizers, but a really coherent decision architecture. So the vision of where this is headed is really one objective, one policy, multiple considerations, right? So today, routing, authentication, and fraud models that we have optimize partially different objectives, right? Approval rate, cost, risk, and customer friction. These objectives are interdependent.When optimized independently, they produce local optima rather than globally efficient outcomes. A unified system requires learning a really coherent global preference function, one objective surface spanning the entire payment lifecycle. This becomes a systems-level learning problem. So we formalize it as thinking about states represented by learning embeddings, actions which include routing decisions now, as well as authentication strategies, fraud interventions, and the reward is really just full funnel net revenue, incorporating cost, conversion, and downstream risk. And we want this agent that's powered by the foundation model to continuously explore policies and updates online through reinforcement learning, aligning all decisions towards long-term value rather than isolated short-term metrics. To make this work, the real unlock is an orchestrator and coordinator layer. So we're focusing on unifying these efforts. Combining preference learning with coordinated decision-making across the payment lifecycle, right? So we want to have a single orchestrator layer that governs routing, authentication, fraud, and cost. In this unified system, each model should be able to estimate expected conversion, cost, and risk at any given time. And optimization should be driven by a... Set of constraints that users tell us, for example, fraud tolerance defined in the start of the funnel, it falls consistently across the modules. We want that orchestrator to sit across the stack,It's able to reason over embeddings, policy outputs, and contextual signals, and actually dynamically adjust routing, authentication, and risk parameters while maintaining these global trade-offs across the stack. We want everything to be powered by our foundational model embedding, this backbone that enables identity and sequence of credit decision. And we don't want this layer to replace banded models. We want this layer to actually coordinate them in a coherent multi-objective policy. You can imagine a system where a user interface, where a user can just set the design preferences for cost, conversion, and fraud. And then we could actually also suggest new implementations and changes that the merchant should implement in their payment stack and the settings for each of them even, including new payment methods to achieve that goal, even actually implementing them automatically. We could even suggest achievable conversion cost and fraud given what we know of, given our transaction history and our foundational model. A user could potentially see the multi-objective function actually working through the latent space to find the best potential settings and thresholds to try to achieve that outcome. So I'm going to summarize now. Payments optimization at Adyen evolved from rules, to supervise reward modeling, to contextual bandits, and then deep interaction modeling, and finally foundational models. The bottleneck shifted for us from exploration to representation. Foundational models,allow shared embeddings, sequence reasoning, and multitask leverage. And scaling all of these requires really, really deep infrastructure investment that NVIDIA has really helped us with. And precision at this trillion dollar scale, trillion dollar transaction scale, Precision at this level of scale compounds dramatically. So we've done this with a really amazing team of about 10 research scientists working in fraud detection and payment optimization, two staff scientists, two research lead and two PMs. And it's been an amazing journey over the last four years. We've learned a lot about the best way to go about this process. And so we have teams focused on all of our core modules, payment routing, lease cost routing, multi-objective optimization, bandits. And this shared expertise in small in-person units has really helped us create efficiencies. We've also set up really, really powerful frameworks for collaboration, pair programming, and joint research dependencies so that we allow engineers to kind of think through their own modules. And we've had to have a really strong interface with our infra and platform team that has experiences with Ray, MLflow, Kubernetes, and tooling with NVIDIA to give us the pipelines we need for pre-training, tokenization, fine-tuning, testing, evaluation, and more, which has led to really huge benefits for us. Thank you so much, and please let me know if there's any questions.",
+    "usage": {
+        "prompt_tokens": 238,
+        "completion_tokens": 13819,
+        "total_tokens": 14057,
+        "prompt_audio_seconds": 2986,
+        "request_count": 34
+    },
+    "language": null,
+    "segments": [
+        {
+            "text": "And I'm one of our principal AI PMs at Agile.",
+            "start": 0.1,
+            "end": 2.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm really excited to talk to you guys at NVIDIA GTC about some of our work in reinforcement learning and also our journey in building foundational models for payments.",
+            "start": 3.5,
+            "end": 12.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm going to walk you through some of the challenges we've faced, how we've solved them, and some of the learnings we've had in this journey.",
+            "start": 13.7,
+            "end": 20.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So here's a brief agenda.",
+            "start": 21.6,
+            "end": 23.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm going to introduce Adyen and payments.",
+            "start": 24.0,
+            "end": 26.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then I'm going to walk through the product that I work on, which is called Adyen Uplift, which essentially improves performance for our customers through our payment stack.",
+            "start": 26.7,
+            "end": 35.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then I'm going to talk through contextual bandits and reinforcement learning at Adyen.",
+            "start": 35.4,
+            "end": 39.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then I'm going to talk through our foundational model journey, what we try to build there.",
+            "start": 39.9,
+            "end": 44.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then I'm going to talk a little bit about our vision and how the system might look in the future and our North Star.",
+            "start": 45.1,
+            "end": 50.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then finally, we're going to wrap up and summarize.",
+            "start": 51.5,
+            "end": 53.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So let me just use this chance to kind of walk you through payments and how Adyen works.",
+            "start": 54.1,
+            "end": 58.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So Adyen is one of the largest payment providers in the world.",
+            "start": 59.0,
+            "end": 62.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're trusted by some of the largest brands, including Adidas, Uber, McDonald's, Spotify, Just Eat, Etsy, Microsoft, just to name a few.",
+            "start": 62.9,
+            "end": 72.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Last year, our net revenue climbed to about 2.3 billion euros, which is about an 18% increase year-on-year.",
+            "start": 73.2,
+            "end": 81.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We're based in Amsterdam, but we have a really strong global footprint.",
+            "start": 81.7,
+            "end": 85.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got about 28 different offices and about 4,000 employees.",
+            "start": 85.8,
+            "end": 90.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "So we also have teams in San Francisco and Chicago as well.",
+            "start": 91.5,
+            "end": 95.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Payments is really complex.",
+            "start": 96.5,
+            "end": 97.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm going to walk you through generally how it works.",
+            "start": 98.0,
+            "end": 100.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In a payment flow, one has a mix of payment processors, card issuers, card schemes, rails, and their systems, issuer banks, address verification schemes, network token schemes,",
+            "start": 100.5,
+            "end": 113.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " POS terminals, checkout screens, and so much more.",
+            "start": 114.0,
+            "end": 116.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The cool benefit of Adyen is that we do everything in this stack end-to-end with one pipeline,",
+            "start": 117.0,
+            "end": 123.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " which is really difficult and it requires thousands of integration types, card scheme partnerships, merchant relationships connected to each other, issuing bank relationships, and much more.",
+            "start": 124.1,
+            "end": 136.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To bring this together into one platform that can do all of your payments in one customizable way.",
+            "start": 136.6,
+            "end": 142.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, sometimes we acquire a payment and process it, sometimes we just offer these payment rails.",
+            "start": 143.0,
+            "end": 147.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We handle billing, reconciliation, POS terminals, even actual physical hardware, and a lot more.",
+            "start": 148.4,
+            "end": 155.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The major unlock of Adyen is this massive data set we have because of the size, the amount of merchants that we've actually worked with.",
+            "start": 155.8,
+            "end": 162.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Where over 4,000 clients are processing trillions of payments and transactions over many years.",
+            "start": 163.0,
+            "end": 168.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So if a shopper shows up at a merchant for the first time, there's an 84% chance that Adyen has seen that shopper before.",
+            "start": 168.3,
+            "end": 175.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So how does the payment flow actually work, right?",
+            "start": 176.0,
+            "end": 178.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "receives a payment request through an API or embedded checkout or post terminal from a merchant.",
+            "start": 180.4,
+            "end": 186.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " A bunch of agile services then kick in.",
+            "start": 187.9,
+            "end": 189.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Depending on the integration, we can personalize the checkout screens.",
+            "start": 190.5,
+            "end": 195.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can perform tokenization depending on the business model of the merchant and the payment instrument.",
+            "start": 195.9,
+            "end": 200.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can perform fraud risk checks.",
+            "start": 200.6,
+            "end": 202.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can perform authentication in case it's required for fraud or regulatory reasons.",
+            "start": 203.0,
+            "end": 208.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we optimize the payment where possible with techniques such as routing.",
+            "start": 208.6,
+            "end": 211.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Behind the scenes, there's typically a payment request with the appropriate ISO message for the designated payment method.",
+            "start": 212.5,
+            "end": 220.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Which is either to a card scheme or a local payment method.",
+            "start": 220.8,
+            "end": 223.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So all of this is happening in real time, where Adjin is ultimately looking to receive an authorization from the cardholder's issuing bank.",
+            "start": 224.4,
+            "end": 232.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " After this entire authorization operation, we start moving money in the background so that our merchants receive the funds for goods and services provided as soon as possible.",
+            "start": 233.0,
+            "end": 242.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So merchants kind of face three main objectives with this.",
+            "start": 244.5,
+            "end": 247.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So they face a complex challenge, right?",
+            "start": 248.0,
+            "end": 250.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And they have these three main goals.",
+            "start": 250.4,
+            "end": 252.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One of them is basically maximize successful payments.",
+            "start": 253.4,
+            "end": 256.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They want to ensure a smooth, reliable checkout process to reduce failed payments and customer drop-offs.",
+            "start": 256.8,
+            "end": 263.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They also want to minimize costs.",
+            "start": 264.3,
+            "end": 265.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So many merchants kind of view payments as a cost center.",
+            "start": 266.0,
+            "end": 269.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "and they want to seek the lowest possible transaction fees to protect their profit margins.",
+            "start": 270.0,
+            "end": 275.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And finally, we want to prevent fraud and disputes.",
+            "start": 276.0,
+            "end": 279.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So at the same time, we do want to maximize conversion of this payment funnel, but we don't want to have fraudsters coming through making false purchases with fake cards or buying.",
+            "start": 279.6,
+            "end": 290.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Items that they never had the intention of buying and they want to return them, sort of exploiting that return mechanism.",
+            "start": 290.7,
+            "end": 296.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So given all these complex conflicting requirements from our merchants, in 2025 we launched this payment optimization suite we call Uplift.",
+            "start": 298.2,
+            "end": 306.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've packaged together multiple different modules we've been building for years into one proposition that helps solve this multi-objective payment optimization problem.",
+            "start": 307.0,
+            "end": 316.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So, Personalize is our module that ranks the different payment methods shown to users at the merchant checkout page.",
+            "start": 317.2,
+            "end": 323.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, we can show local payment methods when the merchant wants to have the lowest cost possible, or maybe we can show the payment method at the top which is most likely to convert for that specific user if the merchant wants to maximize conversion.",
+            "start": 323.7,
+            "end": 337.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then have a module called Tokenize, where we can swap the credit card details sent with network tokens sent by card schemes, and we replace them with these network tokens, which are considered safer and therefore more likely to convert.",
+            "start": 338.2,
+            "end": 351.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Network tokens are generated per merchant, so that if such a token would leak, the actual card number behind the token is not exposed.",
+            "start": 351.4,
+            "end": 358.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can also apply",
+            "start": 359.1,
+            "end": 359.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "real-time account updating to ensure that we basically have the correct card details for a given card, even if that card is expired.",
+            "start": 360.1,
+            "end": 368.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then we have a module called Protect, and if a merchant basically gives us the license, we can apply our own fraud detection systems that understand the risk of fraud.",
+            "start": 369.8,
+            "end": 378.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then we have Authenticate.",
+            "start": 379.1,
+            "end": 380.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can apply, based on that risk score that I mentioned, we can apply a risk-based authentication where we can choose to pick the right challenge to give to the user at payment time.",
+            "start": 381.6,
+            "end": 391.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that means authenticating the transaction, potentially with a bank app, via an SMS, or via Face ID, if we think that this is likely to secure the chance of payment conversion.",
+            "start": 391.3,
+            "end": 401.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Obviously weighing up the risk of payment drop-off, right?",
+            "start": 402.3,
+            "end": 404.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Because you see a new screen when you're paying.",
+            "start": 404.7,
+            "end": 406.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For high-risk transactions, we can choose to apply a challenge rather than block the transaction.",
+            "start": 407.0,
+            "end": 411.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And for low-risk transactions, we can actually choose to just allow the payment instead of applying a challenge to that piece to conversion on that.",
+            "start": 412.4,
+            "end": 418.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Finally, we have a module called Optimize.",
+            "start": 418.8,
+            "end": 421.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Which uses machine learning to analyze real-time signals such as scheme performance, issue of behavior, and cost structures to determine the optimal route and message for each transaction based on conversion and cost.",
+            "start": 422.6,
+            "end": 434.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, we've invested in lots of direct connections with local debit networks early on in markets like the US and Australia.",
+            "start": 435.0,
+            "end": 442.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And for dual-branded debit cards, we can actually route the payment either through global or domestic networks.",
+            "start": 443.1,
+            "end": 449.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "So the impact of this work across the board has meant that our products deliver really significant conversion uplift for our clients in terms of payments alongside other benefits.",
+            "start": 451.1,
+            "end": 459.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So our overall product suite, this product suite has led to about a 1.2% extra uplift on conversion rates.",
+            "start": 460.1,
+            "end": 467.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " On personalize itself, pilots that we've been running have observed conversion rate improvements up to 6% using this personalized optimization.",
+            "start": 467.8,
+            "end": 476.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " On fraud detection, using that reduction in rules-based blocking, we've led to an overall about 10% increase in conversion using machine learning and a 41% drop in fraud rates.",
+            "start": 476.8,
+            "end": 487.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And for cost optimization in terms of optimize and that routing system, we've led to cost savings of up to 20% in the US and actually an 89 basis point improvement in authorization rates in the US alone.",
+            "start": 487.8,
+            "end": 501.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I'm going to focus just on one of these modules in the coming slides, which is our optimized module, and talk through what we've been doing there.",
+            "start": 503.0,
+            "end": 510.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Let's talk through contextual bandits within payments, focusing on that optimized module.",
+            "start": 511.2,
+            "end": 515.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So payments optimization is a fundamental contextual bandit problem.",
+            "start": 516.0,
+            "end": 521.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Every transaction that we have arises with a really rich high-dimensional state, including the merchant's payment configuration, bank identification number, and associated metadata, such as, for example, if it's a prepaid or standard card,",
+            "start": 521.8,
+            "end": 534.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " if it's a commercial versus consumer transaction, it's a credit versus debit transaction.",
+            "start": 535.3,
+            "end": 540.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "the issuing bank involved, that issuer's identity and regulatory region, the amount of retries that transaction has had, and a bunch of different behavioral signals, even at checkout that we know about from the actual shopper.",
+            "start": 540.7,
+            "end": 553.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then choose a structured action consisting of a routing path, an authentication strategy,",
+            "start": 553.5,
+            "end": 560.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and a specific ISO message configuration that's sent in the payment.",
+            "start": 560.8,
+            "end": 565.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The reward that we have is the CASTIC, right?",
+            "start": 565.8,
+            "end": 568.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's the issuer's authorization decision, and it comes from that issuer's internal risk engine that we don't know about.",
+            "start": 568.3,
+            "end": 575.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So this isn't just static prediction, it's about policy learning over interventions.",
+            "start": 575.4,
+            "end": 579.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The key things here is that exploration has a direct economic cost, right?",
+            "start": 579.6,
+            "end": 583.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Whenever we actually change some of these ISO messages or the routes that we take in an online setting, we are actually affecting the conversion rates of that customer in real time.",
+            "start": 583.2,
+            "end": 592.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we need to be very careful about the level of experimentation that we run.",
+            "start": 592.2,
+            "end": 595.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Also, issuer behavior drifts and changes all the time how banks think about different ISO messages and routes.",
+            "start": 596.1,
+            "end": 602.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The risk of payments.",
+            "start": 602.7,
+            "end": 603.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Also, this action space is constrained, right?",
+            "start": 604.4,
+            "end": 606.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can't change these payment messages all the time.",
+            "start": 606.5,
+            "end": 608.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " There's regulatory considerations.",
+            "start": 608.8,
+            "end": 610.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so once we frame payments in this way, the key question is, is how can we actually optimize?",
+            "start": 611.3,
+            "end": 615.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what do we actually optimize here?",
+            "start": 617.1,
+            "end": 620.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So at the end of the day, payments is a really complex optimization problem.",
+            "start": 620.0,
+            "end": 624.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Aiming to maximize the expected approval rate for every transaction, navigating thousands of these",
+            "start": 624.6,
+            "end": 629.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "independent bank risk profiles, right?",
+            "start": 630.1,
+            "end": 632.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They're risk models.",
+            "start": 632.9,
+            "end": 633.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The primary lever that we have is intelligent routing.",
+            "start": 634.6,
+            "end": 636.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's kind of consists of two main things.",
+            "start": 636.8,
+            "end": 638.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can do inter-scheme routing.",
+            "start": 639.1,
+            "end": 640.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So for dual branded cards, so for example, if you have a card that has MasterCard and a Star logo or Visa or Dancor,",
+            "start": 641.0,
+            "end": 649.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can select the network, either MasterCard or Star, which has the best combination of approval chances and the lowest fees, depending on what you choose to prioritize.",
+            "start": 649.9,
+            "end": 659.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then we can also do intra-acquirer routing, where essentially for a single branded card, we as AdGen, the payment processor,",
+            "start": 660.7,
+            "end": 668.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " can send that transaction through the same network or scheme, but with different commercial setup, right?",
+            "start": 669.2,
+            "end": 675.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So for example, we can change the merchant category code that subtly alters your bank's kind of risk perception of that payment.",
+            "start": 675.4,
+            "end": 682.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's within Acquire accounts, within AdGym.",
+            "start": 682.7,
+            "end": 685.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The second lever is around smart payment messaging.",
+            "start": 686.2,
+            "end": 689.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's where we can modify the actual data payload, the ISO message that's sent to the issuer.",
+            "start": 689.1,
+            "end": 694.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Tweaking these configuration fields and flags to influence the bank's risk model and improve approval rates, we can do that without even changing the routing path.",
+            "start": 694.9,
+            "end": 704.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can still have an impact on these approval rates.",
+            "start": 704.0,
+            "end": 706.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Every transaction is treated as a multi-armed bandit problem, where the optimization framework maps the transaction's context, the shopper, the amount, the product, to the joint configuration of these kind of routing and messaging systems that",
+            "start": 706.6,
+            "end": 719.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "that alter and then maximize the approval reward.",
+            "start": 720.0,
+            "end": 722.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's important to say, however, that optimizing approval alone is not sufficient.",
+            "start": 722.8,
+            "end": 727.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This is actually a multi-objective problem.",
+            "start": 728.5,
+            "end": 730.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " As I mentioned before, there are these three main objectives from the merchant, but routing introduces a structural trade-off, just routing itself, between authorization probability and scheme or interchange cost.",
+            "start": 731.3,
+            "end": 743.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Different rails lie at different points of the Pareto frontier.",
+            "start": 743.9,
+            "end": 747.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And a single global scalar weight between cost and approval doesn't actually generalize.",
+            "start": 748.4,
+            "end": 753.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the optimal trade-off depends on transaction amount, merchant, vertical, issue of behavior, and retry stage.",
+            "start": 753.8,
+            "end": 760.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This routing policy that we have has to learn these context-dependent trade-offs dynamically.",
+            "start": 760.8,
+            "end": 765.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so as we scaled the system, complexity increased dramatically.",
+            "start": 766.3,
+            "end": 770.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So routing gives us about up to 10 eligible paths in terms of like the schemes or acquire accounts per transaction.",
+            "start": 771.7,
+            "end": 779.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " While messaging alone, changing the message, introduces more than 30 optimization flags.",
+            "start": 779.8,
+            "end": 784.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Each of these flags is governed by regulatory constraints, scheme compatibility, merchant configuration, and internal conflict logic as well.",
+            "start": 785.3,
+            "end": 793.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The feasible action space becomes a Cartesian product, a constrained Cartesian product of these routing and flag combinations.",
+            "start": 794.1,
+            "end": 802.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this could produce more than 20,000 different combinations that the model has to score.",
+            "start": 802.7,
+            "end": 807.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we're no longer in this.",
+            "start": 807.6,
+            "end": 809.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "small multi-armed bandit setting, this is quite a structured combinatorial contextual bandit.",
+            "start": 810.0,
+            "end": 815.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We can't treat also actions independently and learning a separate reward model per action becomes statistically infeasible.",
+            "start": 815.8,
+            "end": 823.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so sparse coverage across this combinatorial space becomes the dominant technical problem to solve.",
+            "start": 823.6,
+            "end": 831.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So what features do we have to play around with?",
+            "start": 832.5,
+            "end": 834.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got highly granular data, so we've got sub-merchant level features.",
+            "start": 835.0,
+            "end": 839.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got eight-digit BIN numbers, eight-digit bank identification numbers, which is a really key high-cardinality categorical feature.",
+            "start": 840.2,
+            "end": 848.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got really sophisticated time-based features.",
+            "start": 849.1,
+            "end": 851.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got card-level data, which is kind of like card summaries, token summaries, linked events, recurring transaction details.",
+            "start": 851.7,
+            "end": 857.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got policy feedback, so that's kind of contextual flags that communicate what was sent to the schemes, which allows the model to learn from policy outcomes.",
+            "start": 858.2,
+            "end": 869.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got numerical identifiers, so segmented amounts, transaction amount buckets, rolling performance aggregates, which is based on issuer and scheme, and temporal signals, which capture the sequence as well, right?",
+            "start": 869.5,
+            "end": 882.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Retry, temp count, time of day, and so on.",
+            "start": 882.5,
+            "end": 884.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I'm going to walk through a little bit of our approach and how that evolved in terms of payment routing and scheme flag messaging.",
+            "start": 885.4,
+            "end": 893.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We started off with deterministic rules as everyone else does.",
+            "start": 894.0,
+            "end": 896.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Simple safe rules based on aggregate data and static.",
+            "start": 897.2,
+            "end": 899.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "The problem is that this obviously can't really handle real-world drift, like issuers changing their behavior and their risk models, or complex interactions.",
+            "start": 900.9,
+            "end": 910.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And there's a lot of manual tuning of rules, as we all know.",
+            "start": 910.9,
+            "end": 913.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So then we shifted into machine learning, typically boosting, which is supervised reward modeling, right?",
+            "start": 914.2,
+            "end": 921.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We knew certain flags that had been applied in the past and routes.",
+            "start": 922.2,
+            "end": 925.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We used a classification approach to estimate the authorization probability and score thousands of these routing and messaging options based on that training data.",
+            "start": 926.4,
+            "end": 935.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The problem is that it learned us to kind of learn the reward for actions that were already taken.",
+            "start": 936.2,
+            "end": 941.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Not the optimal policy itself.",
+            "start": 942.1,
+            "end": 944.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And also it faced a lot of scaling issues with estimating rewards across this really massive action space.",
+            "start": 944.3,
+            "end": 950.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then shifted into the idea of thinking about this as a contextual bandit with controlled exploration.",
+            "start": 951.3,
+            "end": 955.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We extended the action space.",
+            "start": 956.0,
+            "end": 957.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We explicitly, you know, obviously,",
+            "start": 957.9,
+            "end": 960.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " introduce controlled exploration to reduce bias and adapt to that issue of drift that I mentioned.",
+            "start": 960.9,
+            "end": 966.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The key problem with all of this is that scaling reward estimation in this vast action space was still a persistent problem.",
+            "start": 966.3,
+            "end": 973.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So then data representation became the real problem that we're trying to solve and the new performance bottleneck.",
+            "start": 974.0,
+            "end": 980.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The other issue was that using the banded approach, we were finding that, particularly with trees, they're very, very good at finding the right",
+            "start": 980.9,
+            "end": 990.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "right features to use.",
+            "start": 990.0,
+            "end": 991.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The issue was tree-based models were very good at feature selection, but the features that they were selecting were not actually including the actual flags that were deployed in inference time, which are actually really, really important in terms of building this banded style approach.",
+            "start": 991.8,
+            "end": 1006.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the approach of deep learning was kind of trying to learn these complex",
+            "start": 1007.0,
+            "end": 1011.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " you know, higher order feature interactions between the issuer, the scheme, the merchant amount, and sort of moving away from manual feature engineering and actually constraining the system to use the flag itself to make a prediction.",
+            "start": 1012.1,
+            "end": 1024.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we kind of forced the model to rely more heavily on flagging-based features and learn the relevant interaction between the flags themselves rather than just historical merchant, issuer, shopper features.",
+            "start": 1024.8,
+            "end": 1036.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the key other thing was actually focusing on direct policy optimization and policy learning rather than trying to estimate the reward function.",
+            "start": 1036.9,
+            "end": 1045.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So in that journey of deep learning, first we adopted self-attention deep learning.",
+            "start": 1045.9,
+            "end": 1051.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's where the model sort of learns dynamically which feature interactions are important.",
+            "start": 1051.4,
+            "end": 1057.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We left it to itself, right?",
+            "start": 1057.7,
+            "end": 1058.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So our approach was to embed categorical features, use multi-head attention for complex relationship learning.",
+            "start": 1058.9,
+            "end": 1065.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then use residual connections to retain original feature data.",
+            "start": 1066.0,
+            "end": 1070.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The next step here that we had to solve was unconstrained self-attention becomes unstable in production.",
+            "start": 1070.7,
+            "end": 1077.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And that led us to exploring later.",
+            "start": 1078.3,
+            "end": 1080.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "to improve that stability.",
+            "start": 1081.1,
+            "end": 1082.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So, late attention effectively changed the architecture because the raw data tokens in tabular data were too unstable, as I mentioned.",
+            "start": 1083.4,
+            "end": 1092.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So, this new structure of late attention was a little bit better because it forced the model to first create intermediate combined features or cross-representations.",
+            "start": 1093.1,
+            "end": 1102.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Before running the attention mechanism.",
+            "start": 1102.6,
+            "end": 1104.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This made the model really stable and robust using just plain self-attention.",
+            "start": 1104.7,
+            "end": 1108.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But still, late attention had a major flaw, and that was around temporal leakage.",
+            "start": 1108.9,
+            "end": 1113.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It was basically accidentally our model looking into the future.",
+            "start": 1113.8,
+            "end": 1116.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so we started to look into causal attention to fix that leakage issue and also continue our path",
+            "start": 1117.0,
+            "end": 1123.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " of trying to constrain the features that the bandit was sticking through.",
+            "start": 1124.1,
+            "end": 1127.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Payments data has a strict temporal structure, right?",
+            "start": 1128.6,
+            "end": 1130.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So some signals are available just at the moment we take a decision.",
+            "start": 1130.9,
+            "end": 1135.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Things like bin, merchant, amount, historical embeddings.",
+            "start": 1136.6,
+            "end": 1140.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But other signals are just revealed to us after we take the decision on what action we take.",
+            "start": 1141.3,
+            "end": 1145.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So issuer responses, retry outcomes, chargebacks, downstream friction.",
+            "start": 1145.9,
+            "end": 1150.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And if these post-decision signals leak into training, the model can exploit correlations that disappear once you intervene.",
+            "start": 1151.0,
+            "end": 1157.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So offline it looks great, but online it collapses.",
+            "start": 1158.1,
+            "end": 1160.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So standard global self-attention allows every feature to attend to every other feature.",
+            "start": 1162.2,
+            "end": 1168.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " That's powerful, but in payments...",
+            "start": 1168.8,
+            "end": 1170.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "It's risky because it can allow these post-treatment variables to influence the decision time state representation.",
+            "start": 1170.0,
+            "end": 1177.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So causal attention kind of addresses this directly, right?",
+            "start": 1178.1,
+            "end": 1181.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We basically force the model to not learn what the correct feature is.",
+            "start": 1183.4,
+            "end": 1186.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We forced it to say that the most important feature that should causally affect the outcome the most is the flags itself available to determine the best flags.",
+            "start": 1186.6,
+            "end": 1197.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The multi-head attention mechanism remains unchanged, but the information flow here is controlled within the bandit.",
+            "start": 1198.8,
+            "end": 1205.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Queries can look broadly, but they can't attend to signals that wouldn't have been known at the time of action.",
+            "start": 1206.5,
+            "end": 1212.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so the system doesn't have to learn what the feature is, we kind of give it to it.",
+            "start": 1213.3,
+            "end": 1216.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it ensures the learned policy depends only on actionable information.",
+            "start": 1217.4,
+            "end": 1220.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It keeps feature hygiene, it preserves feature hygiene, it keeps off policy evaluation valid, and it stabilizes policy improvement.",
+            "start": 1222.1,
+            "end": 1230.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And in a reinforcement learning setting, that distinction is really important.",
+            "start": 1231.6,
+            "end": 1236.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In the same spirit of constraining our deep learning model to implicitly use the available ISO message flag adaptations as a feature,",
+            "start": 1236.4,
+            "end": 1243.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " we move to deep cross networks, deep and cross networks, which perform explicit high order feature crossing before the deep nonlinear layers.",
+            "start": 1244.5,
+            "end": 1253.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Sequential interaction and fusion improve representation efficiency, and this is really",
+            "start": 1254.3,
+            "end": 1260.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "really particularly effective when you have sparse categorical domains with repeated interaction motifs.",
+            "start": 1260.0,
+            "end": 1265.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's also often really more stable and latency efficient than unconstrained attention.",
+            "start": 1265.5,
+            "end": 1270.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so this provided this complementary architecture for modeling structured combinatorial spaces.",
+            "start": 1271.5,
+            "end": 1276.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then moved into thinking through structured sparsity and how we include that in.",
+            "start": 1276.9,
+            "end": 1280.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In that same spirit, again, of constraining our deep learning model to implicitly learn interactions only with a flaggy feature, rather than crossing everything, we anchored on primary tokens such as issuer or scheme.",
+            "start": 1281.3,
+            "end": 1293.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We prioritized constrained feature interactions before enabling these broader global crosses.",
+            "start": 1293.8,
+            "end": 1299.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This enforced that structural sparsity I mentioned.",
+            "start": 1300.4,
+            "end": 1302.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It reduced variance in combinatorial ranking, and it improved policy stability in large action spaces.",
+            "start": 1303.7,
+            "end": 1310.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So at this point, the modeling stack here we'd been building up had matured significantly.",
+            "start": 1311.0,
+            "end": 1315.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So through all of this different work,",
+            "start": 1316.9,
+            "end": 1318.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This rigorous experimentation approach that we've been employing has really been core to our success as Adyen in this product.",
+            "start": 1318.9,
+            "end": 1325.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The power of small compounding improvements in payments is really enormous at our scale.",
+            "start": 1325.8,
+            "end": 1330.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In 2025 alone, we ran about 673 experiments across all of our machine learning models.",
+            "start": 1331.2,
+            "end": 1337.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " With 287 focused on the main optimization model.",
+            "start": 1338.0,
+            "end": 1341.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This has led to about over a 1% uplift in conversion from these various experiments.",
+            "start": 1342.1,
+            "end": 1349.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this culture",
+            "start": 1349.5,
+            "end": 1350.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "It's really widespread.",
+            "start": 1350.0,
+            "end": 1351.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One user learned to start 117 experiments last year.",
+            "start": 1351.3,
+            "end": 1354.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Even fractional improvements, like a 0.1% uplift in authorization, can translate to massive incremental GMV and substantial cost reductions, proving that precision really dominates novelty in high-scale machine learning.",
+            "start": 1355.1,
+            "end": 1368.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Prior systems that I've been talking about, despite that deep interaction modeling, were task-specific, right?",
+            "start": 1369.6,
+            "end": 1375.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " There were learning policies over engineering payment summaries, like let's say the average payment amount over 30 days as a payment summary, with transactions treated as independent rows and handcrafted aggregates.",
+            "start": 1376.0,
+            "end": 1388.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But as we know, payments are inherently sequential, they're entity-based, and they are multitask, right?",
+            "start": 1388.4,
+            "end": 1393.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you've got trajectories of the card through history, you've got different shopper patterns.",
+            "start": 1393.3,
+            "end": 1398.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so our model at Adyen shifted from exploration and reward modeling that I just talked about to representation learning, which motivated the need for a foundational model.",
+            "start": 1399.6,
+            "end": 1409.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The vision for Adjent's foundational model is that it will power all of our tasks through a rich shared feature backbone.",
+            "start": 1409.6,
+            "end": 1415.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " At pre-training, a large-scale transformer encoder adds its entire transaction graph to learn that kind of backbone.",
+            "start": 1416.1,
+            "end": 1422.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So instead of having different teams within Adjent trying to handcraft their own features,",
+            "start": 1422.9,
+            "end": 1428.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " effectively losing a lot of information by splitting these different data sets apart.",
+            "start": 1429.2,
+            "end": 1433.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We have a foundational model that kind of puts it into one shared encoder, which all of the different teams can have access to.",
+            "start": 1433.8,
+            "end": 1440.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "it collapses and brings all of the context that was lost from splitting back.",
+            "start": 1440.2,
+            "end": 1444.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And every team can kind of access this foundation model to perform the tasks that it needs to do, right?",
+            "start": 1445.6,
+            "end": 1454.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Whether you're doing, and you can adapt, the idea is that we, you know, rapid adaptation.",
+            "start": 1454.7,
+            "end": 1460.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you can add a simple, every team can add a simple lightweight head layer to this shared backbone and quickly fine tune it for diverse objectives.",
+            "start": 1460.9,
+            "end": 1470.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So if you're the fraud team, you can use this foundation model for fraud detection.",
+            "start": 1470.2,
+            "end": 1475.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " If you're doing next step prediction and you're doing intelligent routing, you can use the foundation model as well and use the different components of it that you need.",
+            "start": 1476.0,
+            "end": 1483.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And if you're doing charge book fact forecasting, you can also use the foundation model with a shared backbone.",
+            "start": 1483.9,
+            "end": 1489.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the key thing is we're using all of the data at AdGen for training our models implicitly rather than different teams trying to effectively find the right",
+            "start": 1490.4,
+            "end": 1499.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " features for their use case and often duplicating the features that they're using.",
+            "start": 1500.8,
+            "end": 1504.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The central challenge in our design was determining the right optimal representation for payments.",
+            "start": 1505.8,
+            "end": 1512.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " A payment transaction is fundamentally distinct from text or images.",
+            "start": 1513.0,
+            "end": 1516.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a complex structured tablet data categorized by high cardinality categorical data.",
+            "start": 1516.9,
+            "end": 1522.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's like merchant ID, bid number, issuer.",
+            "start": 1522.8,
+            "end": 1526.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got numerical signals, so like transaction amount, transaction amount.",
+            "start": 1527.0,
+            "end": 1530.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "transaction velocity, recency.",
+            "start": 1530.0,
+            "end": 1531.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got temporal structure, so we've got an inherent time series component payments, right?",
+            "start": 1532.0,
+            "end": 1536.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've got also even sensitive data like PII.",
+            "start": 1536.7,
+            "end": 1540.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so we needed to kind of think about a data representation for payments that preserves the intrinsic structure of how payments work and then the integrity of this tabular data,",
+            "start": 1540.6,
+            "end": 1550.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " ensure scalability so it can handle billions of events efficiently, and facilitate generalization.",
+            "start": 1550.9,
+            "end": 1556.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So be applicable across various downstream tasks like fraud detection, authorization, optimization, and so on.",
+            "start": 1556.7,
+            "end": 1563.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so this necessity drove our exploration experimentation with multiple data formats.",
+            "start": 1563.8,
+            "end": 1569.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So this is actually what real payments data looks like.",
+            "start": 1570.3,
+            "end": 1572.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " As you can see, it's naturally multi-level.",
+            "start": 1573.1,
+            "end": 1575.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got card, shopper, account, device, email identity, which is the entity level.",
+            "start": 1575.0,
+            "end": 1579.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got merchant level information, which is merchant policies, customer mix, vertical.",
+            "start": 1580.4,
+            "end": 1584.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got market level information, so the country, issue of behavior, obviously implicit in that.",
+            "start": 1585.5,
+            "end": 1591.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you've got the transaction itself, which is like the amount, the bin, the device, the timestamp.",
+            "start": 1591.6,
+            "end": 1595.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so you can see that the payments are heterogeneous structured objects defined by these strong temporal dynamics.",
+            "start": 1596.5,
+            "end": 1605.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so it's important to think about two things.",
+            "start": 1605.4,
+            "end": 1607.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One of them is structured encoding.",
+            "start": 1607.8,
+            "end": 1609.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you need to capture the data's inherent organization.",
+            "start": 1609.4,
+            "end": 1612.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then you also have to think about sequence modeling.",
+            "start": 1613.0,
+            "end": 1615.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you need to think about...",
+            "start": 1615.5,
+            "end": 1617.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You know, leveraging the inherent temporal temporal",
+            "start": 1617.6,
+            "end": 1619.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "within payment trajectories.",
+            "start": 1620.6,
+            "end": 1622.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Our goal was basically first to start modeling what an individual payment is, right?",
+            "start": 1622.6,
+            "end": 1627.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And do this via an encoder-based approach, build this foundational encoder for payments.",
+            "start": 1627.8,
+            "end": 1634.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want to treat effectively a transaction as a sentence and these fields as tokens.",
+            "start": 1634.6,
+            "end": 1640.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And learn these contextual embeddings through self-supervision.",
+            "start": 1640.6,
+            "end": 1643.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The initial model that we built was PaymentBERT, right?",
+            "start": 1643.7,
+            "end": 1646.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It was a tabular version of BERT that initially focused on individual payments and no sequences.",
+            "start": 1646.1,
+            "end": 1651.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The input features like bin, merchant ID, amount, you know, treated like words.",
+            "start": 1651.6,
+            "end": 1656.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And categorical features,",
+            "start": 1657.5,
+            "end": 1658.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " used embeddings, and these numerical features used projections.",
+            "start": 1659.8,
+            "end": 1663.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so our goal was to produce this dense payment embedding capturing structural and behavioral context.",
+            "start": 1664.1,
+            "end": 1669.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " All of these different features were projected through a shared dimension, stacked with a CLS token, and then passed through a transformer encoder trained with MLF.",
+            "start": 1670.0,
+            "end": 1679.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Mask language modeling.",
+            "start": 1679.4,
+            "end": 1680.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The self-attention mechanism that we all know about learned complex interactions like between the issuer, the regime, and the merchant without need for manual feature engineering.",
+            "start": 1681.2,
+            "end": 1692.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this work paved the way for us to think about sequence awareness.",
+            "start": 1692.7,
+            "end": 1696.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So then we thought about",
+            "start": 1698.2,
+            "end": 1699.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " text-based sequence modeling.",
+            "start": 1699.7,
+            "end": 1701.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We realized that a critical unlock was modeling the history, the full sequence of transactions for an entity to predict things like risk.",
+            "start": 1701.3,
+            "end": 1709.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "This led to a radical shift.",
+            "start": 1710.6,
+            "end": 1712.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We started treating the entire payment or sequence of payments not as a collection of numerical or categorical features, but as a single long piece of text.",
+            "start": 1712.6,
+            "end": 1720.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To do this, we serialized the payments into structured token sequences, effectively converting all those structured features, the amount, the merchants, the PRI that was in payment, into special tokens.",
+            "start": 1721.2,
+            "end": 1731.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Within a continuous string.",
+            "start": 1732.4,
+            "end": 1733.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We fed this long string into a Bert Starling coder, trained using the masked language modeling task.",
+            "start": 1734.2,
+            "end": 1739.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The pros of this approach is that there's no information bottleneck, there's end-to-end learning and optimization, we have one unique objective, and there's one vocabulary, right, assuming which is text-friendly.",
+            "start": 1740.2,
+            "end": 1750.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The cons is that it has very high context window inefficiency, so there's the quadratic scaling aspect of the tension.",
+            "start": 1750.6,
+            "end": 1759.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's a bit of a black box.",
+            "start": 1759.9,
+            "end": 1761.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's also very, very data hungry.",
+            "start": 1761.7,
+            "end": 1763.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so it worked to kind of achieve the long range behavioral modeling that we were looking for, but it introduced the new challenge of scale.",
+            "start": 1763.5,
+            "end": 1770.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One key thing to talk about now is also around our view-based approach to our foundation model.",
+            "start": 1771.1,
+            "end": 1777.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " It's centered really around creating a universal multi-view representation for every payment.",
+            "start": 1777.7,
+            "end": 1782.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We kind of recognize that a single transaction can be seen from several crucial perspectives, right?",
+            "start": 1782.5,
+            "end": 1787.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The shopper, the card, the merchant, or the broader market.",
+            "start": 1788.0,
+            "end": 1791.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The power of our system is in its single shared backbone encoder.",
+            "start": 1791.6,
+            "end": 1796.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This encoder is trained to simultaneously compute",
+            "start": 1796.5,
+            "end": 1798.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "comprehensive set of contextual embeddings, shopper, card, merchant, or more.",
+            "start": 1800.1,
+            "end": 1804.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this object really simplifies life for our downstream teams.",
+            "start": 1804.6,
+            "end": 1808.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, the fraud team might focus on shopper and card views for behavioral anomalies, feeding them into their specialized fraud head, but the authorization optimization team might tap the card",
+            "start": 1809.7,
+            "end": 1821.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and the market embedding to inform their authorization head, the authentication head around the issuer or local success rates.",
+            "start": 1821.7,
+            "end": 1829.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So every team simply selects the specific embeddings they need and attaches a small specialized prediction head ensuring maximum data efficiency and a unified company-wide",
+            "start": 1830.3,
+            "end": 1840.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " understanding of payment flows.",
+            "start": 1840.8,
+            "end": 1842.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So at inference time, you're looking at this shopper's behavior, the sequence of how that shopper has interacted.",
+            "start": 1843.3,
+            "end": 1849.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But if you were to only look at just the shopper, how they compare to different shoppers, you might have a situation where, for example, that particular shopper might be just shopping and using Spotify and Uber, but all of a sudden there's a birthday and they buy a watch.",
+            "start": 1850.6,
+            "end": 1865.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " If you were just looking at shopper behavior, that would be deep.",
+            "start": 1866.5,
+            "end": 1868.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Anomalous and fraudulent.",
+            "start": 1869.1,
+            "end": 1870.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But actually if you were to combine it with these priors that we've built, for example, on the merchant's view, you can know that actually buying a watch for that specific merchant was not going to be an anomaly at all.",
+            "start": 1871.1,
+            "end": 1881.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the idea here is to kind of like allow different teams to use these different priors as and when they need.",
+            "start": 1881.4,
+            "end": 1888.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To make sure that they get accurately",
+            "start": 1888.5,
+            "end": 1890.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "predicting and solving the problems that they have.",
+            "start": 1890.0,
+            "end": 1892.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In 2026, we're going to be looking very deeply at thinking through a hierarchical foundation model.",
+            "start": 1892.3,
+            "end": 1898.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So hierarchical architecture for the foundation model.",
+            "start": 1898.5,
+            "end": 1901.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Payments data is naturally multi-level.",
+            "start": 1902.3,
+            "end": 1904.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So you have your transaction, as I mentioned, which is your amount, the bin, the device, the timestamp.",
+            "start": 1904.4,
+            "end": 1908.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You then have your entity, which is the shopper, the car, the account, the email ID.",
+            "start": 1909.2,
+            "end": 1913.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You have the merchant, which is the policies of that merchant, customer mix, the vertical.",
+            "start": 1913.9,
+            "end": 1918.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then you've got the market that it's operating in, the country, the issue of behavior, or the network rules.",
+            "start": 1918.9,
+            "end": 1923.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so, as we mentioned before, the encoder should output representations at these multiple levels.",
+            "start": 1923.9,
+            "end": 1928.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But the key thing is we want to build a system that essentially...",
+            "start": 1929.0,
+            "end": 1932.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Moves beyond single transaction analysis to incorporate priors from sequences and entities, so shopper, merchant, and market.",
+            "start": 1932.8,
+            "end": 1940.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The architecture of such an approach is that we want to take inputs, so take these inputs and turn these raw heterogeneous features, numerical, categorical, high commonality IDs,",
+            "start": 1940.6,
+            "end": 1953.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " into type tokens for this common embedding space.",
+            "start": 1953.5,
+            "end": 1956.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then use a lean transformer on these current event tokens and small context, very, very small context, like issuer, merchant, device, to quickly produce representations of transactions.",
+            "start": 1956.9,
+            "end": 1968.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we also have prior encoders, so that's the merchant and the market.",
+            "start": 1968.7,
+            "end": 1972.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But we learn merchant encoders from merchant sequences, and all of these actors like Bayesian priors, right?",
+            "start": 1973.3,
+            "end": 1979.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then...",
+            "start": 1979.5,
+            "end": 1980.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "want to think about hierarchical fusion.",
+            "start": 1980.7,
+            "end": 1982.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So how do we combine all of these summary embeddings, transaction shopper, card merchant, and market, and fuse them together using a small attention block to produce this final universal representation?",
+            "start": 1982.5,
+            "end": 1994.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The pros of this approach is interpretability, right?",
+            "start": 1995.3,
+            "end": 1998.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We have embeddings for different levels of the hierarchy of payment.",
+            "start": 1998.5,
+            "end": 2002.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We also have context window efficiency, so we use summaries rather than the full sequence that I mentioned.",
+            "start": 2003.2,
+            "end": 2008.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We also deploy this domain knowledge prior, so explicitly modeling hierarchies with a really strong prior for payments.",
+            "start": 2009.4,
+            "end": 2016.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The negatives are there's an information bottleneck, right?",
+            "start": 2017.1,
+            "end": 2019.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Summaries lose detail.",
+            "start": 2019.7,
+            "end": 2021.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " There's also joint objectives.",
+            "start": 2021.3,
+            "end": 2023.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So when we're training this, obviously we have an objective of the individual hierarchical levels that we're trying to encode, as well as how they fuse together.",
+            "start": 2023.2,
+            "end": 2030.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So these two different joint objectives can lead to model collapse and also risks of optimizing for different goals.",
+            "start": 2030.8,
+            "end": 2037.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And also text is not really as welcome here, right?",
+            "start": 2037.8,
+            "end": 2041.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This approach is designed for tabulated data and struggles with open text fields.",
+            "start": 2041.1,
+            "end": 2045.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The also negative is the fact that we have a domain knowledge prior.",
+            "start": 2046.0,
+            "end": 2048.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " If that prior is wrong, it can actually mislead the model.",
+            "start": 2049.2,
+            "end": 2051.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So to summarize very briefly, 2024 we focused on transaction level payment transformers and payment birth.",
+            "start": 2053.0,
+            "end": 2059.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " 2025 we focused on text-based sequence modeling and the idea of multi-view embeddings in the beginning of that journey.",
+            "start": 2060.3,
+            "end": 2066.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this year we're really focusing on hierarchical",
+            "start": 2067.2,
+            "end": 2069.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "sequence modeling for our foundation model.",
+            "start": 2070.0,
+            "end": 2072.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Each iteration that we've had removed a bottleneck and exposed these deeper representation challenges that we're trying to solve.",
+            "start": 2073.1,
+            "end": 2079.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I'm going to talk a little bit about pre-training this foundation model.",
+            "start": 2079.7,
+            "end": 2082.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Our foundation model uses an encoder-only architecture and is trained using self-supervision, right?",
+            "start": 2082.8,
+            "end": 2087.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we don't really need initial labels.",
+            "start": 2088.0,
+            "end": 2089.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The primary objective is mass language modeling applied across billions of transactions, very common for foundation models.",
+            "start": 2090.6,
+            "end": 2096.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The core idea is to effectively mass structure tokens within payment trajectories, specifically quantized numerical bins and categorical tokens, and then predict them for the surrounding context.",
+            "start": 2097.0,
+            "end": 2108.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This forces the model to learn the inherent structure of payments and how they work, encouraging strong contextual understanding and feature interaction learning as well.",
+            "start": 2108.7,
+            "end": 2117.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Beyond MLM, other self-supervised tasks have been used to further enhance representation learning, such as next event prediction.",
+            "start": 2118.7,
+            "end": 2129.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got a payment trajectory, you need to see what would happen next to that, or even to a shopper, right?",
+            "start": 2129.2,
+            "end": 2134.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got a set of shoppers, a shopper doing a sequence of payments, what would be their next payment?",
+            "start": 2134.5,
+            "end": 2139.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You've got contrastive learning to distinguish between same and different shoppers, so that's why we're trying to make these embeddings and encodings really, really powerful and splitting different shoppers.",
+            "start": 2140.0,
+            "end": 2150.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " apart, cohort discrimination, and temporal consistency as well.",
+            "start": 2150.6,
+            "end": 2155.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So after this extensive self-supervised pre-training, the models are better.",
+            "start": 2155.7,
+            "end": 2160.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "are adapted hopefully and lightly fine-tuned for the downstream tasks like fraud, authorization, and chargeback prediction.",
+            "start": 2160.3,
+            "end": 2167.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We evaluate our embedding quality on clustering effectiveness, neighborhood consistency, and linear separability.",
+            "start": 2167.5,
+            "end": 2173.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then for the downstream classification tasks, the key thing is we try to freeze these embeddings and train simple MLPs or logistic regressions.",
+            "start": 2174.2,
+            "end": 2182.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To optimize for things like AUROC or log loss as well.",
+            "start": 2182.8,
+            "end": 2186.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we can actually see how well do these embeddings actually use, how well do they actually work on downstream tasks, real downstream tasks of our teams.",
+            "start": 2186.5,
+            "end": 2194.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Do they actually improve performance?",
+            "start": 2195.5,
+            "end": 2196.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the pre-training task is really, really complex.",
+            "start": 2198.7,
+            "end": 2200.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Our embeddings are trained on around 200 billion payments, which amounts to about 50 trillion tokens.",
+            "start": 2202.4,
+            "end": 2208.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And to give you a sense of that scale, Lama 4 was only trained on 22 trillion tokens.",
+            "start": 2208.3,
+            "end": 2212.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this scale is really due to high card and now T vocabularies,",
+            "start": 2213.2,
+            "end": 2217.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " really long sequence contexts, and multiple identity groupings with a risk of shortcut learning and leakage if you actually drop any of this information.",
+            "start": 2218.1,
+            "end": 2228.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Training at this scale is required distributed training, sharding and careful memory optimization.",
+            "start": 2228.5,
+            "end": 2234.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And model scaling introduced infrastructure constraints we really hadn't seen before at Adyen.",
+            "start": 2235.5,
+            "end": 2239.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So at peak, to give you a sense, we had to hit about 3,000 transactions per second in inference.",
+            "start": 2239.9,
+            "end": 2244.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Adyen has about 120 million transactions per day.",
+            "start": 2245.0,
+            "end": 2248.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One of our clients is a really large...",
+            "start": 2248.5,
+            "end": 2250.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "social media giant only has about 30 million transactions per day.",
+            "start": 2250.3,
+            "end": 2254.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " One of the largest social media giants in the world.",
+            "start": 2254.8,
+            "end": 2256.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Basically, payments require millisecond level decisioning.",
+            "start": 2256.9,
+            "end": 2260.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Our SLAs require us to hit below 30 milliseconds almost 100% of the time.",
+            "start": 2261.0,
+            "end": 2267.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Full sequence transformers can't run per request.",
+            "start": 2269.6,
+            "end": 2272.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We have to pre-compute entity embeddings offline and cache them.",
+            "start": 2272.6,
+            "end": 2276.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we have these lightweight online adapters that can combine new transaction or shopper context that we're looking at, trying to predict.",
+            "start": 2277.1,
+            "end": 2283.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so this hybrid architecture balances quality with latency.",
+            "start": 2284.5,
+            "end": 2287.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So let's talk a little bit about NVIDIA.",
+            "start": 2288.2,
+            "end": 2290.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This has really only been possible because of NVIDIA.",
+            "start": 2290.9,
+            "end": 2293.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We use, in terms of hardware, we use NVIDIA A100 GPUs for training these foundational models.",
+            "start": 2294.4,
+            "end": 2299.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The choice is non-negotiable because of the A100's really immense VRAM, which is essential for filling model weights and data.",
+            "start": 2300.5,
+            "end": 2308.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And really fast speed, which basically cut our interaction time, our iteration time from days to hours.",
+            "start": 2309.1,
+            "end": 2315.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We chose the A100 for its large VRAM, viewing it as a kind of a future-proof resource that can be flexibly partitioned later.",
+            "start": 2316.2,
+            "end": 2324.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Beyond just the raw power of the hardware,",
+            "start": 2325.8,
+            "end": 2327.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The A100 has a really mature ecosystem, enabling out-of-the-box integration for us with things like PyTorch, flash attention, and gradient checkpointing as well.",
+            "start": 2328.8,
+            "end": 2339.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "And so, you know, given the high cost of hardware, we prioritize maximum utilization.",
+            "start": 2340.1,
+            "end": 2345.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've invested a lot in low-level monitoring to immediately surface and address any drop in MFU.",
+            "start": 2345.7,
+            "end": 2352.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And to overcome physical limits like network bottlenecks using intense training, we've implemented really advanced techniques like RDMA for optimal GPU to GPU communication.",
+            "start": 2353.3,
+            "end": 2364.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Then we have resilience and scaling, right?",
+            "start": 2366.2,
+            "end": 2368.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Training foundational models requires robust systems.",
+            "start": 2368.1,
+            "end": 2371.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To handle the inevitable failures, just like GPO time, time, machine downtime, we've utilized automated detection and fencing for failed machines, with future plans for auto recovery as well.",
+            "start": 2372.1,
+            "end": 2384.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For managing complex sharding and scaling, we've leveraged Ray.",
+            "start": 2386.6,
+            "end": 2391.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And increasingly, we deploy smart, like topology-aware orchestrators to distribute our jobs on optimized formations, ensuring high utilization by understanding the physical layout of our cluster.",
+            "start": 2392.7,
+            "end": 2405.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We also adapt the A100s for diverse internal teams using Kubernetes.",
+            "start": 2407.1,
+            "end": 2411.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The NVIDIA GPU operator for Kubernetes automates driver management, device plugins, and automated node, automatic node labeling.",
+            "start": 2412.3,
+            "end": 2421.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And a key part of our strategy is also the heavy use of multi-instance GPUs, which securely partitions this.",
+            "start": 2422.9,
+            "end": 2429.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "single A100 into about seven isolated instances.",
+            "start": 2430.0,
+            "end": 2433.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This allows us to divide it into a standard unit size, offer right-sized resources for smaller jobs, maximize utilization, and democratize access to these powerful resources.",
+            "start": 2434.8,
+            "end": 2446.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So this is what embeddings actually look like in latent space.",
+            "start": 2447.5,
+            "end": 2451.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Just by inspecting the embeddings, you can kind of see the beautifully separate clusters of payments between unique things that we don't even know about.",
+            "start": 2451.3,
+            "end": 2458.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " For example, fast food restaurants versus non-fast food restaurants, different types of merchant or geography clusters, and even approval rates.",
+            "start": 2458.5,
+            "end": 2466.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " They look different when you actually look at these embeddings.",
+            "start": 2466.2,
+            "end": 2469.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Once the payment and entity embeddings are pre-trained, we're evaluating various ways to integrate these into downstream systems.",
+            "start": 2470.0,
+            "end": 2477.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The lowest complexity approach is using embeddings as dense feature augmentations.",
+            "start": 2478.3,
+            "end": 2483.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So in this setting, embeddings are treated as fixed representations and concatenated into existing deep models.",
+            "start": 2483.8,
+            "end": 2491.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This isolates the representation learning from task-specific optimization.",
+            "start": 2491.5,
+            "end": 2495.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's kind of using embeddings as features.",
+            "start": 2495.5,
+            "end": 2497.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The second approach is on ensembling, right?",
+            "start": 2497.6,
+            "end": 2499.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So that's where the foundational model outputs an auxiliary prediction or score that's blended into existing model stacks.",
+            "start": 2499.7,
+            "end": 2506.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This preserves legacy architectures while injecting representation-level signal.",
+            "start": 2506.5,
+            "end": 2514.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then the final, most tightly coupled approach is fine-tuning.",
+            "start": 2515.4,
+            "end": 2519.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "This regime, we can actually update the pre-trained backbone jointly with a task-specific head.",
+            "start": 2520.0,
+            "end": 2524.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This maximizes task alignment, but increases the computational and ownership complexity.",
+            "start": 2525.7,
+            "end": 2531.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The key insight here is that representation learning can be decoupled from policy learning to different degrees, and it allows us to have controlled experimentation across the system without forcing architectural rewrites.",
+            "start": 2532.4,
+            "end": 2544.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I'm going to walk you through a case study of how embeddings have actually, and this foundational model has actually helped us in production.",
+            "start": 2546.0,
+            "end": 2552.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We had an experiment, we basically evaluated whether payment embeddings improved shopper linking.",
+            "start": 2553.1,
+            "end": 2558.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In this task, we've seen about 1.5 billion individuals on earth, and we need to kind of see patterns in",
+            "start": 2559.1,
+            "end": 2567.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want to establish patterns about their identities given the footprint they have in the platform.",
+            "start": 2568.7,
+            "end": 2573.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so the task that we had was pairwise linkage.",
+            "start": 2574.0,
+            "end": 2576.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So given two transactions, predict whether they belong to the same shopper.",
+            "start": 2576.9,
+            "end": 2581.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so we evaluated using precision recall.",
+            "start": 2582.5,
+            "end": 2585.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So precision is measured as resistance to overlinking, so avoiding false mergers.",
+            "start": 2585.6,
+            "end": 2590.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And recall measured as resistance to underlinking, which is avoiding fragmented profiles.",
+            "start": 2591.1,
+            "end": 2595.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We compared three approaches, so a greedy identifier, base matcher, a one-hot plus.",
+            "start": 2596.6,
+            "end": 2604.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We compared three approaches, a greedy identifier-based matcher, a one-hot plus,",
+            "start": 2605.5,
+            "end": 2610.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "and hot plus hashing model on explicit features and learn payment embeddings.",
+            "start": 2610.0,
+            "end": 2614.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And the embeddings basically dominated the precision recall curve across the entire range.",
+            "start": 2615.2,
+            "end": 2619.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " At 80% recall, we observed roughly a 20% precision improvement on this task.",
+            "start": 2619.8,
+            "end": 2624.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And on synthetic shopper disentangled, we found actually 170% increase in ARI.",
+            "start": 2625.4,
+            "end": 2631.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The embeddings themselves capture latent behavioral structure rather than relying on surface identifiers.",
+            "start": 2632.6,
+            "end": 2638.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this reduced our variance in sparse merchant and issuer interactions.",
+            "start": 2638.3,
+            "end": 2643.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it demonstrated really for us that improved upstream representations translated into more robust entity resolution downstream.",
+            "start": 2644.3,
+            "end": 2653.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " What's next?",
+            "start": 2654.1,
+            "end": 2654.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Where is this all headed?",
+            "start": 2654.9,
+            "end": 2655.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We began with contextual bandits, so optimizing individual decisions under uncertainty.",
+            "start": 2656.2,
+            "end": 2661.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We then moved to foundation models, learning shared representations of payment behavior.",
+            "start": 2662.2,
+            "end": 2666.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Bandits optimize actions, foundation models learn structure.",
+            "start": 2667.9,
+            "end": 2671.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And now the next step is coordinating these layers into a unified system.",
+            "start": 2672.4,
+            "end": 2676.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we don't have isolated optimizers, but a really coherent decision architecture.",
+            "start": 2676.8,
+            "end": 2681.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So the vision of where this is headed is really one objective, one policy, multiple considerations, right?",
+            "start": 2683.1,
+            "end": 2688.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So today, routing, authentication, and fraud models that we have optimize partially different objectives, right?",
+            "start": 2688.2,
+            "end": 2694.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Approval rate, cost, risk, and customer friction.",
+            "start": 2694.8,
+            "end": 2697.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " These objectives are interdependent.",
+            "start": 2698.7,
+            "end": 2700.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "When optimized independently, they produce local optima rather than globally efficient outcomes.",
+            "start": 2701.0,
+            "end": 2708.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " A unified system requires learning a really coherent global preference function, one objective surface spanning the entire payment lifecycle.",
+            "start": 2708.4,
+            "end": 2717.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " This becomes a systems-level learning problem.",
+            "start": 2718.1,
+            "end": 2720.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we formalize it as thinking about states represented by learning embeddings, actions which include routing decisions now, as well as authentication strategies, fraud interventions,",
+            "start": 2721.1,
+            "end": 2731.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " and the reward is really just full funnel net revenue, incorporating cost, conversion, and downstream risk.",
+            "start": 2731.9,
+            "end": 2737.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we want this agent that's powered by the foundation model to continuously explore policies and updates online through reinforcement learning, aligning all decisions towards long-term value rather than isolated short-term metrics.",
+            "start": 2738.6,
+            "end": 2751.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " To make this work, the real unlock is an orchestrator and coordinator layer.",
+            "start": 2752.2,
+            "end": 2755.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we're focusing on unifying these efforts.",
+            "start": 2756.0,
+            "end": 2758.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Combining preference learning with coordinated decision-making across the payment lifecycle, right?",
+            "start": 2759.1,
+            "end": 2764.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we want to have a single orchestrator layer that governs routing, authentication, fraud, and cost.",
+            "start": 2765.0,
+            "end": 2770.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " In this unified system, each model should be able to estimate expected conversion, cost, and risk at any given time.",
+            "start": 2770.8,
+            "end": 2777.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And optimization should be driven by a...",
+            "start": 2777.1,
+            "end": 2779.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Set of constraints that users tell us, for example, fraud tolerance defined in the start of the funnel, it falls consistently across the modules.",
+            "start": 2780.3,
+            "end": 2787.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want that orchestrator to sit across the stack,",
+            "start": 2788.0,
+            "end": 2789.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "It's able to reason over embeddings, policy outputs, and contextual signals, and actually dynamically adjust routing, authentication, and risk parameters while maintaining these global trade-offs across the stack.",
+            "start": 2790.2,
+            "end": 2801.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want everything to be powered by our foundational model embedding, this backbone that enables identity and sequence of credit decision.",
+            "start": 2802.1,
+            "end": 2810.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we don't want this layer to replace banded models.",
+            "start": 2811.2,
+            "end": 2814.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We want this layer to actually coordinate them in a coherent multi-objective policy.",
+            "start": 2815.0,
+            "end": 2819.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " You can imagine a system where a user interface, where a user can just set the design preferences for cost, conversion, and fraud.",
+            "start": 2820.3,
+            "end": 2826.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And then we could actually also suggest new implementations and changes that the merchant should implement in their payment stack and the settings for each of them even, including new payment methods to achieve that goal, even actually implementing them automatically.",
+            "start": 2826.9,
+            "end": 2841.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We could even suggest achievable conversion cost and fraud given what we know of, given our transaction history and our foundational model.",
+            "start": 2842.5,
+            "end": 2850.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " A user could potentially see the multi-objective function actually working through the latent space to find the best potential settings and thresholds to try to achieve that outcome.",
+            "start": 2850.6,
+            "end": 2859.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So I'm going to summarize now.",
+            "start": 2861.0,
+            "end": 2862.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Payments optimization at Adyen evolved from rules, to supervise reward modeling, to contextual bandits, and then deep interaction modeling, and finally foundational models.",
+            "start": 2862.4,
+            "end": 2873.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " The bottleneck shifted for us from exploration to representation.",
+            "start": 2874.4,
+            "end": 2878.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Foundational models,",
+            "start": 2878.6,
+            "end": 2879.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "allow shared embeddings, sequence reasoning, and multitask leverage.",
+            "start": 2880.0,
+            "end": 2883.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And scaling all of these requires really, really deep infrastructure investment that NVIDIA has really helped us with.",
+            "start": 2884.4,
+            "end": 2890.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And precision at this trillion dollar scale, trillion dollar transaction scale,",
+            "start": 2890.3,
+            "end": 2894.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Precision at this level of scale compounds dramatically.",
+            "start": 2895.1,
+            "end": 2898.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we've done this with a really amazing team of about 10 research scientists working in fraud detection and payment optimization, two staff scientists, two research lead and two PMs.",
+            "start": 2898.3,
+            "end": 2908.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And it's been an amazing journey over the last four years.",
+            "start": 2908.8,
+            "end": 2911.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've learned a lot about the best way to go about this process.",
+            "start": 2912.2,
+            "end": 2917.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And so we have teams focused on all of our core modules, payment routing, lease cost routing, multi-objective optimization, bandits.",
+            "start": 2918.1,
+            "end": 2924.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And this shared expertise in small in-person units has really helped us create efficiencies.",
+            "start": 2925.5,
+            "end": 2930.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " We've also set up really, really powerful frameworks for collaboration, pair programming, and joint research dependencies so that we allow engineers to kind of think through their own modules.",
+            "start": 2930.6,
+            "end": 2940.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And we've had to have a really strong interface with our infra and platform team that has experiences with Ray, MLflow, Kubernetes, and tooling with NVIDIA",
+            "start": 2941.4,
+            "end": 2950.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " to give us the pipelines we need for pre-training, tokenization, fine-tuning, testing, evaluation, and more, which has led to really huge benefits for us.",
+            "start": 2951.2,
+            "end": 2959.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you so much, and please let me know if there's any questions.",
+            "start": 2960.4,
+            "end": 2964.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        }
+    ],
+    "type": "transcription.done"
+}
