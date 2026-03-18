@@ -1,0 +1,3760 @@
+{
+    "model": "voxtral-mini-latest",
+    "text": "Without further ado, let's get started with our session. So our next session is Scalable Data Access for Next-Gen Algorithmic Trading. And yeah, I'd like to welcome the speaker, Christina Chee. Please come up to the stage. So Christina is the CEO of Data Bento, a market data provider serving over 30,000 customers across finance, AI technology, and other industries. She formerly founded Domeyard LP, a hedge fund focused on high-frequency trading that traded up to $7.1 billion per day. She's a member of the MIT Board of Trustees and graduated from MIT in 2013. Take it away. Awesome. Thanks, guys, for having me. So, yeah, as mentioned, I'm Christina. I'm the founder and CEO of Data Bento. So maybe just to give you a quick overview, we provide financial stock data. And other similar data sets to actually about now 35,000 or so customers today. And most of our revenue does come from large financial institutions and from fintech firms. But, you know, so for example, I guess to give you an example of what we actually do, if you pull up a stock price on some trading app, like if you trade for fun and you use some sort of trading app and you pull up a stock price on any of those apps, chances are that data already comes from DataVenture today. And so you probably are using us.indirectly in some way shape or form you just don't know it and so that's how we provide data is we provide data modern by API to a variety of different firms within this industry now actually one thing that I wanted to just disclaim actually before we started was that I actually want to try my best to not make this a sales pitch. So I promise you, I know you've been sold like a thousand products throughout this week. And my goal here is to educate, not to sell. So I'll try my best to, that was the pitch. So that's it. I'm going to try to educate you actually on the history of the industry because I'm guessing most of you guys don't come from the industry around the West Coast, whereas I come from this industry. And so it is a very fascinating history of how algo trading started. And it's also a very fascinating history of how high frequency trading and also how AI came into this industry and why it's in this space. And so first to explain, like, why in the world am I here? Because I do come from the financial services industry. My company doesn't do AI. And so why am I here? Well, in the last couple months or so, we've noticed a new category using our data. It started, I'm not allowed to mention any names of our customers, by the way, given the nature of our industry, because we're under NDA, but it started with the largest, most famous AI company known to mankind. Started using us and then after that all their competitors started using us and then it was I think after that was like the Frontier Labs, the LM wrappers, the agentic startups, they all started using us as well and we were likeWhat is going on here? They were all using us for various reasons in the AI space, and this was really brand new to us. And I guess one thing to also give some context is that, look, AI has been talked about in financial services for a really long time, for as long as any other industry has talked about. AI, by the way. So other industries have talked about AI too. And finance has also been talked about in, sorry, in finance we've also talked about AI too. But the challenge is that actually AI hasn't been successfully adopted in finance until pretty recently. In fact, I would argue that it still hasn't quite been successful yet in this space. Like, name a fully AI autonomous hedge fund, right? Like, there really isn't one today. There's always a human in the loop somewhere. And so, So why is it that only recently has there been like a major shift, right? And why was there a failure in the past? Maybe to give you some examples of, I don't want to call them failures, but let me just give you some examples to give you some more context on this before I go to my slides. Do you guys remember Watson, right? Like IBM Watson, they'd be, you know, the older AI that beat Ken Jennings at Jeopardy, right? I don't know if any of you guys know this. In our industry, we know that Watson has an AI ETF. They launched the first, I believe, the first AI-driven ETF in the markets. And if you look at the performance of the ETF, it's all public information, right? If you look at the performance of that ETF, it has underperformed the S&P consistently every year. And you're imagining, how come this big AI project that is so good at Jeopardy has failed to perform in the financial market?So I'll explain a little bit of that and then also kind of why there's a shift in terms of actual success that we're seeing in this day and age. So anyway, I think that's it for this page. I think, yeah, let's just, let's begin. And by the way, the answer to all this success, it's not LLMs. I just want to be clear on that. Language models are not algorithmic trading models, so please don't plug in quantitative strategies into language model stuff and trust your language model to do trading strategies. That is not a good idea today. Anyway, okay, so let's begin on the history of algo trading. So as you guys probably know, like, Algo trading firms, they've always been really secretive about what they do in the space, right? But if you guys heard Jensen's talk on Monday, he mentioned that the trading industry is becoming one of the biggest consumers of GPUs right now. And so that's kind of become not so big of a secret right now. On the left side, we have... Here I have the backstory of the launch of a company called DeepSeek. It was actually one of the landmark moments in AI as of last year. And at that time when DeepSeek first came out, it kind of came out of nowhere for a lot of people. No one's ever heard of this obscure quant hedge fund before. But those of us who were in the industry, we already knew about it. We've actually known since, I think, around maybe 2021 that DeepSeek has had one of the largest GPU clusters in China, actually. And then on the right side, there's just another example of a major trading firm and their website. They're all secretive in this website. It's like, oh, we have 25,000 GPUs. They're really pretty.And then I've read other articles about like, there's a lot of companies, other companies that like claim that, hey, we've, you know, bought so many GPUs that we've blocked off all the Northeast supply of GPUs for months at a time. And so the funny thing is that outgo trading firms are super secretive about certain things. And then they're like very proud about how many GPUs they own, which is kind of funny. So anyway. So I guess the question is kind of like, why are they secretive? And I'll kind of shed some light on why they're secretive for a good reason. But throughout my talk, I'm going to talk about three things. Primarily, how did we get here? So the history of Alka Trading and how everything started. How did AI get into this space? So why am I here, basically? And then also, I'm going to talk about why do financial firms need so many GPUs? Which has been kind of strange in recent in this space. And then also, what is the future of AI in finance? Okay, so I'm going to talk about the kind of early history of algo trading in this space. So many of you guys know that stocks trade on stock exchanges, but what some of you might not know is that they also trade on alternative trading venues, which I think of them as like secondary markets. That you can trade on, but you can't list stocks on them. You can't take a company public on those venues. And so the early days of electronic trading began on those alternative trading venues, and we call those ECNs in our industry. Many of you know NASDAQ, for example, as a stock exchange. But actually, NASDAQ started off as an ECM, for example. So NASDAQ was one of the pioneers of early kind of electronic trading back in the day as a market.Now, algo trading was actually the accident child of two major SEC regulations, which I do want to talk about a little bit here. So one of the regulations was the adoption of the display rule in 1996 that basically forced market makers to display quotes on ECNs, essentially. And this actually drew trading away from the traditional markets, which were on the floor at the time, to these electronic markets. So that was kind of the first major movement that drove that in place. And then the second thing was that, and by the way, it also gave the electronic venues kind of a structural advantage because the electronic venues, they don't have to do listings, right? They don't have to do IPOs, but you can still trade on them. They can still trade stocks. And so it gave them a huge structural advantage as a result of that regulation. And then the second regulation that came around. Was there was, oh and also by the way, by the early 2000s, what happened was that almost half of electronic trading became, you know, was on these ECNs, right, became electronic. And so then what ended up happening as a result of that was that the SEC in 2005, they published another set of rules, and this is a big set of rules that you guys, if you're in our industry, you'll become familiar with a lot. It's called Reg NMS. And this still kind of governs how U.S. Stock trading is done today. And so I'm going to list a couple things that Reg NMS kind of introduced. It had a lot of well-intended kind of rules, and then those rules had consequences.Some of the rules to explain. One is that it introduced a rule about the minimum price increment you can trade at. It introduced a concept of a best bid and a best offer. Those are things that if you trade today, you'll be familiar with what that is. And also introduced like when a customer places an order now in the markets, like in the U.S. Equities market, you must get filled at the best price. And that sounds like fair. By the way, for those who aren't familiar, there's not just like one stock market, right? There's not one equities market in the U.S., right? There's over two dozen today. And so that rule was designed to try to make things more fair and equitable across all these different markets. And it's made to be fair for you guys as traders, right, as participants in the markets, so you're not being taken advantage of across different markets like that. It's designed so you're being filled at the best price possible when you place a trade. But every regulation like this, they always have these unintended accidental consequences that happen. And this one was like, no, like this one definitely had the same thing. It had a big unintended consequence of introducing a latency race, actually. It introduced a race to zero. And thus was kind of the beginning of, I guess, modern algorithmic high frequency trading, as you might know it to be. Basically what happened was like if you are a faster firm You would have a huge informational advantage because if you knew what the best bid and offer was across like multiple Different stock exchanges across multiple venues at the exact same time You would be able to basically You know capture information right have capture ororder flow essentially, all these trades ahead of everyone else, ahead of time. And then exchanges, by the way, they also capitalize on that too. So around that time, exchanges introduced basically exotic order types. And these order types could be exploited only if you were fast, essentially. I don't have time to go through all this. And by the way, I'm probably going to take up all 40 minutes. So if you have questions, feel free to ask me afterwards. But the exchanges introduced all these exotic order types. And if you want to learn more about those, there's actually maybe two resources that I may or may not recommend. One is actually in our industry, there's a book called Flash Boys that came out over 10 years ago now, 2014. By Michael Lewis, like the famous author. And that book actually put high frequency trading onto the public scene. Like before that, nobody knew what high frequency trading was. And I know this because I started a high frequency trading firm in like two years before that, 2012. And when I was starting that, no one knew what it was. And after Flash Boys came out, everyone knew what it was. And so anyway, I recommend reading that book with a grain of salt a little bit because it does give a lot of hyperbole on a bunch of definitions that are wrong and gives the wrong definitions of a lot of things. It's a very hyperbolic, I guess, and very Hollywood glam view on this world here. And then surprisingly, another history, if you want to learn more about the beginnings of this industry, is actually the Harvard Business School case study on high-frequency trading as well. I think that's a more academic, more like... Nuance and also like less buyI'm not showing myself like I'm not trying to sell anything. That case study is about me. That case study is about my previous company that I started. And I don't make any money from it, so I promise I'm not selling anything. It's just that that actually is the best history of this industry. Because every other history that you look up on Google is very glamorized and incorrect. And that's the only one that's written by academics that's actually right. So anyway. Okay, so long story short, though, that's kind of how the modern latency race started. But before the modern latency race, there has always been a race to zero, by the way. So before the whole Flash Boys thing that Michael Lewis complains about, if you think about it, like, back in the, what, 1600s and 1700s, the carrier pigeons, right? Like, if you have the fastest pigeons. There's always been a latency race for different things. And then in America, the Pony Express in the 1800s, and then the telegraph, right? And all these technologies, by the way, I don't know if you guys took history class or not, but all these technologies and inventions and companies, they became successful and they were... They're basically propagated by the financial markets, actually. They were designed to basically transmit financial information, market information from one coast of America to the other, basically. And so that's the history of it was a lot of that was driven by financial market innovation at the time. So yeah, low latency has always been a thing in this space for as long as we could possibly remember it. It's just that right now it's all instead of a race from horses, it's like a race of computers, right? So it's just a different kind of race now. Anyway.So after RAG and MS, so billions of dollars now were poured into this industry, and it took barely 10 years or so for these trading firms to approach the physical limits of flight. And the 2008 financial crisis, you would expect that, you know, you hear the news about the crisis and you're like, oh, all the banks are struggling and everyone was failing and stuff. But actually, the 08 financial crisis, I don't know if you know this, but it actually accelerated the innovation in the space because the early high-frequency trading firms actually made a killing from this. Those were, if you talk to people who used to work at these firms back in the day, those were like the glory days of high-frequency trading. Those were like the early days that these firms were making like hundreds of millions of revenue. It was an amazing time for them. So in the subsequent years though, all kinds of technologies were, they were created to further like reduce that latency, to make things faster and faster as a result of that. And so on the left here, just to give you a sense of that diagram, is those are the microwave routes between like these different two trading venues, London and Frankfurt. And basically these are people trying to get from London to Frankfurt in the least amount of time possible via a microwave network. So it's like the pony express, but like in modern day, essentially. The people trying to get there from, you know, fastest possible. And you'll notice that there's a lot of crowding around like certain areas there.Butting is that firms are trying to aim for like the shortest possible path, right? That makes a lot of sense. And a lot of this does, like is explained a lot in Flash Boys, but it did result in various lawsuits. People try to sue each other over it. Sometimes, you know, firms will try to compete against each other in kind of crazy ways. They would put repeaters on each other's apartment roofs and stuff. Anyway, at the time also, there were technologies like, I think, Mellanox, their VMA network acceleration stack, ConnectX, their network cards, high-speed switches, they were all central to this race. And Mellanox, I don't know if you guys know, they were later acquired by NVIDIA, and that was also for a good reason as well. So today actually the fastest trading firms can react to the markets even like within single digit nanoseconds. And what's interesting is also like maybe to also explain kind of contextually what's happening right now is that it's actually the race to zero is pretty much over in the sense that it's economically unfeasible for more than a handful of firms to compete, right, for speed today. And I guess the analogy to give on that and why it doesn't make sense is like, this is kind of a dumb analogy, but like I think about like if you play board games like Settlers of Catan or like Ticket to Ride, one of those board games, and there's like the shortest possible path or whatever, like literally, or like the longest route, like those kinds of, at the end of the game, right, one person gets that bonus card.And at some point, if you're playing with like five or six people, like it just doesn't make sense to compete for that one bonus card anymore. Right. It's the same with this industry when there's like, you know, thousands and thousands of players out there. Right. At some point, it's like only five or the top maybe 10 or so people benefit from it. And the rest of them kind of just are like, why are we competing in this space? Like, it just doesn't make sense to spend millions of dollars to be like a nanosecond faster than the next person anymore, right? So I know that's kind of a dumb analogy, but hopefully that helps contextualize things a little bit. And anyway, so building custom basics in this industry, owning private micro networks like this, it costs hundreds of millions of dollars and it is a huge boat to try and penetrate. So if you're a startup in this space and you're looking at this and you're like, I don't know if you're high frequency trading, you're like, what am I doing? Why would you even try to compete against these initial players that decided to do this and invest in all this stuff? When there's so many other things that you can do now. And so, you know, it's kind of like they started playing this game years and years ago, right? And you're playing this game really late now, and of course they're ahead of the game, and they're always going to be ahead of that game. And they have an operational advantage now. And so it's almost like there's no point in trying to catch up to them. So moving on to this next slide, the latency race played out both within data centers as well as between them. So the previous slide I showed like kind of between two data centers. On the left here is an example of this is over a five year period. The S&P cash market in New Jersey got faster and faster at reacting to moves.in the S&P Futures Market near Chicago. And so the peaks here in that left chart, it shows how quickly the participants responded. And you'll see that by, it's 2010 to 2014. So by 2014, that reaction time had dropped to just under five milliseconds, which is basically at the time, that's like the, theoretical minimum for the speed of light traveling the surface distance between those two data centers. So basically you have reached pretty close to the theoretical speed of light. So like, what else could you possibly do after that? And then after that was achieved, by the way, these firms now they're like, okay, now that we've done that in the US, let's turn our attention to the other markets in the world. So they started going out to the UK, to Frankfurt, Japan, Singapore, other markets as well. And then on the right side, you have the same story. It's just playing out within a single data center instead. And so this is within a single exchange. And then you'll see that the improvements became so small that basically firms were commissioning custom ASIC fabrication just to squeeze out like the last few nanoseconds. And again, it's like, at what point is it just not worth it to play that game? But the story of algo trading doesn't just end there. The race to zero might be over, but there was a new frontier emerging now that the race to zero was over. So in the theoretical world, everyone already if everyone's reacting to the speed of light already, right? I guess maybe to ask you guys kind of a dumb question, if everyone's already reacting at the speed of light,How can you have an edge? In a world where, let's say, everyone can already be fast theoretically. Well, the only way that you can have an edge now is to beat the speed of light, you have to forecast things before they happen, right? And so now you can kind of see where, why this is relevant and why I'm here. You have to be able to forecast things before they happen suddenly. And so 40 years in this forecasting space, there's one equation that dominated financial forecasting, and that was linear regression. This is something that you probably learned in school at some point. Coincidentally as well, if you open a machine learning textbook, you will learn about linear regression. That's like the first algorithm that you usually learn about in machine learning. So basically, you know, drawing a straight line between data points, right? You have all these data points and you're like, let's just draw a straight line between them. That was state of the art in financial prediction for basically four decades, essentially. So that was the equation that we used. Basically, you know, we learned about CAPM, FOMO French, like we learned about that in school if you took a basic finance class. And so that's what you learn about in school. But then what changed in this space and what happened? So at the turn of the century, researchers made breakthroughs in nonlinear regression. They developed better techniques for making models that were more robust to noise and to limited data. Then the major tech firms, some of which are in this room today, in this conference, they drove that open source movement.as well. So there's a big open source movement. They created a lot of tools for training on machine learning models more efficiently. So things like XGBoost, PyTorch, TensorFlow, etc. Those are tools that hopefully you're familiar with. Around the same time, actually, this is something just worth mentioning, which is that Kaggle launched around the same time. Now, it may not have the best reputation in our industry, but Kaggle did bring enormous public attention to MLAI competitions at the time. So it did have a role in this history here. And, yeah, so, you know, those are some of the things that I guess were just kind of worth mentioning as well. Let's see. I guess, oh, the other thing worth mentioning is, you know, by 2015, the people that were topping the cattle leaderboards at the time, they were overwhelmingly using deep learning by then. And then I guess the convergence of progress in software, like TensorFlow and then hardware, like NVIDIA, Tesla GPUs at the time, they created this inflection point for financial forecasting. And this inflection point is where my own story begins. So before I started DataBento, which is my second company, I mentioned that I had a company that was subject of a Harvard Business School case study on high-frequency trading. So I spent almost a decade building a quantity trading firm. We focused on high-frequency trading. And started it before Flash Boys came out, before HFT was in the public eye. And ran it for about almost a decade. At the time, we had, in case people are always curious about that,I do talk about this all the time. We had just graduated from MIT undergrad. Statistically, we should have failed before we got to launch. And I'll skip the details because I talk about this all the time online, by the way. I've given lectures about this topic over and over again, how to start a hedge fund, how to not die, how to run a company, essentially. And the differences between a hedge fund and a startup. I talk about that all the time online. So I'll skip those details because that's not what this presentation is about. But anyway, first pictures are our office in year one, the Charles Rivers in the background. So I was in Cambridge. And at the time, we had no budget and no experience whatsoever. We literally rented an apartment in Cambridge. We snuck a server rack into the closet of the apartment. And then literally, like, I remember we built our own exhaust vent, our own cooling system out of parts from, like, Home Depot and Ikea. Like, that was literally, we were literally, like, the scrappiest founders alive because we had no money ourselves. We didn't come from, like, a rich background. We literally, like, struggled a lot. And that's where we had to start it and run the business as a hedge fund structure because we had to raise money from other people to trade. We didn't have our own money. And it took us several years to find our footing. We made a lot of mistakes to the point where I give lectures at many university campuses just on those mistakes that I make. I have a whole talk and a whole series on mistakes we made. But then when we finally did figure it out, we were using a combination of low latency hardware as well as deep learning models. By the time we finally figured it out, we ended up trading over $7 billion daily. So we became one of the largest market makers on the CME.We're training about 7% of their average daily volume at the time. So, and yeah, that was our, the right was like one of our other offices over time in Boston. Okay, so then we went through essentially every phase of that modern evolution firsthand. The early cases of GPUs in finance were like super straightforward, but they mostly explored it, raw parallel compute power, things like volatility pricing, which you can see on the left, by the way. And then firms began replicating linear regression with more sophisticated models. And maybe to put some things in context, training one final model, one model at the very end, it's actually quite fast, but because you have to optimize these models and cross-validate all these models all at the same time, you end up having to do this training over and over again in parallel. And that's where GPUs come into this picture. And so today, actually, most of the firms that use the firms that use most of the GPUs in this industry, they're not necessarily doing anything super exotic or super complex like you would expect. It's just that the cutting edge is feature engineering. Finance involves hundreds of petabytes of data, and the space of possible predictors is enormous in this space. While in fintech, maybe to give you an example as well, like comparison, in fintech, which is kind of a sister industry of ours, if you had a credit scoring model, like a startup in that space, you might use like five to20 different features. In trading, even a basic trading model can start with 100,000 or more predictors. So it is quite a much bigger, more complex of a problem. And in the middle image right there on the slides there, you'll see every pixel is a single predictor there. That's what the correlation matrix of a typical predictor set looks like. It's quite complicated. Actually, I think we actually created that ourselves, that middle one we did generate ourselves. I think we had to create that, and this was way before AI was a thing, so we built that or created it ourselves for some investor back in the day. Anyway, so we have a lot of random things like that from back in the day. And anyway, so yeah, these like nonlinear interactions and stuff, that's like where, you know, deep learning really excels. And that's where, that's why GPUs matter in this space is like the combinations, right? Like whether a stock moves up or down, it's a one signal, but combining that with volatility, like whether volatility is high or low, that's an even more powerful signal. So there's like, you're combining different things, everything's interrelated in this industry. And that's where GPUs really matter. By the way, originally I wanted to call this talk, you know, the cost of GPUs is too damn high, or like where are my GPUs? Because, you know, I don't know if you guys know this, like procuring GPUs, right, is extremely difficult, especially, and also in the financial services industry as well. Sometimes we have to wait up to a year, if not longer, to get some of the technology that we're waiting for. And so, but I didn't think that in video would have been.So anyway, I decided to tone it down just a little bit. Okay, so I've told the story of kind of two parallel developments, right? There's latency-driven trading, like I talked about, like how did we go from the race to zero? And then there's this ML-driven trading. And so basically the parallel developments are like it's fast versus smart, right? So fast and smart. And you might be wondering, who won in this industry? Is it the fast hedge funds, like the fast market participants in this industry, or is it like the smart guys, like the smart trading firms in this space? And so I'll just show you the answer right there, actually. So this slide shows here the S&P trading revenues. It looks like there's nine firms on there. There are five firms here who are considered the fastest in U.S. And European markets. And then there are four firms here considered the best in ML-driven trading. And you'll notice that the four firms in ML-driven trading are making the most revenue right now. With XTX being the newest player in this industry. So the other ones have been around for a little bit longer. Now, I guess the question is like, you know, why is the edge in algo trading shifting from being, you know, latency sensitive, from latency to ML? Like, why are we shifting over to, you know, being as fast as possible to being smart? In a nutshell, machine learning is scalable. Whereas racing to zero is not, like I mentioned, right?By the way, to be very clear on this, these firms are not, I'm not saying that these firms are slow, by the way, they are fast too. They have FPGAs, they invest a lot in cutting edge speed and data and everything too. It's just that they're known the most for machine learning. That's what they do as a whole as a team. And so anyway, yeah, they are still fast. It's just that they are not trying to be like the fastest in the world by any means anymore. Anyway, so now if you ask like what opportunities does this like open up in the markets, right? Like what are some opportunities for us in this industry, for you guys in this space? Before I talk about that, maybe it's worth mentioning some of the trends in finance that are worth mentioning. So maybe to give you examples of that, beyond algo trading, There's also retail trading, which surged after COVID. Think of apps like Robinhood and recently CalSheet, Polymarket. There's a lot of retail trading apps out there now. 15 years ago, retail trading appealed to a very niche audience. But today, you think about like, you know, my uncle trades, my mom trades, like everyone trades. My cousin, my little cousin's trade. There are literally retail trading apps that target millennials and boomers and Gen Z, like everybody, they target women, they target different religions, they target parents, they target busy people. Like there are literally retail trading apps for every type of different demographic. And so retail trading has definitely surged a lot post-COVID.The other trend is that traders are becoming just more sophisticated as a whole though. So although people still think of retail traders as like, you know, your Robin Hood 17 year old trader in your mom's basement kind of stereotype, that's actually not the case. That's not at least what we're noticing at DataBento. There's a couple reasons for that. One is like, look, there's 11 times more CS degrees awarded in the past decade, right? People are studying computer science these days, so people are getting smarter. And the second thing is that due to AI and open source tools available now, it's easier to educate the public on basic trading concepts. And so you're less likely to make like, you know, easy mistakes, basic mistakes that people used to make in the past. It's also faster to build apps with AI, right? It's cheaper now as well. So algo trading used to be definitely a lot more expensive to like get started. And now you can build an algo, you can literally buy a code and algo trading strategy if you wanted to, to get started. Now, will it be, you know, will it make a lot of money? Like probably not, maybe not, but you'll at least learn how to do the fundamentals of that, right? And so it's a lot easier to get started and to get the facts right on day one. And so as a result, the market for developer API products like DataBento has grown tenfold over just the past year alone. And it's never been easier to just like build something and, you know, integrate an API and just kind of build something off of data essentially today. So it's definitely an interesting time that we're in. I think that there's also just... Like, there's a growing...population of people who are just like good enough at coding that you know AI assistance pushes them over the threshold of like what it takes to build something incredible in the space right so like you don't need to be like like a true expert at the cutting edge now you just need to know like the fundamentals and then by then you just need to be able to use AI to go from there and so anyway So this is where DataBento sits in the industry today. We provide APIs for building outbound trading strategies and other, you can also build other products on top of us throughout other industries. So people build AI stuff with us, products, they build trading apps with us and other things. Our APIs are fast enough, you can actually technically access our data through like in-flight Wi-Fi if you wanted to. And we've been collecting high precision financial data at a pace that would put us amongst the, I think it's like the top three now largest self-hosted sources of financial data in the world by the end of the year. So we are now that we're going to become the third largest by end of this year, which is kind of crazy if you think about it, because we actually launched about two years ago. So we are just a little bit smaller now than, a little bit, a little, like a lot, lot smaller, but at least we're the third largest than the two incumbents in this space that you might have heard of. We designed everything to be very like plug and play for people. So if you're interested in like ML, AI, and finance, the goal is like, hey, you can get things started really easily. Our goal is like, let's make market data democratized. Let's make it convenient, fast, and affordable to get access to that data. I promise you I'm trying to keep the pitch really short, but this one's fun.One of the things about this is that people are doing things with data APIs today that used to require teams of data engineers, right? So a long time ago, you used to have teams of people that needed to do this, but now you can literally just plug us into Cloud Code and get started. It's a lot easier than it used to be. On the right, the graph is partially blocked on the right, but it just shows that we do have an increasing conversion rate of new users who integrate DataVento, our API, successfully with AI assistance, actually. And that blue line does go up. It just shows that it's become a lot more prominent over time, that AI assistance is getting better at that. And let's see, oh, lastly, I do want to thank NVIDIA and especially Joanna Boyer. For, Joanna's, by the way, NVIDIA's global head of capital market strategy. They gave us this opportunity to speak here today. And to give you a sense, we use a range of NVIDIA technologies that helped us go from We were the underdog two years ago to becoming the category leader in under two years, basically. I've walked around this exhibition hall since Monday, and it seems like almost everyone here does AI in some way, shape, or form, which makes DataVento a little bit of an anomaly in the sense that we don't do AI ourselves. Like, we are not an AI firm, which, by the way, makes fundraising very difficult for us. But that's okay. So anyway, we don't provide an AI service, but AI has been our single biggest growth catalyst this past year, which is why I'm here.And then maybe to show you guys that the screenshot on the right is that we were featured as the first financial startup success story on NVIDIA's website. This was like maybe three weeks ago or something. This is fairly recent. And one of the first financial firms in general on NVIDIA's website. There's like two or three other ones. Like the one before us was literally NASDAQ. So it was like NASDAQ and then Diavento. So it was a huge honor to be featured as a successful story on NVIDIA's page here as well. And the other thing I appreciate, by the way, is that we use each other's products. So not only do we use NVIDIA's products, but also they use our product as well. And I think that's just such a huge honor that we can use each other's products both ways. So it's been super nice to partner with them. And I guess the moral of the story is that, you know, the innovation happening at NVIDIA doesn't just happen within AI. It has a tremendous ripple effect across adjacent industries like financial services. And actually financial services might be the most profound example of that, like Jensen mentioned on Monday. Financial services are notoriously secretive, but it is no secret that AI adoption now is becoming a really big deal. And it's also not a secret that NVIDIA technology does actually sit at the core of many of the most powerful trading firms in the world today. That is something that these firms are proud of, and they really do boast about. And also that countless startups, right, including ours, we would not be here. Like, we literally owe a meaningful part of our own growth and success.So if there's one takeaway I could summarize, it's that the next wave of innovation is already here in financial services, and that a lot of that is powered by NVIDIA. Thank you. That's all. I think we do have a little bit of time for Q&A. I don't know if anyone has questions or anything. Yeah, it looks like we have time. So we have a couple of, maybe one quick question. And you guys are welcome to ask me anything. There's no bad question. I totally understand what it's like to not be from this space.Vadim from Morgan Stanley. I have a question. Do you see yourself as a more historical, analytical data provider or real-time trading use? Oh, that's a good question. So we provide both, actually. And I think in order to be successful in this industry, you have to do a little bit of everything under the sun. But I think that... One of the bigger factors for our success is real time, right? And the reason why real time data is a lot more useful than historical data is because think of historical data as driving with a rear view mirror. That's actually an analogy that my professor in college gave. If you're backtesting only on historical data and you're not being able to see training in real time, right? It's like driving with a rear view mirror, but you can't see what's ahead of you. And so you have to be able to Real-time data is extremely useful in this space, and so we do provide real-time data as well. But not for HFT, obviously, right? That's not for collocations. It's more for real flow. That's a good question. Sorry, I didn't sell ourselves very much. I didn't talk about ourselves. I'm sorry I should talk about that. Yes, we actually do provide a lot of our major customers are high-frequency trading and quantitative trading firms. And for those who do need to co-locate, we do provide connectivity solutions. We can provide cross-connects and co-location as well as cloud solutions as well as connectivity to our data. So yeah, we do, like I mentioned, you have to do a little bit of everything. So connectivity for those who aren't familiar, if you're purchasing a lot of data from us, or from any website, right? You need to make sure that that data arrives to you on time because there's a lot ofthat all the data is arriving on your end fast enough, and so you get purchase connectivity. And so for the firms here purchasing a lot of data, especially options data, chances are you need to buy connectivity at some point. And so that's why we provide both the data as well as the connectivity. So kind of a little bit of everything under the sun. That's a great question, thanks. The data is coming from NASDAQ, right? And is it competing to the data that they're provided by Bloomberg? Is it all coming from the same source? Yeah, that's a good question. So I mentioned actually that in the US, NASDAQ is not the only stock exchange. There are actually over two dozen stock exchanges. And then there's also futures exchanges, options exchanges. There's different exchanges. There's crypto exchanges, right? So there's literally dozens and dozens of different exchanges, both stock exchanges as NASDAQ, the New York Stock Exchange. There's all kinds of different exchanges. You might have heard of IEX. You might have heard of MIAX. There's a variety of different stock exchanges all across the United States, and a lot of them are a lot smaller, and so you might not have heard of them. Now, these exchanges... So that's why I mentioned that there's regulation that came about. Because when you're trading, it's easy for people to take advantage. Well, if you're trading and you're placing an order on Apple stock on this exchange, someone else could just, like, you know, arbitrage that between two different exchanges, right? Or what if you're getting a terrible price on this exchange?And so that's why that regulation I mentioned came about. So it would provide you with the best price across all those different exchanges. And then you mentioned Bloomberg, right? What does Bloomberg do? So Bloomberg is what's called a charting solution, Bloomberg Terminal. So Bloomberg Terminal sits one step below stream for data method. So meaning we actually sell our data to a lot of terminals. So a terminal or a charting product is like when a human looks at a chart and you're like trying to analyze stuff, right? We actually sell our data via API to a lot of services very similar to that, where you might want to take a look and like produce analytics and charts and graphs and stuff like that. But Bloomberg is not a direct producer of the data. They are also like more of a data aggregator, a charting tool, analytics company. They do a little bit of everything now too because of how big they are. So yeah, they are not an exchange. They're more of a technology company. Great questions. Great, thank you. I think that's all the time that we have for today. But, Christina, so let's thank the speaker again. Awesome, thanks guys.",
+    "usage": {
+        "prompt_tokens": 203,
+        "completion_tokens": 14624,
+        "total_tokens": 14827,
+        "prompt_audio_seconds": 2430,
+        "request_count": 29
+    },
+    "language": null,
+    "segments": [
+        {
+            "text": "Without further ado, let's get started with our session.",
+            "start": 2.1,
+            "end": 6.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So our next session is Scalable Data Access for Next-Gen Algorithmic Trading.",
+            "start": 6.7,
+            "end": 12.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And yeah, I'd like to welcome the speaker, Christina Chee.",
+            "start": 13.0,
+            "end": 18.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Please come up to the stage.",
+            "start": 18.9,
+            "end": 20.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So Christina is the CEO of Data Bento, a market data provider serving over 30,000 customers across finance, AI technology, and other industries.",
+            "start": 24.2,
+            "end": 34.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " She formerly founded Domeyard LP, a hedge fund focused on high-frequency trading that traded up to $7.1 billion per day.",
+            "start": 35.2,
+            "end": 43.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " She's a member of the MIT Board of Trustees and graduated from MIT in 2013.",
+            "start": 43.8,
+            "end": 48.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Take it away.",
+            "start": 49.9,
+            "end": 50.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Awesome.",
+            "start": 51.6,
+            "end": 52.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Thanks, guys, for having me.",
+            "start": 52.4,
+            "end": 53.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So, yeah, as mentioned, I'm Christina.",
+            "start": 53.8,
+            "end": 56.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'm the founder and CEO of Data Bento.",
+            "start": 56.2,
+            "end": 58.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So maybe just to give you a quick overview, we provide financial stock data.",
+            "start": 59.3,
+            "end": 63.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And other similar data sets to actually about now 35,000 or so customers today.",
+            "start": 63.6,
+            "end": 68.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And most of our revenue does come from large financial institutions and from fintech firms.",
+            "start": 68.9,
+            "end": 73.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But, you know, so for example, I guess to give you an example of what we actually do, if you pull up a stock price on some trading app, like if you trade for fun and you use some sort of trading app and you pull up a stock price on any of those apps, chances are that data already comes from DataVenture today.",
+            "start": 73.8,
+            "end": 88.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so you probably are using us.",
+            "start": 88.1,
+            "end": 90.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "indirectly in some way shape or form you just don't know it and so that's how we provide data is we provide data modern by API to a variety of different firms within this industry",
+            "start": 90.0,
+            "end": 100.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " now actually one thing that I wanted to just disclaim actually before we started was that I actually want to try my best to",
+            "start": 101.5,
+            "end": 107.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " not make this a sales pitch.",
+            "start": 108.7,
+            "end": 110.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I promise you, I know you've been sold like a thousand products throughout this week.",
+            "start": 110.2,
+            "end": 113.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And my goal here is to educate, not to sell.",
+            "start": 114.4,
+            "end": 117.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I'll try my best to, that was the pitch.",
+            "start": 117.6,
+            "end": 119.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So that's it.",
+            "start": 120.1,
+            "end": 120.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I'm going to try to educate you actually on the history of the industry because I'm guessing most of you guys don't come from the industry around the West Coast, whereas I come from this industry.",
+            "start": 120.6,
+            "end": 127.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so it is a very fascinating history of how algo trading started.",
+            "start": 127.9,
+            "end": 131.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it's also a very fascinating history of how high frequency trading and also how AI came into this industry and why it's in this space.",
+            "start": 131.7,
+            "end": 137.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so first to explain, like, why in the world am I here?",
+            "start": 138.1,
+            "end": 140.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because I do come from the financial services industry.",
+            "start": 140.5,
+            "end": 143.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " My company doesn't do AI.",
+            "start": 143.7,
+            "end": 145.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so why am I here?",
+            "start": 145.0,
+            "end": 146.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Well, in the last couple months or so, we've noticed a new category using our data.",
+            "start": 147.9,
+            "end": 154.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It started, I'm not allowed to mention any names of our customers, by the way, given the nature of our industry, because we're under NDA, but it started with the largest, most famous AI company known to mankind.",
+            "start": 155.5,
+            "end": 166.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Started using us and then after that all their competitors started using us and then it was I think after that was like the Frontier Labs, the LM wrappers, the agentic startups, they all started using us as well and we were like",
+            "start": 167.3,
+            "end": 179.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "What is going on here?",
+            "start": 180.0,
+            "end": 181.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They were all using us for various reasons in the AI space, and this was really brand new to us.",
+            "start": 181.5,
+            "end": 185.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I guess one thing to also give some context is that, look, AI has been talked about in financial services for a really long time, for as long as any other industry has talked about.",
+            "start": 185.5,
+            "end": 196.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " AI, by the way.",
+            "start": 197.8,
+            "end": 198.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So other industries have talked about AI too.",
+            "start": 198.4,
+            "end": 199.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And finance has also been talked about in, sorry, in finance we've also talked about AI too.",
+            "start": 200.4,
+            "end": 204.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But the challenge is that actually AI hasn't been successfully adopted in finance until pretty recently.",
+            "start": 204.9,
+            "end": 211.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In fact, I would argue that it still hasn't quite been successful yet in this space.",
+            "start": 211.9,
+            "end": 215.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, name a fully AI autonomous hedge fund, right?",
+            "start": 216.0,
+            "end": 220.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, there really isn't one today.",
+            "start": 220.1,
+            "end": 221.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's always a human in the loop somewhere.",
+            "start": 222.4,
+            "end": 223.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so,",
+            "start": 223.8,
+            "end": 224.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So why is it that only recently has there been like a major shift, right?",
+            "start": 225.9,
+            "end": 229.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And why was there a failure in the past?",
+            "start": 229.4,
+            "end": 231.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Maybe to give you some examples of, I don't want to call them failures, but let me just give you some examples to give you some more context on this before I go to my slides.",
+            "start": 231.3,
+            "end": 236.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Do you guys remember Watson, right?",
+            "start": 237.6,
+            "end": 239.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like IBM Watson, they'd be, you know, the older AI that beat Ken Jennings at Jeopardy, right?",
+            "start": 239.1,
+            "end": 244.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I don't know if any of you guys know this.",
+            "start": 244.2,
+            "end": 245.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In our industry, we know that Watson has an AI ETF.",
+            "start": 245.8,
+            "end": 249.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They launched the first, I believe, the first AI-driven ETF in the markets.",
+            "start": 249.5,
+            "end": 255.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And if you look at the performance of the ETF, it's all public information, right?",
+            "start": 255.5,
+            "end": 259.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you look at the performance of that ETF, it has underperformed the S&P consistently every year.",
+            "start": 259.0,
+            "end": 264.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you're imagining, how come this big AI project that is so good at Jeopardy has failed to perform in the financial market?",
+            "start": 264.3,
+            "end": 270.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So I'll explain a little bit of that and then also kind of why there's a shift in terms of actual success that we're seeing in this day and age.",
+            "start": 270.8,
+            "end": 277.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So anyway, I think that's it for this page.",
+            "start": 277.1,
+            "end": 281.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I think, yeah, let's just, let's begin.",
+            "start": 281.3,
+            "end": 283.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And by the way, the answer to all this success, it's not LLMs.",
+            "start": 283.8,
+            "end": 286.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I just want to be clear on that.",
+            "start": 286.4,
+            "end": 287.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Language models are not algorithmic trading models, so please don't plug in quantitative strategies into language model stuff and trust your language model to do trading strategies.",
+            "start": 288.0,
+            "end": 298.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That is not a good idea today.",
+            "start": 298.5,
+            "end": 299.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Anyway, okay, so let's begin on the history of algo trading.",
+            "start": 300.3,
+            "end": 304.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So as you guys probably know, like,",
+            "start": 305.1,
+            "end": 306.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Algo trading firms, they've always been really secretive about what they do in the space, right?",
+            "start": 306.9,
+            "end": 310.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But if you guys heard Jensen's talk on Monday, he mentioned that the trading industry is becoming one of the biggest consumers of GPUs right now.",
+            "start": 311.5,
+            "end": 319.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so that's kind of become not so big of a secret right now.",
+            "start": 320.6,
+            "end": 323.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On the left side, we have...",
+            "start": 323.6,
+            "end": 324.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Here I have the backstory of the launch of a company called DeepSeek.",
+            "start": 325.0,
+            "end": 327.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It was actually one of the landmark moments in AI as of last year.",
+            "start": 328.3,
+            "end": 332.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And at that time when DeepSeek first came out, it kind of came out of nowhere for a lot of people.",
+            "start": 332.8,
+            "end": 337.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " No one's ever heard of this obscure quant hedge fund before.",
+            "start": 337.7,
+            "end": 340.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But those of us who were in the industry, we already knew about it.",
+            "start": 340.8,
+            "end": 344.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We've actually known since, I think, around maybe 2021 that",
+            "start": 344.5,
+            "end": 347.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " DeepSeek has had one of the largest GPU clusters in China, actually.",
+            "start": 348.1,
+            "end": 352.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then on the right side, there's just another example of a major trading firm and their website.",
+            "start": 352.8,
+            "end": 356.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They're all secretive in this website.",
+            "start": 357.0,
+            "end": 358.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's like, oh, we have 25,000 GPUs.",
+            "start": 358.0,
+            "end": 359.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They're really pretty.",
+            "start": 359.6,
+            "end": 360.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And then I've read other articles about like, there's a lot of companies, other companies that like claim that, hey, we've, you know, bought so many GPUs that we've blocked off all the Northeast supply of GPUs for months at a time.",
+            "start": 361.1,
+            "end": 370.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so the funny thing is that outgo trading firms are super secretive about certain things.",
+            "start": 370.4,
+            "end": 374.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then they're like very proud about how many GPUs they own, which is kind of funny.",
+            "start": 374.2,
+            "end": 377.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So anyway.",
+            "start": 377.4,
+            "end": 378.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I guess the question is kind of like, why are they secretive?",
+            "start": 379.8,
+            "end": 383.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I'll kind of shed some light on why they're secretive for a good reason.",
+            "start": 383.1,
+            "end": 386.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But throughout my talk, I'm going to talk about three things.",
+            "start": 387.1,
+            "end": 389.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Primarily, how did we get here?",
+            "start": 389.6,
+            "end": 390.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the history of Alka Trading and how everything started.",
+            "start": 390.9,
+            "end": 393.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " How did AI get into this space?",
+            "start": 393.8,
+            "end": 395.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So why am I here, basically?",
+            "start": 395.8,
+            "end": 396.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then also, I'm going to talk about why do financial firms need so many GPUs?",
+            "start": 396.9,
+            "end": 401.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Which has been kind of strange in recent in this space.",
+            "start": 401.4,
+            "end": 404.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then also, what is the future of AI in finance?",
+            "start": 404.3,
+            "end": 407.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Okay, so I'm going to talk about the kind of early history of algo trading in this space.",
+            "start": 408.6,
+            "end": 413.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So many of you guys know that stocks trade on stock exchanges, but what some of you might not know is that they also trade on alternative trading venues, which I think of them as like secondary markets.",
+            "start": 413.7,
+            "end": 424.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That you can trade on, but you can't list stocks on them.",
+            "start": 425.4,
+            "end": 427.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You can't take a company public on those venues.",
+            "start": 427.9,
+            "end": 430.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so the early days of electronic trading began on those alternative trading venues, and we call those ECNs in our industry.",
+            "start": 431.5,
+            "end": 437.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Many of you know NASDAQ, for example, as a stock exchange.",
+            "start": 438.9,
+            "end": 441.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But actually, NASDAQ started off as an ECM, for example.",
+            "start": 441.9,
+            "end": 444.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So NASDAQ was one of the pioneers of early kind of electronic trading back in the day as a market.",
+            "start": 444.3,
+            "end": 448.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Now, algo trading was actually the accident child of two major SEC regulations, which I do want to talk about a little bit here.",
+            "start": 450.4,
+            "end": 457.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So one of the regulations was the adoption of the display rule in 1996 that basically forced market makers to display quotes on ECNs, essentially.",
+            "start": 458.5,
+            "end": 469.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this actually drew trading away from the traditional markets, which were on the floor at the time, to these electronic markets.",
+            "start": 470.8,
+            "end": 480.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So that was kind of the first major movement that drove that in place.",
+            "start": 480.5,
+            "end": 483.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then the second thing was that, and by the way, it also gave the electronic venues kind of a structural advantage because the electronic venues, they don't have to do listings, right?",
+            "start": 484.3,
+            "end": 492.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They don't have to do IPOs, but you can still trade on them.",
+            "start": 492.0,
+            "end": 494.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They can still trade stocks.",
+            "start": 494.7,
+            "end": 496.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so it gave them a huge structural advantage as a result of that regulation.",
+            "start": 496.1,
+            "end": 499.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then the second regulation that came around.",
+            "start": 500.4,
+            "end": 503.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Was there was, oh and also by the way, by the early 2000s, what happened was that almost half of electronic trading became, you know, was on these ECNs, right, became electronic.",
+            "start": 503.7,
+            "end": 513.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so then what ended up happening as a result of that was that the SEC in 2005, they published another set of rules, and this is a big set of rules that you guys, if you're in our industry, you'll become familiar with a lot.",
+            "start": 514.2,
+            "end": 526.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's called Reg NMS.",
+            "start": 526.7,
+            "end": 528.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this still kind of governs how U.S.",
+            "start": 529.5,
+            "end": 531.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Stock trading is done today.",
+            "start": 531.4,
+            "end": 533.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so I'm going to list a couple things that Reg NMS kind of introduced.",
+            "start": 533.1,
+            "end": 535.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It had a lot of well-intended kind of rules, and then those rules had consequences.",
+            "start": 535.9,
+            "end": 539.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Some of the rules to explain.",
+            "start": 540.3,
+            "end": 541.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " One is that it introduced a rule about the minimum price increment you can trade at.",
+            "start": 541.4,
+            "end": 545.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It introduced a concept of a best bid and a best offer.",
+            "start": 546.2,
+            "end": 548.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Those are things that if you trade today, you'll be familiar with what that is.",
+            "start": 548.9,
+            "end": 551.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And also introduced like when a customer places an order now in the markets, like in the U.S.",
+            "start": 552.7,
+            "end": 556.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Equities market, you must get filled at the best price.",
+            "start": 556.6,
+            "end": 559.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that sounds like fair.",
+            "start": 560.1,
+            "end": 561.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " By the way, for those who aren't familiar, there's not just like one stock market, right?",
+            "start": 561.6,
+            "end": 564.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's not one equities market in the U.S., right?",
+            "start": 564.5,
+            "end": 566.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's over two dozen today.",
+            "start": 566.3,
+            "end": 568.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so that rule was designed to try to make things more fair and equitable across all these different markets.",
+            "start": 569.0,
+            "end": 574.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it's made to be fair for you guys as traders, right, as participants in the markets, so you're not being taken advantage of across different markets like that.",
+            "start": 574.4,
+            "end": 581.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's designed so you're being filled at the best price possible when you place a trade.",
+            "start": 581.3,
+            "end": 584.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But every regulation like this, they always have these unintended accidental consequences that happen.",
+            "start": 586.5,
+            "end": 591.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this one was like, no, like this one definitely had the same thing.",
+            "start": 592.6,
+            "end": 597.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It had a big unintended consequence of introducing a latency race, actually.",
+            "start": 597.0,
+            "end": 602.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It introduced a race to zero.",
+            "start": 602.2,
+            "end": 603.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And thus was kind of the beginning of, I guess, modern algorithmic high frequency trading, as you might know it to be.",
+            "start": 604.3,
+            "end": 611.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Basically what happened was like if you are a faster firm You would have a huge informational advantage because if you knew what the best bid and offer was across like multiple Different stock exchanges across multiple venues at the exact same time You would be able to basically",
+            "start": 613.1,
+            "end": 626.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You know capture information right have capture or",
+            "start": 627.2,
+            "end": 630.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "order flow essentially, all these trades ahead of everyone else, ahead of time.",
+            "start": 630.0,
+            "end": 633.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then exchanges, by the way, they also capitalize on that too.",
+            "start": 634.7,
+            "end": 636.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So around that time, exchanges introduced basically exotic order types.",
+            "start": 636.9,
+            "end": 641.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And these order types could be exploited only if you were fast, essentially.",
+            "start": 642.1,
+            "end": 645.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I don't have time to go through all this.",
+            "start": 645.7,
+            "end": 647.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And by the way, I'm probably going to take up all 40 minutes.",
+            "start": 647.4,
+            "end": 649.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if you have questions, feel free to ask me afterwards.",
+            "start": 650.0,
+            "end": 651.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But the exchanges introduced all these exotic order types.",
+            "start": 651.8,
+            "end": 654.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And if you want to learn more about those, there's actually maybe two resources that I may or may not recommend.",
+            "start": 654.5,
+            "end": 659.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " One is actually in our industry, there's a book called Flash Boys that came out over 10 years ago now, 2014.",
+            "start": 659.6,
+            "end": 665.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " By Michael Lewis, like the famous author.",
+            "start": 666.6,
+            "end": 668.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that book actually put high frequency trading onto the public scene.",
+            "start": 669.2,
+            "end": 673.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like before that, nobody knew what high frequency trading was.",
+            "start": 673.2,
+            "end": 675.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I know this because I started a high frequency trading firm in like two years before that, 2012.",
+            "start": 675.7,
+            "end": 680.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And when I was starting that, no one knew what it was.",
+            "start": 681.2,
+            "end": 682.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And after Flash Boys came out, everyone knew what it was.",
+            "start": 682.9,
+            "end": 685.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so anyway,",
+            "start": 685.3,
+            "end": 686.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I recommend reading that book with a grain of salt a little bit because it does give a lot of hyperbole on a bunch of definitions that are wrong and gives the wrong definitions of a lot of things.",
+            "start": 687.7,
+            "end": 698.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's a very hyperbolic, I guess, and very Hollywood glam view on this world here.",
+            "start": 699.0,
+            "end": 705.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then surprisingly, another history, if you want to learn more about the beginnings of this industry, is actually the Harvard Business School case study on high-frequency trading as well.",
+            "start": 705.2,
+            "end": 714.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I think that's a more academic, more like...",
+            "start": 715.1,
+            "end": 718.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Nuance and also like less buy",
+            "start": 718.6,
+            "end": 720.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "I'm not showing myself like I'm not trying to sell anything.",
+            "start": 722.5,
+            "end": 725.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That case study is about me.",
+            "start": 725.3,
+            "end": 726.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That case study is about my previous company that I started.",
+            "start": 726.8,
+            "end": 728.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I don't make any money from it, so I promise I'm not selling anything.",
+            "start": 729.6,
+            "end": 732.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's just that that actually is the best history of this industry.",
+            "start": 732.6,
+            "end": 735.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because every other history that you look up on Google is very glamorized and incorrect.",
+            "start": 735.9,
+            "end": 739.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's the only one that's written by academics that's actually right.",
+            "start": 740.1,
+            "end": 742.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So anyway.",
+            "start": 742.6,
+            "end": 743.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Okay, so long story short, though, that's kind of how the modern latency race started.",
+            "start": 744.8,
+            "end": 748.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But before the modern latency race, there has always been a race to zero, by the way.",
+            "start": 749.2,
+            "end": 754.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So before the whole Flash Boys thing that Michael Lewis complains about, if you think about it, like, back in the, what, 1600s and 1700s, the carrier pigeons, right?",
+            "start": 754.3,
+            "end": 762.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, if you have the fastest pigeons.",
+            "start": 762.5,
+            "end": 763.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's always been a latency race for different things.",
+            "start": 764.4,
+            "end": 766.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then in America, the Pony Express in the 1800s, and then the telegraph, right?",
+            "start": 766.1,
+            "end": 771.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And all these technologies, by the way, I don't know if you guys took history class or not, but all these technologies and inventions and companies, they became successful and they were...",
+            "start": 771.3,
+            "end": 781.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They're basically propagated by the financial markets, actually.",
+            "start": 782.2,
+            "end": 784.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They were designed to basically transmit financial information, market information from one coast of America to the other, basically.",
+            "start": 784.8,
+            "end": 792.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so that's the history of it was a lot of that was driven by financial market innovation at the time.",
+            "start": 792.3,
+            "end": 796.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So yeah, low latency has always been a thing in this space for as long as we could possibly remember it.",
+            "start": 797.1,
+            "end": 801.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's just that right now it's all instead of a race from horses, it's like a race of computers, right?",
+            "start": 802.0,
+            "end": 806.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it's just a different kind of race now.",
+            "start": 806.4,
+            "end": 808.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Anyway.",
+            "start": 808.9,
+            "end": 809.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So after RAG and MS, so billions of dollars now were poured into this industry, and it took barely 10 years or so for these trading firms to approach the physical limits of flight.",
+            "start": 810.2,
+            "end": 822.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the 2008 financial crisis, you would expect that, you know, you hear the news about the crisis and you're like, oh, all the banks are struggling and everyone was failing and stuff.",
+            "start": 823.0,
+            "end": 830.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But actually, the 08 financial crisis, I don't know if you know this, but it actually accelerated the innovation in the space because the early high-frequency trading firms actually made a killing from this.",
+            "start": 830.2,
+            "end": 841.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Those were, if you talk to people who used to work at these firms back in the day, those were like the glory days of high-frequency trading.",
+            "start": 842.1,
+            "end": 847.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Those were like the early days that these firms were making like hundreds of millions of revenue.",
+            "start": 847.4,
+            "end": 851.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It was an amazing time for them.",
+            "start": 851.8,
+            "end": 853.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So in the subsequent years though, all kinds of technologies were, they were created to further like reduce that latency, to make things faster and faster as a result of that.",
+            "start": 853.7,
+            "end": 861.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so on the left here, just to give you a sense of that diagram, is those are the microwave routes between like these different two trading venues, London and Frankfurt.",
+            "start": 862.3,
+            "end": 871.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And basically these are people trying to get from London to Frankfurt in the least amount of time possible via a microwave network.",
+            "start": 871.9,
+            "end": 878.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it's like the pony express, but like in modern day, essentially.",
+            "start": 879.6,
+            "end": 882.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The people trying to get there from, you know, fastest possible.",
+            "start": 882.0,
+            "end": 884.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you'll notice that there's a lot of crowding around like certain areas there.",
+            "start": 885.3,
+            "end": 888.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Butting is that firms are trying to aim for like the shortest possible path, right?",
+            "start": 892.824,
+            "end": 896.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That makes a lot of sense.",
+            "start": 896.824,
+            "end": 897.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And a lot of this does, like is explained a lot in Flash Boys, but it did result in various lawsuits.",
+            "start": 898.424,
+            "end": 904.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " People try to sue each other over it.",
+            "start": 904.824,
+            "end": 906.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Sometimes, you know, firms will try to compete against each other in kind of crazy ways.",
+            "start": 906.424,
+            "end": 911.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They would put repeaters on each other's apartment roofs and stuff.",
+            "start": 912.124,
+            "end": 915.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Anyway, at the time also, there were technologies like, I think, Mellanox, their VMA network acceleration stack, ConnectX, their network cards, high-speed switches, they were all central to this race.",
+            "start": 915.924,
+            "end": 927.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And Mellanox, I don't know if you guys know, they were later acquired by NVIDIA, and that was also for a good reason as well.",
+            "start": 927.724,
+            "end": 932.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So today actually the fastest trading firms can react to the markets even like within single digit nanoseconds.",
+            "start": 934.324,
+            "end": 942.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And what's interesting is also like maybe to also explain kind of contextually what's happening right now is that it's actually the race to zero is pretty much over in the sense that",
+            "start": 943.324,
+            "end": 953.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " it's economically unfeasible for more than a handful of firms to compete, right, for speed today.",
+            "start": 953.524,
+            "end": 959.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I guess the analogy to give on that and why it doesn't make sense is like, this is kind of a dumb analogy, but like I think about like if you play board games like Settlers of Catan or like Ticket to Ride, one of those board games,",
+            "start": 959.924,
+            "end": 969.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " and there's like the shortest possible path or whatever, like literally, or like the longest route, like those kinds of, at the end of the game, right, one person gets that bonus card.",
+            "start": 969.724,
+            "end": 978.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And at some point, if you're playing with like five or six people, like it just doesn't make sense to compete for that one bonus card anymore.",
+            "start": 978.724,
+            "end": 984.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Right.",
+            "start": 984.624,
+            "end": 984.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's the same with this industry when there's like, you know, thousands and thousands of players out there.",
+            "start": 984.824,
+            "end": 988.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Right.",
+            "start": 988.324,
+            "end": 988.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " At some point, it's like only five or the top maybe 10 or so people benefit from it.",
+            "start": 988.624,
+            "end": 992.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the rest of them kind of just are like, why are we competing in this space?",
+            "start": 992.824,
+            "end": 996.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, it just doesn't make sense to spend millions of dollars to be like a nanosecond faster than the next person anymore, right?",
+            "start": 996.024,
+            "end": 1001.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I know that's kind of a dumb analogy, but hopefully that helps contextualize things a little bit.",
+            "start": 1002.324,
+            "end": 1005.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And anyway, so building custom basics in this industry, owning private micro networks like this, it costs hundreds of millions of dollars and it is a huge boat to try and penetrate.",
+            "start": 1007.224,
+            "end": 1016.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if you're a startup in this space and you're looking at this and you're like, I don't know if you're high frequency trading, you're like, what am I doing?",
+            "start": 1016.824,
+            "end": 1021.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Why would you even try to compete against these initial players that decided to do this and invest in all this stuff?",
+            "start": 1022.124,
+            "end": 1028.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " When there's so many other things that you can do now.",
+            "start": 1030.024,
+            "end": 1031.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so, you know, it's kind of like they started playing this game years and years ago, right?",
+            "start": 1032.424,
+            "end": 1036.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you're playing this game really late now, and of course they're ahead of the game, and they're always going to be ahead of that game.",
+            "start": 1037.024,
+            "end": 1041.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And they have an operational advantage now.",
+            "start": 1041.524,
+            "end": 1043.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so it's almost like there's no point in trying to catch up to them.",
+            "start": 1043.024,
+            "end": 1046.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So moving on to this next slide, the latency race played out both within data centers as well as between them.",
+            "start": 1048.924,
+            "end": 1055.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the previous slide I showed like kind of between two data centers.",
+            "start": 1055.424,
+            "end": 1057.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On the left here is an example of this is over a five year period.",
+            "start": 1058.524,
+            "end": 1063.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The S&P cash market in New Jersey got faster and faster at reacting to moves.",
+            "start": 1063.424,
+            "end": 1068.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "in the S&P Futures Market near Chicago.",
+            "start": 1068.824,
+            "end": 1071.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so the peaks here in that left chart, it shows how quickly the participants responded.",
+            "start": 1072.324,
+            "end": 1077.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you'll see that by, it's 2010 to 2014.",
+            "start": 1078.024,
+            "end": 1080.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So by 2014, that reaction time had dropped to just under five milliseconds, which is basically at the time, that's like the,",
+            "start": 1080.224,
+            "end": 1089.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " theoretical minimum for the speed of light traveling the surface distance between those two data centers.",
+            "start": 1089.724,
+            "end": 1094.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So basically you have reached pretty close to the theoretical speed of light.",
+            "start": 1094.724,
+            "end": 1097.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So like, what else could you possibly do after that?",
+            "start": 1098.024,
+            "end": 1100.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then after that was achieved, by the way, these firms now they're like, okay, now that we've done that in the US, let's turn our attention to the other markets in the world.",
+            "start": 1100.724,
+            "end": 1108.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So they started going out to the UK,",
+            "start": 1108.824,
+            "end": 1110.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " to Frankfurt, Japan, Singapore, other markets as well.",
+            "start": 1110.624,
+            "end": 1113.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then on the right side, you have the same story.",
+            "start": 1115.224,
+            "end": 1118.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's just playing out within a single data center instead.",
+            "start": 1118.124,
+            "end": 1121.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so this is within a single exchange.",
+            "start": 1122.124,
+            "end": 1124.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then you'll see that the improvements became so small that basically firms were commissioning custom ASIC fabrication",
+            "start": 1124.324,
+            "end": 1131.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " just to squeeze out like the last few nanoseconds.",
+            "start": 1131.424,
+            "end": 1133.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And again, it's like, at what point is it just not worth it to play that game?",
+            "start": 1134.224,
+            "end": 1137.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But the story of algo trading doesn't just end there.",
+            "start": 1139.424,
+            "end": 1141.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The race to zero might be over, but there was a new frontier emerging now that the race to zero was over.",
+            "start": 1142.124,
+            "end": 1147.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So in the theoretical world, everyone already",
+            "start": 1148.424,
+            "end": 1151.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " if everyone's reacting to the speed of light already, right?",
+            "start": 1151.624,
+            "end": 1153.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I guess maybe to ask you guys kind of a dumb question, if everyone's already reacting at the speed of light,",
+            "start": 1153.924,
+            "end": 1158.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "How can you have an edge?",
+            "start": 1158.624,
+            "end": 1159.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In a world where, let's say, everyone can already be fast theoretically.",
+            "start": 1160.124,
+            "end": 1162.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Well, the only way that you can have an edge now is to beat the speed of light, you have to forecast things before they happen, right?",
+            "start": 1164.224,
+            "end": 1170.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so now you can kind of see where, why this is relevant and why I'm here.",
+            "start": 1171.324,
+            "end": 1174.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You have to be able to forecast things before they happen suddenly.",
+            "start": 1174.924,
+            "end": 1177.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so 40 years in this forecasting space, there's one equation that dominated financial forecasting, and that was linear regression.",
+            "start": 1177.724,
+            "end": 1184.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is something that you probably learned in school at some point.",
+            "start": 1184.424,
+            "end": 1186.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Coincidentally as well, if you open a machine learning textbook, you will learn about linear regression.",
+            "start": 1187.224,
+            "end": 1192.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's like the first algorithm that you usually learn about in machine learning.",
+            "start": 1192.424,
+            "end": 1196.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So basically, you know, drawing a straight line between data points, right?",
+            "start": 1196.824,
+            "end": 1200.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You have all these data points and you're like, let's just draw a straight line between them.",
+            "start": 1200.324,
+            "end": 1202.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That was state of the art in financial prediction for basically four decades, essentially.",
+            "start": 1204.124,
+            "end": 1210.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So that was the equation that we used.",
+            "start": 1210.324,
+            "end": 1214.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Basically, you know, we learned about CAPM, FOMO French, like we learned about that in school if you took a basic finance class.",
+            "start": 1214.524,
+            "end": 1220.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so that's what you learn about in school.",
+            "start": 1220.624,
+            "end": 1222.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But then what changed in this space and what happened?",
+            "start": 1223.724,
+            "end": 1227.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So at the turn of the century, researchers made breakthroughs in nonlinear regression.",
+            "start": 1227.924,
+            "end": 1233.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They developed better techniques for making models that were more robust to noise and to limited data.",
+            "start": 1233.524,
+            "end": 1240.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Then the major tech firms, some of which are in this room today, in this conference, they drove that open source movement.",
+            "start": 1242.624,
+            "end": 1248.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "as well.",
+            "start": 1248.724,
+            "end": 1249.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So there's a big open source movement.",
+            "start": 1249.124,
+            "end": 1250.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They created a lot of tools for training on machine learning models more efficiently.",
+            "start": 1250.524,
+            "end": 1254.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So things like XGBoost, PyTorch, TensorFlow, etc.",
+            "start": 1254.824,
+            "end": 1259.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Those are tools that hopefully you're familiar with.",
+            "start": 1259.324,
+            "end": 1261.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Around the same time, actually, this is something just worth mentioning, which is that Kaggle launched around the same time.",
+            "start": 1261.624,
+            "end": 1266.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, it may not have the best reputation in our industry, but Kaggle did bring enormous public attention to MLAI competitions at the time.",
+            "start": 1266.524,
+            "end": 1275.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it did have a role in this history here.",
+            "start": 1275.824,
+            "end": 1277.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And, yeah, so, you know, those are some of the things that I guess were just kind of worth mentioning as well.",
+            "start": 1278.624,
+            "end": 1284.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Let's see.",
+            "start": 1285.324,
+            "end": 1286.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I guess, oh, the other thing worth mentioning is, you know, by 2015, the people that were topping the cattle leaderboards at the time, they were overwhelmingly using deep learning by then.",
+            "start": 1286.624,
+            "end": 1298.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then I guess the convergence of progress in software, like TensorFlow and then hardware, like NVIDIA, Tesla GPUs at the time, they created this inflection point for financial forecasting.",
+            "start": 1299.324,
+            "end": 1310.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And this inflection point is where my own story begins.",
+            "start": 1310.324,
+            "end": 1314.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So before I started DataBento, which is my second company, I mentioned that I had a company that was subject of a Harvard Business School case study on high-frequency trading.",
+            "start": 1314.524,
+            "end": 1322.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I spent almost a decade building a quantity trading firm.",
+            "start": 1323.724,
+            "end": 1326.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We focused on high-frequency trading.",
+            "start": 1326.724,
+            "end": 1328.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And started it before Flash Boys came out, before HFT was in the public eye.",
+            "start": 1328.624,
+            "end": 1333.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And ran it for about almost a decade.",
+            "start": 1333.924,
+            "end": 1335.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " At the time, we had, in case people are always curious about that,",
+            "start": 1336.424,
+            "end": 1338.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "I do talk about this all the time.",
+            "start": 1339.024,
+            "end": 1339.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We had just graduated from MIT undergrad.",
+            "start": 1340.024,
+            "end": 1342.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Statistically, we should have failed before we got to launch.",
+            "start": 1342.724,
+            "end": 1345.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I'll skip the details because I talk about this all the time online, by the way.",
+            "start": 1347.124,
+            "end": 1350.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I've given lectures about this topic over and over again, how to start a hedge fund, how to not die, how to run a company, essentially.",
+            "start": 1350.924,
+            "end": 1357.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the differences between a hedge fund and a startup.",
+            "start": 1358.924,
+            "end": 1360.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I talk about that all the time online.",
+            "start": 1360.524,
+            "end": 1361.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I'll skip those details because that's not what this presentation is about.",
+            "start": 1362.324,
+            "end": 1364.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But anyway, first pictures are our office in year one, the Charles Rivers in the background.",
+            "start": 1364.624,
+            "end": 1369.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I was in Cambridge.",
+            "start": 1369.324,
+            "end": 1370.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And at the time, we had no budget and no experience whatsoever.",
+            "start": 1370.524,
+            "end": 1373.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We literally rented an apartment in Cambridge.",
+            "start": 1373.824,
+            "end": 1375.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We snuck a server rack into the closet of the apartment.",
+            "start": 1375.624,
+            "end": 1379.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then literally, like, I remember we built our own exhaust vent, our own cooling system out of parts from, like, Home Depot and Ikea.",
+            "start": 1379.224,
+            "end": 1386.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, that was literally, we were literally, like, the scrappiest founders alive because we had no money ourselves.",
+            "start": 1386.124,
+            "end": 1390.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We didn't come from, like, a rich background.",
+            "start": 1391.324,
+            "end": 1392.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We literally, like, struggled a lot.",
+            "start": 1392.824,
+            "end": 1394.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's where we had to start it and run the business as a hedge fund structure because we had to raise money from other people to trade.",
+            "start": 1394.424,
+            "end": 1399.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We didn't have our own money.",
+            "start": 1399.224,
+            "end": 1400.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it took us several years to find our footing.",
+            "start": 1401.724,
+            "end": 1403.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We made a lot of mistakes to the point where I give lectures at many university campuses just on those mistakes that I make.",
+            "start": 1403.424,
+            "end": 1410.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I have a whole talk and a whole series on mistakes we made.",
+            "start": 1410.524,
+            "end": 1413.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But then when we finally did figure it out, we were using a combination of low latency hardware as well as deep learning models.",
+            "start": 1414.724,
+            "end": 1421.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " By the time we finally figured it out, we ended up trading over $7 billion daily.",
+            "start": 1421.624,
+            "end": 1425.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we became one of the largest market makers on the CME.",
+            "start": 1425.824,
+            "end": 1428.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "We're training about 7% of their average daily volume at the time.",
+            "start": 1429.324,
+            "end": 1432.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So, and yeah, that was our, the right was like one of our other offices over time in Boston.",
+            "start": 1433.124,
+            "end": 1439.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Okay, so then we went through essentially every phase of that modern evolution firsthand.",
+            "start": 1440.124,
+            "end": 1446.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The early cases of GPUs in finance were like super straightforward, but they mostly explored it, raw parallel compute power, things like volatility pricing, which you can see on the left, by the way.",
+            "start": 1447.824,
+            "end": 1458.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then firms began replicating linear regression with more sophisticated models.",
+            "start": 1459.024,
+            "end": 1463.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And maybe to put some things in context, training one final model,",
+            "start": 1464.224,
+            "end": 1467.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " one model at the very end, it's actually quite fast, but because you have to optimize these models and cross-validate all these models all at the same time, you end up having to do this training over and over again in parallel.",
+            "start": 1468.124,
+            "end": 1478.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's where GPUs come into this picture.",
+            "start": 1479.024,
+            "end": 1481.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so today, actually, most of the firms that use",
+            "start": 1482.324,
+            "end": 1485.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " the firms that use most of the GPUs in this industry, they're not necessarily doing anything super exotic or super complex like you would expect.",
+            "start": 1486.824,
+            "end": 1493.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's just that the cutting edge is feature engineering.",
+            "start": 1494.124,
+            "end": 1497.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Finance involves hundreds of petabytes of data, and the space of possible predictors is enormous in this space.",
+            "start": 1498.024,
+            "end": 1505.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " While in fintech, maybe to give you an example as well, like comparison, in fintech, which is kind of a sister industry of ours, if you had a credit scoring model, like a startup in that space, you might use like five to",
+            "start": 1507.124,
+            "end": 1518.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "20 different features.",
+            "start": 1518.724,
+            "end": 1519.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In trading, even a basic trading model can start with 100,000 or more predictors.",
+            "start": 1520.124,
+            "end": 1524.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it is quite a much bigger, more complex of a problem.",
+            "start": 1524.524,
+            "end": 1528.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And in the middle image right there on the slides there, you'll see every pixel is a single predictor there.",
+            "start": 1529.024,
+            "end": 1535.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's what the correlation matrix of a typical predictor set looks like.",
+            "start": 1537.024,
+            "end": 1540.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's quite complicated.",
+            "start": 1540.524,
+            "end": 1541.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Actually, I think we actually created that ourselves, that middle one we did generate ourselves.",
+            "start": 1541.224,
+            "end": 1546.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I think we had to create that, and this was way before AI was a thing, so we built that or created it ourselves for some investor back in the day.",
+            "start": 1546.524,
+            "end": 1554.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Anyway, so we have a lot of random things like that from back in the day.",
+            "start": 1554.524,
+            "end": 1558.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And anyway, so yeah, these like nonlinear interactions and stuff, that's like where, you know, deep learning really excels.",
+            "start": 1559.724,
+            "end": 1566.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's where, that's why GPUs matter in this space is like the combinations, right?",
+            "start": 1566.624,
+            "end": 1570.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like whether a stock moves up or down, it's a one signal, but combining that with volatility, like whether volatility is high or low, that's an even more powerful signal.",
+            "start": 1570.924,
+            "end": 1578.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So there's like, you're combining different things, everything's interrelated in this industry.",
+            "start": 1578.424,
+            "end": 1581.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that's where GPUs really matter.",
+            "start": 1582.124,
+            "end": 1584.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " By the way, originally I wanted to call this talk, you know, the cost of GPUs is too damn high, or like where are my GPUs?",
+            "start": 1584.924,
+            "end": 1591.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because, you know, I don't know if you guys know this, like procuring GPUs, right, is extremely difficult, especially, and also in the financial services industry as well.",
+            "start": 1591.924,
+            "end": 1599.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Sometimes we have to wait up to a year, if not longer, to get some of the technology that we're waiting for.",
+            "start": 1601.324,
+            "end": 1606.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so, but I didn't think that in video would have been.",
+            "start": 1606.624,
+            "end": 1608.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So anyway, I decided to tone it down just a little bit.",
+            "start": 1609.024,
+            "end": 1611.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Okay, so I've told the story of kind of two parallel developments, right?",
+            "start": 1612.924,
+            "end": 1616.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's latency-driven trading, like I talked about, like how did we go from the race to zero?",
+            "start": 1616.624,
+            "end": 1620.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then there's this ML-driven trading.",
+            "start": 1621.224,
+            "end": 1623.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so basically the parallel developments are like it's fast versus smart, right?",
+            "start": 1624.324,
+            "end": 1627.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So fast and smart.",
+            "start": 1627.824,
+            "end": 1629.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you might be wondering, who won in this industry?",
+            "start": 1629.824,
+            "end": 1632.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Is it the fast hedge funds, like the fast market participants in this industry, or is it like the smart guys, like the smart trading firms in this space?",
+            "start": 1633.024,
+            "end": 1640.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so I'll just show you the answer right there, actually.",
+            "start": 1642.024,
+            "end": 1644.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this slide shows here the S&P trading revenues.",
+            "start": 1644.724,
+            "end": 1648.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It looks like there's nine firms on there.",
+            "start": 1649.624,
+            "end": 1651.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There are five firms here who are considered the fastest in U.S.",
+            "start": 1652.124,
+            "end": 1656.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And European markets.",
+            "start": 1656.024,
+            "end": 1656.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then there are four firms here considered the best in ML-driven trading.",
+            "start": 1657.224,
+            "end": 1661.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And you'll notice that the four firms in ML-driven trading are making the most revenue right now.",
+            "start": 1662.024,
+            "end": 1667.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " With XTX being the newest player in this industry.",
+            "start": 1668.424,
+            "end": 1671.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So the other ones have been around for a little bit longer.",
+            "start": 1672.124,
+            "end": 1674.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, I guess the question is like, you know, why is the edge in algo trading shifting from being, you know, latency sensitive, from latency to ML?",
+            "start": 1676.224,
+            "end": 1685.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, why are we shifting over to, you know, being as fast as possible to being smart?",
+            "start": 1685.624,
+            "end": 1690.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " In a nutshell, machine learning is scalable.",
+            "start": 1690.824,
+            "end": 1694.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Whereas racing to zero is not, like I mentioned, right?",
+            "start": 1695.024,
+            "end": 1698.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "By the way, to be very clear on this, these firms are not, I'm not saying that these firms are slow, by the way, they are fast too.",
+            "start": 1698.624,
+            "end": 1705.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They have FPGAs, they invest a lot in cutting edge speed and data and everything too.",
+            "start": 1706.124,
+            "end": 1712.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's just that they're known the most for machine learning.",
+            "start": 1712.824,
+            "end": 1718.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's what they do as a whole as a team.",
+            "start": 1718.124,
+            "end": 1719.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so anyway, yeah, they are still fast.",
+            "start": 1720.024,
+            "end": 1722.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's just that they are not trying to be like the fastest in the world by any means anymore.",
+            "start": 1722.524,
+            "end": 1727.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Anyway, so now if you ask like what opportunities does this like open up in the markets, right?",
+            "start": 1728.124,
+            "end": 1733.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like what are some opportunities for us in this industry, for you guys in this space?",
+            "start": 1733.424,
+            "end": 1738.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Before I talk about that, maybe it's worth mentioning some of the trends in finance that are worth mentioning.",
+            "start": 1739.324,
+            "end": 1743.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So maybe to give you examples of that, beyond algo trading,",
+            "start": 1743.824,
+            "end": 1747.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's also retail trading, which surged after COVID.",
+            "start": 1748.624,
+            "end": 1751.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Think of apps like Robinhood and recently CalSheet, Polymarket.",
+            "start": 1753.024,
+            "end": 1756.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's a lot of retail trading apps out there now.",
+            "start": 1756.424,
+            "end": 1758.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " 15 years ago, retail trading appealed to a very niche audience.",
+            "start": 1758.624,
+            "end": 1763.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But today, you think about like, you know, my uncle trades, my mom trades, like everyone trades.",
+            "start": 1763.424,
+            "end": 1767.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " My cousin, my little cousin's trade.",
+            "start": 1768.124,
+            "end": 1769.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There are literally retail trading apps that target",
+            "start": 1770.124,
+            "end": 1772.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " millennials and boomers and Gen Z, like everybody, they target women, they target different religions, they target parents, they target busy people.",
+            "start": 1773.924,
+            "end": 1781.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like there are literally retail trading apps for every type of different demographic.",
+            "start": 1781.624,
+            "end": 1785.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so retail trading has definitely surged a lot post-COVID.",
+            "start": 1785.324,
+            "end": 1788.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "The other trend is that traders are becoming just more sophisticated as a whole though.",
+            "start": 1790.724,
+            "end": 1795.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So although people still think of retail traders as like, you know, your Robin Hood 17 year old trader in your mom's basement kind of stereotype, that's actually not the case.",
+            "start": 1795.924,
+            "end": 1804.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's not at least what we're noticing at DataBento.",
+            "start": 1804.624,
+            "end": 1806.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's a couple reasons for that.",
+            "start": 1808.524,
+            "end": 1809.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " One is like, look, there's 11 times more CS degrees awarded in the past decade, right?",
+            "start": 1809.524,
+            "end": 1813.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " People are studying computer science these days, so people are getting smarter.",
+            "start": 1813.324,
+            "end": 1815.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the second thing is that due to AI and open source tools available now, it's easier to educate the public on basic trading concepts.",
+            "start": 1817.424,
+            "end": 1824.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so you're less likely to make like, you know, easy mistakes, basic mistakes that people used to make in the past.",
+            "start": 1824.724,
+            "end": 1830.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's also faster to build apps with AI, right?",
+            "start": 1831.124,
+            "end": 1833.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's cheaper now as well.",
+            "start": 1833.224,
+            "end": 1834.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So algo trading used to be definitely a lot more expensive to like get started.",
+            "start": 1834.424,
+            "end": 1839.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And now you can build an algo, you can literally buy a code and algo trading strategy if you wanted to, to get started.",
+            "start": 1839.824,
+            "end": 1844.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, will it be, you know, will it make a lot of money?",
+            "start": 1844.724,
+            "end": 1846.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like probably not, maybe not, but you'll at least learn how to do the fundamentals of that, right?",
+            "start": 1846.824,
+            "end": 1850.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so it's a lot easier to get started and to get the facts right on day one.",
+            "start": 1850.724,
+            "end": 1854.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so as a result, the market for developer API products like DataBento has grown tenfold over just the past year alone.",
+            "start": 1855.624,
+            "end": 1863.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it's never been easier to just like build something and, you know, integrate an API and just kind of build something off of data essentially today.",
+            "start": 1864.324,
+            "end": 1872.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it's definitely an interesting time that we're in.",
+            "start": 1872.624,
+            "end": 1874.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I think that there's also just...",
+            "start": 1875.124,
+            "end": 1876.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, there's a growing...",
+            "start": 1877.524,
+            "end": 1878.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "population of people who are just like good enough at coding that you know AI assistance pushes them over the threshold of like what it takes to build something incredible in the space right so like you don't need to be like like a true expert at the cutting edge now",
+            "start": 1878.624,
+            "end": 1890.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " you just need to know like the fundamentals and then by then you just need to be able to use AI to go from there and so anyway",
+            "start": 1890.824,
+            "end": 1897.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So this is where DataBento sits in the industry today.",
+            "start": 1898.624,
+            "end": 1900.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We provide APIs for building outbound trading strategies and other, you can also build other products on top of us throughout other industries.",
+            "start": 1900.524,
+            "end": 1906.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So people build AI stuff with us, products, they build trading apps with us and other things.",
+            "start": 1906.724,
+            "end": 1912.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Our APIs are fast enough, you can actually technically access our data through like in-flight Wi-Fi if you wanted to.",
+            "start": 1912.824,
+            "end": 1917.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And we've been collecting",
+            "start": 1917.924,
+            "end": 1919.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " high precision financial data at a pace that would put us amongst the, I think it's like the top three now largest self-hosted sources of financial data in the world by the end of the year.",
+            "start": 1920.724,
+            "end": 1930.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we are now that we're going to become the third largest by end of this year, which is kind of crazy if you think about it, because we actually launched about two years ago.",
+            "start": 1930.224,
+            "end": 1938.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we are just a little bit smaller now than, a little bit, a little, like a lot, lot smaller, but at least we're the third largest than the two incumbents in this space that you might have heard of.",
+            "start": 1938.324,
+            "end": 1948.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We designed everything to be very like plug and play for people.",
+            "start": 1949.724,
+            "end": 1952.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So if you're interested in like ML, AI, and finance, the goal is like, hey, you can get things started really easily.",
+            "start": 1952.124,
+            "end": 1957.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Our goal is like, let's make market data democratized.",
+            "start": 1958.024,
+            "end": 1959.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Let's make it convenient, fast, and affordable to get access to that data.",
+            "start": 1959.924,
+            "end": 1964.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I promise you I'm trying to keep the pitch really short, but this one's fun.",
+            "start": 1966.024,
+            "end": 1968.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "One of the things about this is that people are doing things with data APIs today that used to require teams of data engineers, right?",
+            "start": 1968.624,
+            "end": 1975.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So a long time ago, you used to have teams of people that needed to do this, but now you can literally just plug us into Cloud Code and get started.",
+            "start": 1975.624,
+            "end": 1982.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's a lot easier than it used to be.",
+            "start": 1982.924,
+            "end": 1984.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " On the right, the graph is partially blocked on the right, but it just shows that we do have an increasing conversion rate of new users who integrate DataVento, our API, successfully with AI assistance, actually.",
+            "start": 1985.224,
+            "end": 1996.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And that blue line does go up.",
+            "start": 1996.324,
+            "end": 1998.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It just shows that it's become a lot more prominent over time, that AI assistance is getting better at that.",
+            "start": 1998.124,
+            "end": 2003.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And let's see, oh, lastly, I do want to thank NVIDIA and especially Joanna Boyer.",
+            "start": 2005.624,
+            "end": 2011.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " For, Joanna's, by the way, NVIDIA's global head of capital market strategy.",
+            "start": 2012.024,
+            "end": 2015.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They gave us this opportunity to speak here today.",
+            "start": 2016.924,
+            "end": 2019.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And to give you a sense, we use a range of NVIDIA technologies that helped us go from",
+            "start": 2019.424,
+            "end": 2023.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We were the underdog two years ago to becoming the category leader in under two years, basically.",
+            "start": 2024.024,
+            "end": 2028.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I've walked around this exhibition hall since Monday, and it seems like almost everyone here does AI in some way, shape, or form, which makes DataVento a little bit of an anomaly in the sense that we don't do AI ourselves.",
+            "start": 2029.424,
+            "end": 2041.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, we are not an AI firm, which, by the way, makes fundraising very difficult for us.",
+            "start": 2041.524,
+            "end": 2045.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But that's okay.",
+            "start": 2047.624,
+            "end": 2048.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So anyway, we don't provide an AI service, but AI has been our single biggest growth catalyst this past year, which is why I'm here.",
+            "start": 2048.524,
+            "end": 2057.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And then maybe to show you guys that the screenshot on the right is that we were featured as the first financial startup success story on NVIDIA's website.",
+            "start": 2059.324,
+            "end": 2067.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This was like maybe three weeks ago or something.",
+            "start": 2067.224,
+            "end": 2069.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " This is fairly recent.",
+            "start": 2069.224,
+            "end": 2070.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And one of the first financial firms in general on NVIDIA's website.",
+            "start": 2070.924,
+            "end": 2073.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's like two or three other ones.",
+            "start": 2074.624,
+            "end": 2075.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like the one before us was literally NASDAQ.",
+            "start": 2075.924,
+            "end": 2078.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it was like NASDAQ and then Diavento.",
+            "start": 2078.224,
+            "end": 2079.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it was a huge honor to be featured as a successful story on NVIDIA's page here as well.",
+            "start": 2079.924,
+            "end": 2085.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the other thing I appreciate, by the way, is that we use each other's products.",
+            "start": 2085.524,
+            "end": 2088.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So not only do we use NVIDIA's products, but also they use our product as well.",
+            "start": 2088.724,
+            "end": 2092.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I think that's just such a huge honor that we can use each other's products both ways.",
+            "start": 2092.724,
+            "end": 2096.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it's been super nice to partner with them.",
+            "start": 2096.724,
+            "end": 2098.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I guess the moral of the story is that, you know, the innovation happening at NVIDIA doesn't just happen within AI.",
+            "start": 2100.224,
+            "end": 2108.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It has a tremendous ripple effect across adjacent industries like financial services.",
+            "start": 2109.824,
+            "end": 2114.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And actually financial services might be the most profound example of that, like Jensen mentioned on Monday.",
+            "start": 2115.024,
+            "end": 2119.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Financial services are notoriously secretive, but it is no secret that AI adoption now is becoming a really big deal.",
+            "start": 2121.024,
+            "end": 2128.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And it's also not a secret that NVIDIA technology does actually sit at the core of many of the most powerful trading firms in the world today.",
+            "start": 2129.824,
+            "end": 2137.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That is something that these firms are proud of, and they really do boast about.",
+            "start": 2137.124,
+            "end": 2140.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And also that countless startups, right, including ours, we would not be here.",
+            "start": 2142.124,
+            "end": 2145.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Like, we literally owe a meaningful part of our own growth and success.",
+            "start": 2145.724,
+            "end": 2148.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "So if there's one takeaway I could summarize, it's that the next wave of innovation is already here in financial services, and that a lot of that is powered by NVIDIA.",
+            "start": 2150.824,
+            "end": 2162.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Thank you.",
+            "start": 2163.424,
+            "end": 2163.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's all.",
+            "start": 2163.824,
+            "end": 2164.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I think we do have a little bit of time for Q&A.",
+            "start": 2167.924,
+            "end": 2170.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I don't know if anyone has questions or anything.",
+            "start": 2170.224,
+            "end": 2172.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yeah, it looks like we have time.",
+            "start": 2173.624,
+            "end": 2174.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So we have a couple of, maybe one quick question.",
+            "start": 2174.824,
+            "end": 2177.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " And you guys are welcome to ask me anything.",
+            "start": 2179.924,
+            "end": 2182.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's no bad question.",
+            "start": 2182.124,
+            "end": 2183.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " I totally understand what it's like to not be from this space.",
+            "start": 2184.124,
+            "end": 2188.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "Vadim from Morgan Stanley.",
+            "start": 2193.92,
+            "end": 2194.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I have a question.",
+            "start": 2194.92,
+            "end": 2195.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Do you see yourself as a more historical, analytical data provider or real-time trading use?",
+            "start": 2196.32,
+            "end": 2203.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Oh, that's a good question.",
+            "start": 2203.42,
+            "end": 2204.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So we provide both, actually.",
+            "start": 2204.42,
+            "end": 2205.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And I think in order to be successful in this industry, you have to do a little bit of everything under the sun.",
+            "start": 2205.72,
+            "end": 2210.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But I think that...",
+            "start": 2210.32,
+            "end": 2212.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " One of the bigger factors for our success is real time, right?",
+            "start": 2212.62,
+            "end": 2215.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And the reason why real time data is a lot more useful than historical data is because think of historical data as driving with a rear view mirror.",
+            "start": 2215.62,
+            "end": 2222.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's actually an analogy that my professor in college gave.",
+            "start": 2222.32,
+            "end": 2224.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " If you're backtesting only on historical data and you're not being able to see training in real time, right?",
+            "start": 2225.02,
+            "end": 2229.32,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " It's like driving with a rear view mirror, but you can't see what's ahead of you.",
+            "start": 2229.62,
+            "end": 2232.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so you have to be able to",
+            "start": 2232.62,
+            "end": 2233.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Real-time data is extremely useful in this space, and so we do provide real-time data as well.",
+            "start": 2234.92,
+            "end": 2238.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But not for HFT, obviously, right?",
+            "start": 2239.92,
+            "end": 2241.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " That's not for collocations.",
+            "start": 2241.52,
+            "end": 2242.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's more for real flow.",
+            "start": 2242.72,
+            "end": 2244.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " That's a good question.",
+            "start": 2244.02,
+            "end": 2244.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Sorry, I didn't sell ourselves very much.",
+            "start": 2244.62,
+            "end": 2246.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I didn't talk about ourselves.",
+            "start": 2246.42,
+            "end": 2247.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I'm sorry I should talk about that.",
+            "start": 2247.32,
+            "end": 2248.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Yes, we actually do provide a lot of our major customers are high-frequency trading and quantitative trading firms.",
+            "start": 2248.62,
+            "end": 2254.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And for those who do need to co-locate, we do provide connectivity solutions.",
+            "start": 2255.02,
+            "end": 2258.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We can provide cross-connects and co-location as well as cloud solutions as well as connectivity to our data.",
+            "start": 2258.62,
+            "end": 2265.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So yeah, we do, like I mentioned, you have to do a little bit of everything.",
+            "start": 2265.52,
+            "end": 2268.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So connectivity for those who aren't familiar, if you're purchasing a lot of data from us,",
+            "start": 2268.62,
+            "end": 2272.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " or from any website, right?",
+            "start": 2273.72,
+            "end": 2274.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You need to make sure that that data arrives to you on time because there's a lot of",
+            "start": 2275.12,
+            "end": 2278.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "that all the data is arriving on your end fast enough, and so you get purchase connectivity.",
+            "start": 2280.32,
+            "end": 2284.32,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so for the firms here purchasing a lot of data, especially options data, chances are you need to buy connectivity at some point.",
+            "start": 2285.02,
+            "end": 2292.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And so that's why we provide both the data as well as the connectivity.",
+            "start": 2293.02,
+            "end": 2295.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So kind of a little bit of everything under the sun.",
+            "start": 2296.12,
+            "end": 2298.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " That's a great question, thanks.",
+            "start": 2298.82,
+            "end": 2299.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " The data is coming from NASDAQ, right?",
+            "start": 2307.72,
+            "end": 2309.32,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And is it competing to the data that they're provided by Bloomberg?",
+            "start": 2309.72,
+            "end": 2314.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Is it all coming from the same source?",
+            "start": 2314.92,
+            "end": 2317.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Yeah, that's a good question.",
+            "start": 2317.22,
+            "end": 2317.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So I mentioned actually that in the US, NASDAQ is not the only stock exchange.",
+            "start": 2318.32,
+            "end": 2323.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There are actually over two dozen stock exchanges.",
+            "start": 2323.92,
+            "end": 2326.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then there's also futures exchanges, options exchanges.",
+            "start": 2326.72,
+            "end": 2329.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's different exchanges.",
+            "start": 2329.02,
+            "end": 2330.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's crypto exchanges, right?",
+            "start": 2330.52,
+            "end": 2331.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So there's literally dozens and dozens of different exchanges, both stock exchanges as NASDAQ, the New York Stock Exchange.",
+            "start": 2332.02,
+            "end": 2338.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's all kinds of different exchanges.",
+            "start": 2338.92,
+            "end": 2340.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You might have heard of IEX.",
+            "start": 2340.72,
+            "end": 2342.32,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " You might have heard of MIAX.",
+            "start": 2342.92,
+            "end": 2344.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " There's a variety of different stock exchanges all across the United States, and a lot of them are a lot smaller, and so you might not have heard of them.",
+            "start": 2344.72,
+            "end": 2350.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Now, these exchanges...",
+            "start": 2351.62,
+            "end": 2354.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So that's why I mentioned that there's regulation that came about.",
+            "start": 2354.62,
+            "end": 2356.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Because when you're trading, it's easy for people to take advantage.",
+            "start": 2356.92,
+            "end": 2359.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Well, if you're trading and you're placing an order on Apple stock on this exchange, someone else could just, like, you know, arbitrage that between two different exchanges, right?",
+            "start": 2359.52,
+            "end": 2366.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Or what if you're getting a terrible price on this exchange?",
+            "start": 2366.52,
+            "end": 2368.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": "And so that's why that regulation I mentioned came about.",
+            "start": 2369.02,
+            "end": 2371.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So it would provide you with the best price across all those different exchanges.",
+            "start": 2371.42,
+            "end": 2374.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " And then you mentioned Bloomberg, right?",
+            "start": 2375.42,
+            "end": 2376.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " What does Bloomberg do?",
+            "start": 2376.62,
+            "end": 2377.32,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So Bloomberg is what's called a charting solution, Bloomberg Terminal.",
+            "start": 2377.42,
+            "end": 2380.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So Bloomberg Terminal sits one step below stream for data method.",
+            "start": 2381.22,
+            "end": 2384.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So meaning we actually sell our data to a lot of terminals.",
+            "start": 2384.72,
+            "end": 2386.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So a terminal or a charting product is like when a human looks at a chart and you're like trying to analyze stuff, right?",
+            "start": 2387.02,
+            "end": 2392.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " We actually sell our data via API to a lot of services very similar to that, where you might want to take a look and like produce analytics and charts and graphs and stuff like that.",
+            "start": 2392.72,
+            "end": 2402.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " But Bloomberg is not a direct producer of the data.",
+            "start": 2402.32,
+            "end": 2404.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They are also like more of a data aggregator, a charting tool, analytics company.",
+            "start": 2404.52,
+            "end": 2408.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They do a little bit of everything now too because of how big they are.",
+            "start": 2408.62,
+            "end": 2411.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " So yeah, they are not an exchange.",
+            "start": 2412.32,
+            "end": 2414.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " They're more of a technology company.",
+            "start": 2414.72,
+            "end": 2416.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Great questions.",
+            "start": 2418.22,
+            "end": 2418.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Great, thank you.",
+            "start": 2419.32,
+            "end": 2419.92,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think that's all the time that we have for today.",
+            "start": 2420.02,
+            "end": 2422.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " But, Christina, so let's thank the speaker again.",
+            "start": 2422.72,
+            "end": 2425.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Awesome, thanks guys.",
+            "start": 2426.02,
+            "end": 2426.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        }
+    ],
+    "type": "transcription.done"
+}
