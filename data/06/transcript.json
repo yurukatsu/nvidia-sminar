@@ -1,0 +1,2822 @@
+{
+    "model": "voxtral-mini-latest",
+    "text": "Always on AI Assistant. Another reminder is that the These sessions are recorded and will be available within 72 hours if you'd like to see any of the recorded sessions from other ones as well. So without further ado, it's my pleasure to introduce the speakers for today's, this next talk, Category Theory in Commodities. Applying Sheep-Based Neural Networks and Quantum Portfolio Optimization. So our speakers are Emmanuel Skoulos and Igal Gerard. Emmanuel is a data scientist on the AI factory team at NVIDIA, where he focuses on GPU applications. Previously, he worked at a startup applying data science for anti-money laundering. He earned his PhD and master's degrees in chemical engineering from Princeton University and an undergraduate degree in chemical engineering from Rutgers University. Egal is a portfolio manager and director of quantitative and derivatives strategies at Cohen& Steers. Prior to joining in 2007, he headed the quantitative and derivatives effort at Morgan Stanley. He graduated from Wharton School of the University of Pennsylvania with a BS in Economics. Let's welcome the speakers to the stage. Thank you.Just kick it over here or there. Alright, well thank you for joining us. It's going to be a pretty interesting session. It's always good to share work that we've done. I also want to thank Manny and Sid for their hard work in being able to focus on this project and really help move along a commodity framework. So with that, I'd say it's pretty timely.to be able to talk about commodities because we're in a world where, you know, right now in Iran and Middle East and the Straits of Hormuz, you've seen as a result of that oil move up by about 50% in the span of about two and a half, three weeks. And so it just punctuates the issues that we have in commodities is that you have significant returns, extreme returns, and part of the challenge is to be able to size your trade, to be able to look at risk and be able to evaluate opportunities in a way that really respects the framework that commodities operate under. Overall goal here is there are many different techniques that are out there that folks are using to be able to build processes to look at risk models in alpha. We're going to use a sheath-based neural network. This is a generalization of graphic neural networks. The nice thing that we're going to find out about this is that it's a pretty wholesome technique that allows us to be able to really look at many different types of assets and how they're related in relationships to be able to really account for the risks that are embedded and endemic to commodities. It's a supervised learning technique. The way you train it is you look at the past, you look at what's transpired and you try to match it up basically with your model. So, objective here really is can we apply chief neuralthe networks to be able to better forecast prices and to forecast risk. And really our focus is going to be on risk because that's really a key driver within commodities. And some of the things I'm going to go over is that when we look at commodities structure, you can see fat tails, asymmetric shocks, seasonality, geopolitical events on one hand, and then you have lead-lag relationships between macro variables, correlations that are changing and shifting pretty quickly, and really dynamic cross-correlations between commodities and each other and macro. So with that, I'll maybe just step back and talk a little bit more about what commodities are. So commodities span energy, metals, agriculture, all the stuff that you see in the shelves that you're buying and you can touch. These are real assets, and they really span a wide breadth of sectors. There's a term structure in commodities, so when you think about trading a commodity,Like oil, there's a one month, two months, three months, six months future. One year, it goes even out to ten years. And so one of the unique aspects of commodities is that when you say you're going to buy oil, it's like, what are you going to buy in the front month? Are you going to buy three months from now? Where are you going to be in the term structure? And that's a unique part of the commodities world. And the term structure embeds expectations. It's not like the S&P futures where the opportunity cost is interest rates. It's interest rates, but it's storage costs, it's supply demand, it's hedging activities. So all of these create a set of expectations that are reflected in the term structure. Typically, though, when you see shocks, that happens really on the front end of the term structure because that's where the greatest demand is. Cross commodity and macro dependencies, you know, oil and inflation are integrated oil and the dollar. Integrated oil is based on the dollar in many respects. So when the dollar goes up, oil goes down and vice versa. Copper and growth. Copper is probably the most equity-like commodity, I would say, but it's linked to growth. When you have greater growth, you have more need for copper pipes. And so it's a benefactor of that. And then you have gold and safety and quality and flight to quality in part. Supply and demand is important.Weather is important, so you have an element in some respects of randomness there. Geopolitics, as we discussed, and also financial positioning, you have CTAs that are momentum, focus on momentum and trend followers, and that's part of the overall dynamic of positioning in commodities. And then you have seasonality. You know, to trade a commodity in the winter may be different than trading it in the summer. That gas is a great example. And then in addition, you have technical trading, momentum curve, shape, CTAs, what I mentioned. And so these are all, you can think of as many different dimensions. And it isn't as any one of these is more important than the other. They're pretty much congruent in terms of their impact on the price of commodities. And this is what you're dealing with is a multidimensional world where you have to be able to size risk and forecast return.On this chart, I put this chart here just to show some of the differences between commodities and equities. And if you look at the spread of returns, and this is looking at the last 10 years, the best and the worst returns for each of the commodities on the top left, and then right beneath that you have selected S&P sectors, energy tech, etc. But if you look at the spread, it's pretty wide. You know, crude, it can be up, just up 50%, that just happened, down 25%, nat gas, up 65%, down, you know, 51%. And this is just in one month. We're talking about one month monthly returns, the best and the worst. And so when you look at the zip code that these are in, they're pretty wide. And compared certainly to their equity counterparts, maybe energy is a little bit more volatile, but then even tech and financial utilities are on a lower level in terms of overall breadth.in terms of the dispersion in returns. Just look at 20-day returns. Again, looking at monthly returns, best and worst, similar story. This is commodities, equities. You'll see just that there's a different x-axis. You're measuring different y-axis as well. So here is a looking at volatility on commodities. And the interesting thing is some of these things, if you look at natural gas, it exceeds 80%. 200%, I mean that's pretty big. So just think about a mean variance type of a framework where your vol is 200%. That's really a non-starter. And so again, part of the challenge with commodities is that you have significant volatilities across the board, it's not just natural gas, if you look at all the other petroleum complex, heating oil, crude, all very, very high. Even you go to the precious metals, you've seen silver. Silver shares some of the qualities gold has in terms of safety, but it's also used in industrial uses, like 50-50. So you've seen 162% vol in silver. Copper, I said it was the most equity-like, but you see 99% of all, and that's in part because of the tariffs. And so it gets back to geopolitical and monetary policy and fiscal policy.Policy and et cetera. But just to show you that the vols of these commodities are pretty steep. And so when you think about managing a portfolio, this is what you have in the back of your mind. And by the way, these markets are open more or less seven days a week, 24 hours. And this is the corresponding S&P sectors. Again, volatilities are in the 11 to 20 range. Yes, every once in a while you see some big spikes in information technology, but certainly not at the same level as what you're seeing on the commodities.Okay, so here we're looking at seasonality. And, you know, seasonality is all about, let's say, natural gas, that the dynamic of natural gas in the winter may be different than the dynamic of natural gas in the summer or in the spring or the fall. And so you have the seasonality. And you can say, well, you know, we've seen seasonality before. You just, you know, you just de-seasonalize your time series and you can look at it. But it's not really as simple as that because it's not just that in the winter natural gas acts differently. It's the fact that it's in a different regime. The volatility is different. The likelihood of extreme events is different. And so here you see like a net gas in the fall, the green, you can see some pretty big dots there that signify large volatility spikes taking place. And this is really weather related. So if the weather is going to be colder than anticipated, then you see a lot more demand for net gas and that pushes up the price. And we've seen that recently in December, November, December of this past year. We've seen it move up a lot and then we've seen it come back down.more in February and March. But also cotton, you see variations in returns and volatility across the board, and that's because of harvesting, the rainfall, and its uncertainty around the harvest. And so, you know, not just limited to natural gas, cotton, wheat, corn, all of them are susceptible to different regimes with respect to the seasons. All right, and this is a chart that I like showing just to highlight that, you know, when we talk about commodities, I'll always say, you know, in commodities, every month you'll see a 100-year flood in a specific commodity. And that's kind of a running joke, but it's really true because if you look at this chart, you see heating oil in the past month up 50%, and WCR 42%, the high was, this is month to month, the high was 50. But then you had natural gas down 34, down 24, but then up 17, up 24. And so it wiggles around. But then you have silver, 15% coffee, and coffee in a function of the Brazilian crop is that when you have droughts, then that affects the supply, and the supply then affects the overall price. And you've had some challenging trade for coffee in the last two years, and you see that that's reflected.in the returns. So coffee's in there. And then you see sugar in there, December 2024. It's not big, but sugar is also affected by crops. And so, you know, in Brazil, when energy prices go up, then they can, you know, redirect the cane to produce ethanol, and so that puts the stress on sugar. So you see how these are all interrelated in terms of geopolitics, weather conditions, crop conditions, etc. And I showed this chart just to highlight, is it showing the weekly correlations with macro variables, the break-even WTI oil against the 10-year break-even dollar credit in the S&P N. You know, it's hard to look at this graph. There's so many lines. But I think the one thing you take away from this is that it's very not stable, right? Very cyclical. You see that sometimes the correlations are high, at times they're low. I think if you look at the top line, which is the break-even in the last two years with With inflation running high, it's been a little bit more even, i.e., the correlations between oil and inflation have been relatively stable in a world where you've had inflation. Prior to that, you had a lot more cyclicality. But I think the takeaway here is that with respect to macro variables,A lot of cyclicality in oil. And so that's another thing you need to be respectful of is that if you have a model, you need to know which one of these regimes you're in so that you can better calibrate it. This is an interesting chart that shows whether, looking at two different pairs of assets. So on the left hand you have energy and crude. And the question here is, I'm trying to forecast crude. Is energy give me a leg up? Can energy help me forecast crude? Can VIX help me forecast crude? Can copper help me? Can S&P help me? And what you see here, if you look at the chart on the left, is that energy and these correlations are not, even though they're small, 0.1, those small correlations are actually pretty material in the world of one. What you see here is that generally over the past 20 years or so, energy has had a little bit of information content and be able to predict crude returns. Not so much crude and energy, but the left bars are showing you that energy is a leading indicator for oil, has been. Now I can share with you that that hasn't been the case in the last two years.But if you look at VIX, WTIO, copper, and S&P, generally, if you look at these bars on the left-hand side and the right-hand side, they're more or less symmetric, which means there are regimes where VIX can lead crude and regimes where VIX can lag crude. Similarly with copper, there are regimes where copper leads and where copper lags. And I'd say the same thing for the S&P. It's a broad market sentiment and maybe a reflection of the economy. So the takeaway here is, again, that we're...Regimes are changing, and so we have to be very mindful of that in the role of commodities so that we're calibrating our models effectively. Okay, so this is another chart showing factors and predictive powers of factors. So, you know, does momentum, is momentum a driver in terms of being able to deliver returns over time? So if you just traded momentum or you traded price reversal, you traded backward deviation, which is the shape of the curve, or speculative positioning, how much positioning is a long or short value, what's the price of all?today versus three years ago, or the time spread, how backwardated is a commodity versus where it was a month ago. So these are all factors that are traded very widely in the world of commodities. There are probably billions of dollars on these factors. And when you look at how, whether they work or not, maybe backwardation on the top right seems to work more often. I like that. It's a pretty good signal, but not all the time. Momentum is a lot of trend followers, as you may be aware, but it hasn't really worked a lot. I mean, it worked in 2016. I guess you see that working in the aftermath of shale a while, sort of moving up, and momentum did well. But again, the goal here is these are regimes. Sometimes they work, sometimes they don't. And you need to be able to leverage a regime model that can help you be able to identify where you're in. Okay, so I show this as sort of the macro signature of extreme oil moves. This is just looking at oil across time and some of the biggest moves, just to highlight that they're different drivers. There's demand recovery following the financial crisis. There's supply glut in 2014, shale, OPEC, and supply cuts. And then you have the last, March 2022, Ukraine, and 2026, Iran. The geopolitical issues, wars break out. And I also point this out to highlight that even when you look at 2022 and 2026, they're not all the same. The wars aren't all the same. So in 2022, oil reacted, but net gas also was up.But you don't see that same move in March 2026. Similarly with copper, which is the red, it's not moving up as much. And certainly, yeah, so in VIX as well, you know, it's not moving up as much as it would. So even within these two different regimes, while they may be similar, they're also very different. And so, you know, your model may say, I don't know what to do at this point because I have never seen this type ofStraight to farm, which gets closed, and things move up quickly. And that's a good thing to know in regime break, because then you will potentially flatten out your positions, or at least resize your positions to be able to account for that. Alright, so let's skip that and that, and then just jump to the category three. So what is category three generally? And without getting into the math, category three is a world where you're focusing on taking assets and objects that are very different, oil and copper, oil, copper, and insulation, and being able to create aa connection with them so that they're speaking the same language, right? So that, you know, so that when you're looking at copper and oil and inflation, that, you know, that you're looking at something that's normalized and that, you know, that they can share a common language such that ultimately the impact is, Can we create a consensus based on our signals that the market's going to go up or the market's going to go down or they're going to have an extreme movement or not? And so part of the goal, and I'll say this loosely speaking, is really in category three to create consensus in the models. So it's not democratic. It's like a jury. You know, in as much as you need to have a unanimous decision. And if everybody looked at the facts, right, and all these assets were accounting for all the facts in the same way, potentially you'd have more of a consensus than you would otherwise. I like to be able to look, use a metaphor here, which is, coming from sociology.So nobody thought that I'd be talking about sociology in a commodities talk. But generally, you know, Irving Goffman, who is a very well-renowned sociologist, came up with a perspective called frame analysis. And the goal there is, and the objective is, that everybody, even everyone here looking at this screen, has a different... Version of translating what they're seeing in some respects a reality that's coming through that maybe you look at different and so I'm borrowing this to show that each actor here interprets the same market events with different lens and what category three tries to do is it tries to account for that normalize for that and then be able to put everyone on a sort of a level playing field so they're allthe same thing and talking the same language. So the economist who's looking at macro, the political analyst, the geopolitical research analyst on the fundamental quantum meteorologist, weather trader, the goal is I'll go back to the goal here is that, and what the process is going to do is try to create a language that they all share such that they can be nudged one way or another so that they can arrive at a unanimous outcome instead of saying, okay, well, the macroeconomist thinks that it wells down. The geopolitical analyst thinks that there's too much risk, and so that's potentially more downside risk. The fundamentalist likes what he sees or what they see. So the goal here is to create consensus. And if you have a common language, there's a greater likelihood of creating consensus. Category 3 gets that is to create that commonality, that common language across different, in many cases, very different, disparate areas and sort of create that common language so that you can end up with a framework that you can look at to create this type ofOkay, I'm going to skip this and maybe turn it over to Manny, who's really done a lot of the heavy lifting and implementing category theory and the Sheaf neural networks. Here you go. Let's skip ahead a little bit here. This slides will be up within that 72 hour period. So much of this work was involved in all of the commodities, break evens, rates, other macro variables, as well as weather. So this is a truly multimodal graph representation and we're gonna go into that momentarily. We have about 20 years worth of data incorporating liquid security fits.And we're trying to identify those key inputs using traditional statistical techniques and then feed them into the different components of the graph itself. And so, like I just said, we have many different complex objects here. We have the commodities, the macro signals, weather, and then even the portfolio allocations. And we need rules to connect those objects in a consistent way. And that's what we have.Sheep, no networks can do. We actually do care about how we compose them together. How do those transformations that we may impose on the data combine to one global allocation? And that's what we're trying to do is have a clean language for that structure. And so we might have a commodity node, which would be like, and we could take many of the features that Yigal was describing before, do some transformations within that node, and then the features themselves might be quite different from one commodity to the next, and of course, to weather. And we now, with a SheafNode network, need to have some sort of language by which we can transfer informationI'm going to get into the architecture momentarily, but we basically map them to a common vector space. Before I dive even deeper, I think we should start with the plain English dictionary. And so let's kind of start first with what a node is. It's really that one source of information like oil, rates, or weather. A stock is that packet of information that's stored in that one node. It's those node-like features. A map is how we transform the data from one representation to another. And chief node networks have this other special component, which is something called a restriction map. That's a learned translation rule between the connected nodes. In other words, you might have some component of your commodity that's relevant to another commodity, but another component in that first commodity that's not. And you want to learn what information should be transferred and what should not. And that's what a restriction map at a high level can learn.very nuanced, very particular information. Ashif is that way to connect that local information together into one global structure. And we also looked at co-homology to detect when that global picture really stops fitting together. What you saw earlier with what Yigal was saying is commodities is a totally different animal compared to the equity markets. And you have those 100-year floods every month. How can you try to create some sense of a global consistency or even a local consistency within your model? And if you at least have some way of measuring the consistency via thingshave some hope of detecting these things and understanding the temporal nature of these graphs. So to dive one step deeper into what a stock is, it's that information bundle at each node. And so every node needs its local state. It's not just a single number. It's a vector representation. That commodity stock can summarize the recent price per gator, momentum, aggregation, et cetera, and other factors. And for macro nodes, it can be things like credit.And then we had a weather stock that can summarize the shape of the recent weather forecast pattern. Because as you know, as you heard of earlier, that gas is highly dependent on things like weather. Like when in the East Coast, you had weather in the teens or single digits about a month ago. Those kinds of being able to forecast that ahead of time can give you a little bit of an edge. And so with these stocks, this is how those different data types can enter into that same graph. And you have them in a uniform way. That's what we're talking about having them talk.in a common language. And so that chief neural network is going to turn those local cues into a global view. And so if each node is carrying its own information, the restriction map is learning how the information can be shared and translated. The chief neural network then can take those local views and map them into a global view, and hopefully we get some consistent. Market and coherent market picture, or at least the diagnostics by which to measure that. And that matters because we have these market relationships, they change over time, they're highly dynamic, and we want to make sure that we can really capture the true essence and nature of the problem, which is where, you know, hopefully you're seeing the Sheaf Network actually adds a unique twist to other ways where you might simply look at individual commodities by themselves without looking at the big picture and you're missingsome interbrain information. So going back to these node state vectors, you can see here, so if we assume we have an oil commodity with these particular components in the node, we have backwardation, time spread, momentum, reversal value, and COT, you can see how under different regimes, what those restriction maps can learn and pass through to other nodes. Similarly for net gas, even across that, we want to be able to learn what those node state vectors and information transfer is over time and dynamically adjust them and have our chief neural network dynamically evolve over time to capture these changing regions.And so when you really look at it with that chief-based graph and all network, these restriction maps can actually open and close depending on the node state. So on the left-hand side, you're seeing a case where you have oil connected to the break-even. It's a very strong... Also with nat gas and copper. And you can also see the reverse edges might not be necessarily as strong. And under a different regime that you saw in just this past month, you can see that that now information transfer would be cut off because that relationship is now broken. That's a big difference compared to graph neural networks, where you're always passing those pairwise relationships. You're always able to talk to your neighbor. Where chief neural networks are able to learn whether information should be shared or not, and you get much more precise relationship metrics. And so chief neural networks are a form of graph neural networks, but they're much more expressive.Now, weather forecasting was a fun component of this work with TIGAL. So weather affects agriculture, energies, transportation, supply chains, and having that signal, you know, just averaging, looking at temperature averages, really misses the wild swings that we can often have from week to week, where some weather front might be crossing over the United States. And so we actually did weather forecasting where we did, we turned the weather fields into compact structural summaries, and we actually connected that as its own node into this commodity graph. The idea being, via these restriction maps, we can learn which commodities are affected by weather and have that be affected over time. And so we think that weather could actually be a first grade investment signal into this particular process for this problem. And so we also looked at, we took this a step further, I'm not going to go very deep on this, we looked at zigzag persistence, this is taken from topological data analysis, where we're trying to start with a sequence of these weather snapshots, so every day we're forecasting the weather roughly a month ahead. And if you treat the United States as a graph, you basically have athat changes over that month. And you need a compact representation that can capture how those different parts of the weather forecast can change as you progress through that month. That way you can incorporate that as a feature. And so we took work from Purdue, Professor Tamal Day, him and his graduate students developed a very brand new technique called zigzag generalized rank invariant landscapes as a way to convert weather into a compressed state vector. And so in this architecture, These features become structural weather memory that can flow through the learned restriction maps and onto the commodity nodes. And that enables a more durable pattern change. It's not just noisy from one day, from a spike to high temperatures or low temperatures, maybe perhaps like we're seeing this past week here at the conference.with the temperatures we've been having. And so here's what we did. We used our NVIDIA's Earth 2. We used DLE Sim. That's the deep learning Earth system model inside of Earth 2 to generate 22 trading day, or roughly one month ahead, forecasts. On two meter temperature high, we used 20 years of forecast at six hour intervals. We then aggregated them into min, max, and mean, and actually computed the heating and cooling days associated that across the continental United States. Further make this, again, a deeper representation, we thought to ourselves, well, maybe perhaps for things like natural gas, it might depend on where you are in the United States. Perhaps dense, much farther than the areas might consume more natural gas than in the Midwest. So we actually did a weighting by population density. Using GPWV4 annual data.with linear interpolation through the dates. And that way we can overlay the weather forecast on top of population density together. And then we applied the zigzag persistence technique that I described in the previous slide to compress all of that for a given day down to a compressed vector that can be incorporated. And then we, of course, did that across the 20 days. And so the real big takeaway is that if you can take weather forecasting and incorporate it into your graphs,You can have a compressed representation and hopefully detect these regime shifts which can impact energy, agriculture, livestock, commodity prices, and have those spatial patterns of stress more often than just a single national average or local averages. And so the other neat thing that we did in this work compared to many traditional things is that we actually forecasted the expected returns in the covariance matrix directly, whereas many alternative ways they actually will try to forecast returnsand then from that tried to produce the mean returns and the covariances. So that was a pretty unique contribution from this work. It's more actually decision aligned than just predicting the intermediate quantities and then only later trying to forecast or trying to do the portfolio optimization. So we're trying to make that into a cohesive problem that we can solve. And then we actually then send that into the portfolio allocation.So related to why we did this, by forecasting the covariance matrix directly, is that we actually have differential end-to-end optimization. So when you experience these painful drawdowns, you don't want to just look at only variance in the classical way. We also look at conditional drawdown at risk, which focuses on the average of the worst tail. And then that lets the model learn downside control and not just the average case accuracy. And that way we can optimize this in a gradient-based training.To put it all together, we have a full end-to-end training that takes the raw features, we compute some intermediate node representations within each part of the graph. Those get passed to these stocks, which we also want to learn via these restriction maps what information gets transferred. We incorporated weather, and then from there we're directly forecasting the covariance matrix and the returns. And from that we actually did a top-based selection of not just all commodities, we wanted a sub-selection of that. And then from that we did this conditional drawdown at risk. That is fully ended.and differential, which compared to many of the techniques applied today, where they view that first process as kind of your alpha signal generation process, and the second part is the portfolio optimization process. And here's a sampling of the commodity graph structure. Because we have many different commodities in different nodes, I subsampled that graph so that you can see some of the connectivity there. And we'll move forward with how we did the first.So we use CUDA-Q, which is an NVIDIA library for doing quantum simulations. And this is an example of the VQE circuit that we did for the variational quantum eigensolver. And we estimate the returns and risk allocations, do those top K, and then do that single optimization objective. And then we actually form started from a classical network, and then you fed that into the quantum optimization, and this did multiple GTOs. So we actually did also a number of contributions to speed up and accelerate, and these are a number of libraries, Signatory and DC Grill. We actually accelerated to make them much faster on GPUs. As well and we did each sweep of this work consumed about 10 hours on a one rack of GB 200 NVL 72 or GB 300 NVL 72 and that doesn't count the weather processing. I'm going to quickly talk about the T-SNE plot and you see here on the bottom in those blue you see all of the metals kind oflocated together, even close to gold, and almost GC. And then on the top, you'll see those red nodes connected together. You have oil, nat gas, and others all close. And conveniently enough, you actually see the weather topology node also. Collected pretty close together so you see that there's some relationship between those nodes. And so this was all learned directly from the graph itself. We actually look at the risk contribution of our model by sector. You can see that compared to BCOM, which we have as a relative benchmark, the energy component is about 29%, which is actually a little bit lower. And so we try to minimize the risk on the downside. And then here's an example of the 12-month information ratio versus the ECOM. And so we have an information ratio, and what I'm showing you here, about 0.3. So it's pretty modest. But you can see that we did penalize ourselves in that number because when we started this roughly 20 years ago, that first, we basically started the model right before the financial crisis. And so that was that initial drop. And so the model paid a learning tax for that. And then we learned the regime sensitivity through the 2015.We had a COVID drop, which we can take away as saying, well, we need to consider another node to capture those kinds of effects and moving forward. And so I'm going to skip over this and just talk about the overall takeaways. We have really an N10 differential process that integrates price, macro, and weather signals. We detected stress and structural change, not just return forecasts. And we really have a modular framework for these multimodal investment decisions, which we feel is what's coming down the line.from the pipe for the financial services industry, and we can actually have explainable portfolio decisions. And do you want to have the last word? Yeah, so I think that, thank you for the work. The work is in development, we're expanding it, but it's, as I mentioned, you come out as a very unique asset class in this type of a framework where you're parsing together many different areas and trying to come up with a unified view is pretty critical. So thank you for your time. Thanks so much, Manny and Eagle. I think we are out of time.questions for this session, but they will definitely be around and feel free to talk to them individually for the questions. Thank you again. Thank you for joining.",
+    "usage": {
+        "prompt_tokens": 315,
+        "completion_tokens": 11276,
+        "total_tokens": 11591,
+        "prompt_audio_seconds": 2495,
+        "request_count": 45
+    },
+    "language": null,
+    "segments": [
+        {
+            "text": "Always on AI Assistant.",
+            "start": 0.3,
+            "end": 1.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Another reminder is that the",
+            "start": 3.0,
+            "end": 4.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " These sessions are recorded and will be available within 72 hours if you'd like to see any of the recorded sessions from other ones as well.",
+            "start": 7.7,
+            "end": 16.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So without further ado, it's my pleasure to introduce the speakers for today's, this next talk, Category Theory in Commodities.",
+            "start": 17.0,
+            "end": 27.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Applying Sheep-Based Neural Networks and Quantum Portfolio Optimization.",
+            "start": 28.2,
+            "end": 32.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " So our speakers are Emmanuel Skoulos and Igal Gerard.",
+            "start": 32.6,
+            "end": 37.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Emmanuel is a data scientist on the AI factory team at NVIDIA, where he focuses on GPU applications.",
+            "start": 38.0,
+            "end": 44.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Previously, he worked at a startup applying data science for anti-money laundering.",
+            "start": 44.7,
+            "end": 48.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " He earned his PhD and master's degrees in chemical engineering from Princeton University and an undergraduate degree in chemical engineering from Rutgers University.",
+            "start": 49.4,
+            "end": 57.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Egal is a portfolio manager and director of quantitative and derivatives strategies at Cohen& Steers.",
+            "start": 58.4,
+            "end": 65.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Prior to joining in 2007, he headed the quantitative and derivatives effort at Morgan Stanley.",
+            "start": 66.0,
+            "end": 71.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " He graduated from Wharton School of the University of Pennsylvania with a BS in Economics.",
+            "start": 72.0,
+            "end": 79.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Let's welcome the speakers to the stage.",
+            "start": 79.8,
+            "end": 81.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you.",
+            "start": 82.0,
+            "end": 82.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "Just kick it over here or there.",
+            "start": 100.072,
+            "end": 101.572,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        },
+        {
+            "text": " Alright, well thank you for joining us.",
+            "start": 103.772,
+            "end": 106.472,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's going to be a pretty interesting session.",
+            "start": 106.472,
+            "end": 108.272,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's always good to share work that we've done.",
+            "start": 109.872,
+            "end": 111.872,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I also want to thank Manny and Sid for their hard work in being able to focus on this project and really help move along a commodity framework.",
+            "start": 112.072,
+            "end": 126.572,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So with that, I'd say it's pretty timely.",
+            "start": 127.372,
+            "end": 129.672,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "to be able to talk about commodities because we're in a world where, you know, right now in Iran and Middle East",
+            "start": 130.24,
+            "end": 136.54,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " and the Straits of Hormuz, you've seen as a result of that oil move up by about 50% in the span of about two and a half, three weeks.",
+            "start": 137.64,
+            "end": 145.34,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so it just punctuates the issues that we have in commodities is that",
+            "start": 145.34,
+            "end": 149.54,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " you have significant returns, extreme returns, and part of the challenge is to be able to size your trade, to be able to look at risk and be able to evaluate opportunities in a way that",
+            "start": 149.94,
+            "end": 161.54,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " really respects the framework that commodities operate under.",
+            "start": 162.64,
+            "end": 166.64,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Overall goal here is there are many different techniques that are out there that folks are using to be able to build processes to look at risk models in alpha.",
+            "start": 169.34,
+            "end": 179.94,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " We're going to use a sheath-based neural network.",
+            "start": 180.24,
+            "end": 182.34,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This is a generalization of graphic neural networks.",
+            "start": 182.44,
+            "end": 184.64,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The nice thing that we're going to find out about this is that it's a pretty wholesome",
+            "start": 185.34,
+            "end": 188.54,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " technique that allows us to be able to really look at many different types of assets and how they're related in relationships to be able to really account for the risks that are embedded and endemic to commodities.",
+            "start": 189.24,
+            "end": 203.84,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's a supervised learning technique.",
+            "start": 204.54,
+            "end": 205.94,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The way you train it is you look at the past, you look at",
+            "start": 206.04,
+            "end": 208.64,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " what's transpired and you try to match it up basically with your model.",
+            "start": 209.04,
+            "end": 213.44,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So, objective here really is can we apply chief neural",
+            "start": 214.94,
+            "end": 219.14,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "the networks to be able to better forecast prices and to forecast risk.",
+            "start": 220.04,
+            "end": 224.84,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And really our focus is going to be on risk because that's really a key driver within commodities.",
+            "start": 224.94,
+            "end": 229.64,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And some of the things I'm going to go over is that when we look at commodities structure, you can see fat tails, asymmetric shocks, seasonality, geopolitical events on one hand, and then you have lead-lag relationships between macro variables,",
+            "start": 229.64,
+            "end": 244.34,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " correlations that are changing and shifting pretty quickly, and really dynamic cross-correlations between commodities and each other and macro.",
+            "start": 245.04,
+            "end": 254.84,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So with that, I'll maybe just step back and talk a little bit more about what commodities are.",
+            "start": 256.94,
+            "end": 261.44,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So commodities span energy, metals, agriculture, all the stuff that you see in the shelves that you're buying and you can touch.",
+            "start": 261.54,
+            "end": 269.84,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " These are real assets, and they really span a wide breadth of sectors.",
+            "start": 270.04,
+            "end": 275.44,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " There's a term structure in commodities, so when you think about trading a commodity,",
+            "start": 277.04,
+            "end": 281.44,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Like oil, there's a one month, two months, three months, six months future.",
+            "start": 281.524,
+            "end": 285.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " One year, it goes even out to ten years.",
+            "start": 285.724,
+            "end": 287.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so one of the unique aspects of commodities is that when you say you're going to buy oil, it's like, what are you going to buy in the front month?",
+            "start": 287.424,
+            "end": 295.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Are you going to buy three months from now?",
+            "start": 295.024,
+            "end": 296.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Where are you going to be in the term structure?",
+            "start": 296.324,
+            "end": 297.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And that's a unique part of the commodities world.",
+            "start": 297.724,
+            "end": 302.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And the term structure embeds expectations.",
+            "start": 303.824,
+            "end": 306.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's not like the S&P futures where the opportunity cost is interest rates.",
+            "start": 306.624,
+            "end": 310.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's interest rates, but it's storage costs, it's supply demand, it's hedging activities.",
+            "start": 311.424,
+            "end": 316.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So all of these create a set of expectations that are reflected in the term structure.",
+            "start": 316.424,
+            "end": 323.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Typically, though, when you see shocks, that happens really on the front end of the term structure because that's where the greatest demand is.",
+            "start": 323.624,
+            "end": 329.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Cross commodity and macro dependencies, you know, oil and inflation are integrated oil and the dollar.",
+            "start": 331.324,
+            "end": 336.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Integrated oil is based on the dollar in many respects.",
+            "start": 337.024,
+            "end": 339.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So when the dollar goes up, oil goes down and vice versa.",
+            "start": 339.724,
+            "end": 342.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Copper and growth.",
+            "start": 343.024,
+            "end": 343.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Copper is probably the most equity-like commodity, I would say, but it's linked to growth.",
+            "start": 344.024,
+            "end": 347.924,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " When you have greater growth, you have more need for copper pipes.",
+            "start": 347.924,
+            "end": 351.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so it's a benefactor of that.",
+            "start": 352.724,
+            "end": 354.824,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And then you have gold and safety and quality and flight to quality in part.",
+            "start": 355.024,
+            "end": 358.524,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Supply and demand is important.",
+            "start": 359.624,
+            "end": 361.724,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Weather is important, so you have an element in some respects of randomness there.",
+            "start": 361.904,
+            "end": 366.004,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Geopolitics, as we discussed, and also financial positioning, you have CTAs that are momentum, focus on momentum and trend followers, and that's part of the overall dynamic of positioning in commodities.",
+            "start": 366.704,
+            "end": 378.904,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And then you have seasonality.",
+            "start": 379.704,
+            "end": 380.804,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You know, to trade a commodity in the winter may be different than trading it in the summer.",
+            "start": 381.504,
+            "end": 386.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " That gas is a great example.",
+            "start": 386.604,
+            "end": 388.004,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And then in addition, you have technical trading, momentum curve, shape, CTAs, what I mentioned.",
+            "start": 388.804,
+            "end": 393.704,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so these are all, you can think of as many different dimensions.",
+            "start": 393.904,
+            "end": 396.804,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And it isn't as any one of these is more important than the other.",
+            "start": 396.804,
+            "end": 400.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " They're pretty much congruent in terms of their impact on the price of commodities.",
+            "start": 400.304,
+            "end": 404.304,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And this is what you're dealing with is a multidimensional world where you have to be able to size risk and forecast return.",
+            "start": 404.404,
+            "end": 411.504,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "On this chart, I put this chart here just to show some of the differences between commodities and equities.",
+            "start": 414.372,
+            "end": 419.772,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And if you look at the spread of returns, and this is looking at the last 10 years, the best and the worst returns for each of the commodities on the top left, and then right beneath that you have",
+            "start": 419.772,
+            "end": 433.272,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " selected S&P sectors, energy tech, etc.",
+            "start": 433.972,
+            "end": 436.872,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But if you look at the spread, it's pretty wide.",
+            "start": 436.872,
+            "end": 439.372,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You know, crude, it can be up, just up 50%, that just happened, down 25%, nat gas, up 65%, down, you know, 51%.",
+            "start": 440.072,
+            "end": 450.572,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And this is just in one month.",
+            "start": 453.472,
+            "end": 454.672,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " We're talking about one month monthly returns, the best and the worst.",
+            "start": 454.772,
+            "end": 457.272,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so when you look at the zip code that these are in, they're pretty wide.",
+            "start": 457.672,
+            "end": 461.972,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And compared certainly to their equity counterparts, maybe energy is a little bit more volatile, but then even tech and financial utilities are on a lower level in terms of overall breadth.",
+            "start": 462.672,
+            "end": 475.072,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "in terms of the dispersion in returns.",
+            "start": 475.312,
+            "end": 479.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Just look at 20-day returns.",
+            "start": 480.912,
+            "end": 483.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Again, looking at monthly returns, best and worst, similar story.",
+            "start": 483.912,
+            "end": 489.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This is commodities, equities.",
+            "start": 489.212,
+            "end": 492.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You'll see just that there's a different x-axis.",
+            "start": 492.512,
+            "end": 495.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You're measuring different y-axis as well.",
+            "start": 496.412,
+            "end": 498.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So here is a looking at volatility on commodities.",
+            "start": 499.212,
+            "end": 504.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And the interesting thing is some of these things, if you look at natural gas, it exceeds 80%.",
+            "start": 504.612,
+            "end": 513.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " 200%, I mean that's pretty big.",
+            "start": 514.612,
+            "end": 516.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So just think about a mean variance type of a framework where your vol is 200%.",
+            "start": 516.312,
+            "end": 521.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " That's really a non-starter.",
+            "start": 522.212,
+            "end": 523.712,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so again, part of the challenge with commodities is that you have significant volatilities across the board, it's not just natural gas, if you look at all the other",
+            "start": 524.312,
+            "end": 532.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " petroleum complex, heating oil, crude, all very, very high.",
+            "start": 533.112,
+            "end": 536.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Even you go to the precious metals, you've seen silver.",
+            "start": 537.612,
+            "end": 541.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Silver shares some of the qualities gold has in terms of safety, but it's also used in industrial uses, like 50-50.",
+            "start": 541.112,
+            "end": 547.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So you've seen 162% vol in silver.",
+            "start": 547.812,
+            "end": 552.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Copper, I said it was the most equity-like, but you see 99% of all, and that's in part because of the tariffs.",
+            "start": 552.712,
+            "end": 560.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so it gets back to geopolitical and monetary policy and fiscal policy.",
+            "start": 560.712,
+            "end": 564.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Policy and et cetera.",
+            "start": 565.312,
+            "end": 567.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But just to show you that the vols of these commodities are pretty steep.",
+            "start": 567.512,
+            "end": 571.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so when you think about managing a portfolio, this is what you have in the back of your mind.",
+            "start": 572.812,
+            "end": 577.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And by the way, these markets are open more or less seven days a week, 24 hours.",
+            "start": 577.912,
+            "end": 582.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And this is the corresponding S&P sectors.",
+            "start": 585.212,
+            "end": 587.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Again, volatilities are in the 11 to 20 range.",
+            "start": 587.212,
+            "end": 590.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Yes, every once in a while you see some big spikes in information technology, but certainly not at the same level as what you're seeing on the commodities.",
+            "start": 590.412,
+            "end": 599.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Okay, so here we're looking at seasonality.",
+            "start": 602.996,
+            "end": 606.196,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And, you know, seasonality is all about, let's say, natural gas, that the dynamic of natural gas in the winter may be different than the dynamic of natural gas",
+            "start": 606.296,
+            "end": 618.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " in the summer or in the spring or the fall.",
+            "start": 619.296,
+            "end": 622.496,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so you have the seasonality.",
+            "start": 622.896,
+            "end": 624.596,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And you can say, well, you know, we've seen seasonality before.",
+            "start": 624.596,
+            "end": 628.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You just, you know, you just de-seasonalize your time series and you can look at it.",
+            "start": 628.396,
+            "end": 632.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But it's not really as simple as that because it's not just that in the winter natural gas acts differently.",
+            "start": 632.796,
+            "end": 639.796,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's the fact that it's in a different regime.",
+            "start": 640.196,
+            "end": 642.896,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The volatility is different.",
+            "start": 643.496,
+            "end": 644.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The likelihood of extreme events is different.",
+            "start": 644.796,
+            "end": 647.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so here you see like a net gas in the fall, the green, you can see some pretty big dots there that signify large volatility spikes taking place.",
+            "start": 647.796,
+            "end": 660.596,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And this is really weather related.",
+            "start": 660.596,
+            "end": 663.296,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So if the weather is going to be colder than anticipated, then you see a lot more demand for net gas and that pushes up the price.",
+            "start": 663.396,
+            "end": 671.196,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And we've seen that recently in December, November, December of this past year.",
+            "start": 671.196,
+            "end": 675.696,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " We've seen it move up a lot and then we've seen it come back down.",
+            "start": 675.996,
+            "end": 679.396,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "more in February and March.",
+            "start": 679.976,
+            "end": 681.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But also cotton, you see variations in returns and volatility across the board, and that's because of harvesting, the rainfall, and its uncertainty around the harvest.",
+            "start": 681.776,
+            "end": 695.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so, you know, not just limited to natural gas, cotton, wheat, corn, all of them are susceptible to different regimes with respect to the seasons.",
+            "start": 695.776,
+            "end": 708.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " All right, and this is a chart that I like showing just to highlight that, you know, when we talk about commodities, I'll always say, you know, in commodities, every month you'll see a 100-year flood in a specific commodity.",
+            "start": 711.776,
+            "end": 724.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And that's kind of a running joke, but it's really true because if you look at this chart, you see heating oil in the past month up 50%, and WCR 42%, the high was, this is month to month, the high was 50.",
+            "start": 725.076,
+            "end": 738.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But then you had natural gas down 34, down 24, but then up 17, up 24.",
+            "start": 739.076,
+            "end": 746.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so it wiggles around.",
+            "start": 746.976,
+            "end": 748.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But then you have silver, 15% coffee, and coffee in a function of the Brazilian crop is that when you have droughts, then that affects the supply, and the supply then affects the overall price.",
+            "start": 748.476,
+            "end": 762.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And you've had some challenging trade for coffee in the last two years, and you see that that's reflected.",
+            "start": 762.876,
+            "end": 769.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "in the returns.",
+            "start": 770.776,
+            "end": 771.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So coffee's in there.",
+            "start": 772.476,
+            "end": 773.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And then you see sugar in there, December 2024.",
+            "start": 774.376,
+            "end": 779.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's not big, but sugar is also affected by crops.",
+            "start": 779.076,
+            "end": 784.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so, you know, in Brazil, when energy prices go up, then they can, you know, redirect",
+            "start": 784.176,
+            "end": 789.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " the cane to produce ethanol, and so that puts the stress on sugar.",
+            "start": 791.176,
+            "end": 795.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So you see how these are all interrelated in terms of geopolitics, weather conditions, crop conditions, etc.",
+            "start": 796.776,
+            "end": 802.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And I showed this chart just to highlight, is it showing the weekly correlations with macro variables, the break-even WTI oil against the 10-year break-even dollar credit in the S&P N.",
+            "start": 804.776,
+            "end": 818.176,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You know, it's hard to look at this graph.",
+            "start": 819.076,
+            "end": 820.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " There's so many lines.",
+            "start": 820.276,
+            "end": 821.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But I think the one thing you take away from this is that",
+            "start": 821.576,
+            "end": 823.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " it's very not stable, right?",
+            "start": 826.476,
+            "end": 829.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Very cyclical.",
+            "start": 829.776,
+            "end": 830.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You see that sometimes the correlations are high, at times they're low.",
+            "start": 830.576,
+            "end": 833.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I think if you look at the top line, which is the break-even in the last two years with",
+            "start": 834.576,
+            "end": 840.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " With inflation running high, it's been a little bit more even, i.e., the correlations between oil and inflation have been relatively stable in a world where you've had inflation.",
+            "start": 841.676,
+            "end": 852.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Prior to that, you had a lot more cyclicality.",
+            "start": 852.376,
+            "end": 854.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But I think the takeaway here is that with respect to macro variables,",
+            "start": 854.376,
+            "end": 859.176,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "A lot of cyclicality in oil.",
+            "start": 859.376,
+            "end": 862.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so that's another thing you need to be respectful of is that if you have a model, you need to know which one of these regimes you're in so that you can better calibrate it.",
+            "start": 862.376,
+            "end": 871.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This is an interesting chart that shows whether, looking at two different pairs of assets.",
+            "start": 874.676,
+            "end": 884.676,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So on the left hand you have energy and crude.",
+            "start": 885.476,
+            "end": 887.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And the question here is, I'm trying to forecast crude.",
+            "start": 887.776,
+            "end": 890.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Is energy give me a leg up?",
+            "start": 891.976,
+            "end": 893.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Can energy help me forecast crude?",
+            "start": 893.776,
+            "end": 895.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Can VIX help me forecast crude?",
+            "start": 895.676,
+            "end": 897.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Can copper help me?",
+            "start": 897.376,
+            "end": 898.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Can S&P help me?",
+            "start": 899.376,
+            "end": 900.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And what you see here, if you look at the chart on the left, is that energy and these correlations are not, even though they're small, 0.1, those small correlations are actually pretty material in the world of one.",
+            "start": 900.276,
+            "end": 914.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " What you see here is that generally over the past 20 years or so, energy has had a little bit of information content and be able to predict crude returns.",
+            "start": 915.076,
+            "end": 925.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Not so much crude and energy, but the left bars are showing you that energy is a leading indicator for oil, has been.",
+            "start": 925.676,
+            "end": 933.176,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Now I can share with you that that hasn't been the case in the last two years.",
+            "start": 933.376,
+            "end": 936.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "But if you look at VIX, WTIO, copper, and S&P, generally, if you look at these bars on the left-hand side and the right-hand side, they're more or less symmetric, which means there are regimes where VIX can lead crude and regimes where VIX can lag crude.",
+            "start": 939.452,
+            "end": 954.152,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Similarly with copper, there are regimes where copper leads and where copper lags.",
+            "start": 954.252,
+            "end": 958.752,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And I'd say the same thing for the S&P.",
+            "start": 958.752,
+            "end": 960.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's a broad market sentiment and maybe a reflection of the economy.",
+            "start": 960.752,
+            "end": 965.052,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So the takeaway here is, again, that we're...",
+            "start": 965.452,
+            "end": 967.552,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Regimes are changing, and so we have to be very mindful of that in the role of commodities so that we're calibrating our models effectively.",
+            "start": 969.8,
+            "end": 976.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Okay, so this is another chart showing factors and predictive powers of factors.",
+            "start": 978.9,
+            "end": 986.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So, you know, does momentum, is momentum a driver in terms of being able to deliver returns over time?",
+            "start": 986.8,
+            "end": 995.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So if you just traded momentum or you traded price reversal, you traded backward deviation, which is the shape of the curve, or speculative positioning, how much positioning is a long or short value, what's the price of all?",
+            "start": 995.2,
+            "end": 1007.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "today versus three years ago, or the time spread, how backwardated is a commodity versus where it was a month ago.",
+            "start": 1007.12,
+            "end": 1012.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So these are all factors that are traded very widely in the world of commodities.",
+            "start": 1012.32,
+            "end": 1016.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " There are probably billions of dollars on these factors.",
+            "start": 1016.12,
+            "end": 1018.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And when you look at how, whether they work or not, maybe backwardation on the top right seems to work more often.",
+            "start": 1019.12,
+            "end": 1025.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I like that.",
+            "start": 1026.02,
+            "end": 1026.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's a pretty good signal, but not all the time.",
+            "start": 1027.52,
+            "end": 1029.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Momentum is a lot of trend followers, as you may be aware, but it hasn't really worked a lot.",
+            "start": 1029.62,
+            "end": 1034.82,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I mean, it worked in 2016.",
+            "start": 1034.82,
+            "end": 1036.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I guess you see that working in the aftermath of shale a while, sort of moving up, and momentum did well.",
+            "start": 1037.22,
+            "end": 1043.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But again, the goal here is these are regimes.",
+            "start": 1043.02,
+            "end": 1046.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Sometimes they work, sometimes they don't.",
+            "start": 1046.02,
+            "end": 1047.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And you need to be able to leverage a regime model that can help you be able to identify where you're in.",
+            "start": 1048.02,
+            "end": 1055.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Okay, so I show this as sort of the macro signature of extreme oil moves.",
+            "start": 1056.62,
+            "end": 1062.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " This is just looking at oil across time and some of the biggest moves, just to highlight that they're different drivers.",
+            "start": 1062.72,
+            "end": 1069.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " There's demand recovery following the financial crisis.",
+            "start": 1069.12,
+            "end": 1071.52,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " There's supply glut in 2014, shale, OPEC, and supply cuts.",
+            "start": 1071.52,
+            "end": 1076.72,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And then you have the last, March 2022, Ukraine, and 2026, Iran.",
+            "start": 1077.12,
+            "end": 1081.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The geopolitical issues, wars break out.",
+            "start": 1081.52,
+            "end": 1084.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And I also point this out to highlight that even when you look at 2022 and 2026, they're not all the same.",
+            "start": 1084.82,
+            "end": 1091.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The wars aren't all the same.",
+            "start": 1091.22,
+            "end": 1092.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So in 2022, oil reacted, but net gas also was up.",
+            "start": 1092.52,
+            "end": 1097.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "But you don't see that same move in March 2026.",
+            "start": 1097.42,
+            "end": 1100.12,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Similarly with copper, which is the red, it's not moving up as much.",
+            "start": 1100.12,
+            "end": 1104.02,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And certainly, yeah, so in VIX as well, you know, it's not moving up as much as it would.",
+            "start": 1105.02,
+            "end": 1116.42,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So even within these two different regimes, while they may be similar, they're also very different.",
+            "start": 1117.22,
+            "end": 1123.22,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so, you know, your model may say, I don't know what to do at this point because I have never seen this type of",
+            "start": 1123.22,
+            "end": 1128.62,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Straight to farm, which gets closed, and things move up quickly.",
+            "start": 1128.688,
+            "end": 1131.188,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And that's a good thing to know in regime break, because then you will potentially flatten out your positions, or at least resize your positions to be able to account for that.",
+            "start": 1131.288,
+            "end": 1139.288,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Alright, so let's skip that and that, and then just jump to the category three.",
+            "start": 1141.288,
+            "end": 1147.788,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So what is category three generally?",
+            "start": 1147.788,
+            "end": 1149.588,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And without getting into the math, category three is a world where you're focusing on taking",
+            "start": 1149.688,
+            "end": 1157.088,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " assets and objects that are very different, oil and copper, oil, copper, and insulation, and being able to create a",
+            "start": 1158.788,
+            "end": 1166.088,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "a connection with them so that they're speaking the same language, right?",
+            "start": 1166.36,
+            "end": 1170.56,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So that, you know, so that when you're looking at copper and oil and inflation, that, you know, that you're looking at something that's normalized and that, you know, that they can share a common language such that ultimately the impact is,",
+            "start": 1170.56,
+            "end": 1185.26,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Can we create a consensus based on our signals that the market's going to go up or the market's going to go down or they're going to have an extreme movement or not?",
+            "start": 1185.76,
+            "end": 1195.56,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And so part of the goal, and I'll say this loosely speaking, is really in category three to create consensus in the models.",
+            "start": 1195.66,
+            "end": 1203.06,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So it's not democratic.",
+            "start": 1203.16,
+            "end": 1204.26,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " It's like a jury.",
+            "start": 1204.26,
+            "end": 1205.16,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " You know, in as much as you need to have a unanimous decision.",
+            "start": 1205.66,
+            "end": 1208.96,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And if everybody looked at the facts, right, and all these assets were accounting for all the facts in the same way, potentially you'd have more of a consensus than you would otherwise.",
+            "start": 1209.36,
+            "end": 1219.86,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I like to be able to look, use a metaphor here, which is,",
+            "start": 1220.66,
+            "end": 1223.76,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " coming from sociology.",
+            "start": 1225.46,
+            "end": 1226.56,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "So nobody thought that I'd be talking about sociology in a commodities talk.",
+            "start": 1226.74,
+            "end": 1230.94,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " But generally, you know, Irving Goffman, who is a very well-renowned sociologist, came up with a perspective called frame analysis.",
+            "start": 1231.04,
+            "end": 1238.64,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And the goal there is, and the objective is, that everybody, even everyone here looking at this screen, has a different...",
+            "start": 1238.74,
+            "end": 1245.44,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Version of translating what they're seeing in some respects a reality that's coming through that maybe you look at different and so I'm borrowing this to show that each actor here interprets the same market events with different lens",
+            "start": 1245.94,
+            "end": 1260.34,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " and what category three tries to do is it tries to account for that normalize for that and then be able to put everyone on a sort of a level playing field so they're all",
+            "start": 1261.34,
+            "end": 1269.74,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "the same thing and talking the same language.",
+            "start": 1270.264,
+            "end": 1272.264,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So the economist who's looking at macro, the political analyst, the geopolitical research analyst on the fundamental quantum meteorologist, weather trader, the goal is",
+            "start": 1272.464,
+            "end": 1281.364,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " I'll go back to the goal here is that, and what the process is going to do is try to create a language that they all share such that they can be nudged one way or another",
+            "start": 1288.464,
+            "end": 1301.064,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " so that they can arrive at a unanimous outcome instead of saying, okay, well, the macroeconomist thinks that it wells down.",
+            "start": 1301.564,
+            "end": 1308.964,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The geopolitical analyst thinks that there's too much risk, and so that's potentially more downside risk.",
+            "start": 1309.264,
+            "end": 1315.664,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The fundamentalist likes what he sees or what they see.",
+            "start": 1315.664,
+            "end": 1318.164,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So the goal here is to create consensus.",
+            "start": 1318.464,
+            "end": 1321.464,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " And if you have a common language, there's a greater likelihood of creating consensus.",
+            "start": 1321.764,
+            "end": 1326.364,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Category 3 gets that is to create that commonality, that common language across different,",
+            "start": 1328.664,
+            "end": 1334.264,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " in many cases, very different, disparate areas and sort of create that common language so that you can end up with a framework that you can look at to create this type of",
+            "start": 1336.364,
+            "end": 1346.664,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": "Okay, I'm going to skip this and maybe turn it over to Manny, who's really done a lot of the heavy lifting and implementing category theory and the Sheaf neural networks.",
+            "start": 1349.332,
+            "end": 1358.932,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Here you go.",
+            "start": 1361.032,
+            "end": 1361.532,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Let's skip ahead a little bit here.",
+            "start": 1362.632,
+            "end": 1364.432,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " This slides will be up within that 72 hour period.",
+            "start": 1372.232,
+            "end": 1376.432,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So much of this work was involved in all of the commodities, break evens, rates, other macro variables, as well as weather.",
+            "start": 1377.232,
+            "end": 1386.832,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So this is a truly multimodal graph representation and we're gonna go into that momentarily.",
+            "start": 1386.832,
+            "end": 1392.332,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We have about 20 years worth of data incorporating liquid security fits.",
+            "start": 1392.932,
+            "end": 1397.332,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "And we're trying to identify those key inputs using traditional statistical techniques and then feed them into the different components of the graph itself.",
+            "start": 1402.692,
+            "end": 1412.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so, like I just said, we have many different complex objects here.",
+            "start": 1413.392,
+            "end": 1418.892,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We have the commodities, the macro signals, weather, and then even the portfolio allocations.",
+            "start": 1418.892,
+            "end": 1424.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And we need rules to connect those objects in a consistent way.",
+            "start": 1424.492,
+            "end": 1430.292,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that's what we have.",
+            "start": 1430.392,
+            "end": 1431.192,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "Sheep, no networks can do.",
+            "start": 1432.352,
+            "end": 1433.952,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We actually do care about how we compose them together.",
+            "start": 1434.952,
+            "end": 1438.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " How do those transformations that we may impose on the data combine to one global allocation?",
+            "start": 1438.652,
+            "end": 1444.352,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that's what we're trying to do is have a clean language for that structure.",
+            "start": 1444.652,
+            "end": 1448.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we might have a commodity node, which would be like,",
+            "start": 1448.852,
+            "end": 1453.152,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " and we could take many of the features that Yigal was describing before, do some transformations within that node, and then the features themselves might be quite different from one commodity to the next, and of course, to weather.",
+            "start": 1454.252,
+            "end": 1468.552,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And we now, with a SheafNode network, need to have some sort of language by which we can transfer information",
+            "start": 1469.452,
+            "end": 1476.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "I'm going to get into the architecture momentarily, but we basically map them to a common vector space.",
+            "start": 1479.676,
+            "end": 1484.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Before I dive even deeper, I think we should start with the plain English dictionary.",
+            "start": 1487.876,
+            "end": 1491.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so let's kind of start first with what a node is.",
+            "start": 1493.076,
+            "end": 1496.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's really that one source of information like oil, rates, or weather.",
+            "start": 1496.876,
+            "end": 1499.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " A stock is that packet of information that's stored in that one node.",
+            "start": 1500.776,
+            "end": 1505.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's those node-like features.",
+            "start": 1505.076,
+            "end": 1506.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " A map is how we transform the data from one representation to another.",
+            "start": 1507.676,
+            "end": 1512.076,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And chief node networks have this other special component, which is something called a restriction map.",
+            "start": 1512.876,
+            "end": 1517.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That's a learned translation rule between the connected nodes.",
+            "start": 1518.376,
+            "end": 1522.576,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " In other words, you might have some component of your commodity that's relevant to another commodity, but another component in that first commodity that's not.",
+            "start": 1522.676,
+            "end": 1532.476,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And you want to learn what information should be transferred and what should not.",
+            "start": 1532.576,
+            "end": 1536.276,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that's what a restriction map at a high level can learn.",
+            "start": 1536.576,
+            "end": 1540.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "very nuanced, very particular information.",
+            "start": 1542.136,
+            "end": 1546.136,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Ashif is that way to connect that local information together into one global structure.",
+            "start": 1547.236,
+            "end": 1552.736,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And we also looked at co-homology to detect when that global picture really stops fitting together.",
+            "start": 1553.236,
+            "end": 1560.036,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " What you saw earlier with what Yigal was saying is commodities is a totally different animal compared to the equity markets.",
+            "start": 1561.536,
+            "end": 1568.636,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And you have those 100-year floods every month.",
+            "start": 1568.636,
+            "end": 1571.936,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " How can you try to create some sense of a global consistency or even a local consistency within your model?",
+            "start": 1572.836,
+            "end": 1581.536,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And if you at least have some way of measuring the consistency via things",
+            "start": 1582.036,
+            "end": 1587.136,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "have some hope of detecting these things and understanding the temporal nature of these graphs.",
+            "start": 1589.252,
+            "end": 1596.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So to dive one step deeper into what a stock is, it's that information bundle at each node.",
+            "start": 1599.152,
+            "end": 1604.752,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so every node needs its local state.",
+            "start": 1605.152,
+            "end": 1607.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's not just a single number.",
+            "start": 1607.252,
+            "end": 1608.752,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's a vector representation.",
+            "start": 1608.752,
+            "end": 1610.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That commodity stock can summarize the recent price per gator, momentum, aggregation, et cetera, and other factors.",
+            "start": 1611.552,
+            "end": 1617.152,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And for macro nodes, it can be things like credit.",
+            "start": 1617.652,
+            "end": 1621.752,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "And then we had a weather stock that can summarize the shape of the recent weather forecast pattern.",
+            "start": 1624.936,
+            "end": 1630.336,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Because as you know, as you heard of earlier, that gas is highly dependent on things like weather.",
+            "start": 1631.136,
+            "end": 1637.036,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Like when in the East Coast, you had weather in the teens or single digits about a month ago.",
+            "start": 1637.036,
+            "end": 1643.136,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Those kinds of being able to forecast that ahead of time can give you a little bit of an edge.",
+            "start": 1643.336,
+            "end": 1647.736,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so with these stocks, this is how those different data types can enter into that same graph.",
+            "start": 1648.936,
+            "end": 1654.236,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And you have them in a uniform way.",
+            "start": 1654.736,
+            "end": 1657.236,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That's what we're talking about having them talk.",
+            "start": 1657.236,
+            "end": 1660.336,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "in a common language.",
+            "start": 1662.324,
+            "end": 1663.324,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so that chief neural network is going to turn those local cues into a global view.",
+            "start": 1665.124,
+            "end": 1671.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so if each node is carrying its own information, the restriction map is learning how the information can be shared and translated.",
+            "start": 1671.224,
+            "end": 1678.624,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " The chief neural network then can take those local views and map them into a global view, and hopefully we get some consistent.",
+            "start": 1678.924,
+            "end": 1686.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Market and coherent market picture, or at least the diagnostics by which to measure that.",
+            "start": 1686.624,
+            "end": 1691.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that matters because we have these market relationships, they change over time, they're highly dynamic, and we want to make sure that we can really capture the true essence and nature of the problem, which is where, you know, hopefully you're seeing the Sheaf Network actually adds",
+            "start": 1692.124,
+            "end": 1706.424,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " a unique twist to other ways where you might simply look at individual commodities by themselves without looking at the big picture and you're missing",
+            "start": 1706.824,
+            "end": 1716.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "some interbrain information.",
+            "start": 1719.012,
+            "end": 1720.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So going back to these node state vectors, you can see here, so if we assume we have an oil commodity with these particular",
+            "start": 1722.212,
+            "end": 1730.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " components in the node, we have backwardation, time spread, momentum, reversal value, and",
+            "start": 1731.012,
+            "end": 1736.312,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " COT, you can see how under different regimes, what those restriction maps can learn and pass through to other nodes.",
+            "start": 1736.812,
+            "end": 1746.112,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Similarly for net gas, even across that, we want to be able to learn what those",
+            "start": 1746.612,
+            "end": 1752.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " node state vectors and information transfer is over time and dynamically adjust them and have our chief neural network dynamically evolve over time to capture these changing regions.",
+            "start": 1754.012,
+            "end": 1764.812,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "And so when you really look at it with that chief-based graph and all network, these restriction maps can actually open and close depending on the node state.",
+            "start": 1767.684,
+            "end": 1777.984,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So on the left-hand side, you're seeing a case where you have oil connected to the break-even.",
+            "start": 1778.084,
+            "end": 1784.884,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's a very strong...",
+            "start": 1785.584,
+            "end": 1787.584,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Also with nat gas and copper.",
+            "start": 1788.584,
+            "end": 1790.184,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And you can also see the reverse edges might not be necessarily as strong.",
+            "start": 1790.484,
+            "end": 1793.684,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And under a different regime that you saw in just this past month, you can see that that now information transfer would be cut off because that relationship is now broken.",
+            "start": 1794.584,
+            "end": 1805.684,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That's a big difference compared to graph neural networks, where you're always passing those pairwise relationships.",
+            "start": 1806.184,
+            "end": 1814.784,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " You're always able to talk to your neighbor.",
+            "start": 1814.884,
+            "end": 1817.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Where chief neural networks are able to learn whether information should be shared or not, and you get much more precise relationship metrics.",
+            "start": 1818.084,
+            "end": 1829.784,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so chief neural networks are a form of graph neural networks, but they're much more expressive.",
+            "start": 1830.784,
+            "end": 1835.284,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "Now, weather forecasting was a fun component of this work with TIGAL.",
+            "start": 1838.5,
+            "end": 1843.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So weather affects agriculture, energies, transportation, supply chains, and having that signal,",
+            "start": 1844.6,
+            "end": 1852.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " you know, just averaging, looking at temperature averages, really misses the wild swings that we can often have from week to week, where some weather front might be crossing over the United States.",
+            "start": 1853.1,
+            "end": 1866.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we actually did weather forecasting where we did, we turned the weather fields into compact structural summaries, and we actually connected that as its own node into this commodity graph.",
+            "start": 1866.6,
+            "end": 1877.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " The idea being, via these restriction maps, we can learn which commodities are affected by weather and have that be affected over time.",
+            "start": 1878.1,
+            "end": 1888.6,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we think that weather could actually be a first grade investment signal into this particular process for this problem.",
+            "start": 1889.5,
+            "end": 1896.7,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we also looked at, we took this a step further, I'm not going to go very deep on this, we looked at zigzag persistence, this is taken from topological data analysis, where we're trying to",
+            "start": 1897.3,
+            "end": 1910.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " start with a sequence of these weather snapshots, so every day we're forecasting the weather roughly a month ahead.",
+            "start": 1912.7,
+            "end": 1919.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And if you treat the United States as a graph, you basically have a",
+            "start": 1920.4,
+            "end": 1925.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "that changes over that month.",
+            "start": 1926.8,
+            "end": 1928.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And you need a compact representation that can capture how those different parts of the weather forecast can change as you progress through that month.",
+            "start": 1929.3,
+            "end": 1940.4,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That way you can incorporate that as a feature.",
+            "start": 1940.7,
+            "end": 1942.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we took work from Purdue,",
+            "start": 1943.5,
+            "end": 1946.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Professor Tamal Day, him and his graduate students developed a very brand new technique called zigzag generalized rank invariant landscapes as a way to convert",
+            "start": 1946.8,
+            "end": 1959.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " weather into a compressed state vector.",
+            "start": 1959.6,
+            "end": 1962.3,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so in this architecture,",
+            "start": 1963.6,
+            "end": 1965.5,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " These features become structural weather memory that can flow through the learned restriction maps and onto the commodity nodes.",
+            "start": 1966.8,
+            "end": 1973.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that enables a more durable pattern change.",
+            "start": 1975.2,
+            "end": 1977.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's not just noisy from one day, from a spike to high temperatures or low temperatures, maybe perhaps like we're seeing this past week here at the conference.",
+            "start": 1977.8,
+            "end": 1986.2,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "with the temperatures we've been having.",
+            "start": 1986.652,
+            "end": 1987.852,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so here's what we did.",
+            "start": 1988.952,
+            "end": 1990.352,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We used our NVIDIA's Earth 2.",
+            "start": 1990.452,
+            "end": 1993.152,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We used DLE Sim.",
+            "start": 1993.252,
+            "end": 1994.552,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That's the deep learning Earth system model inside of Earth 2 to generate 22 trading day, or roughly one month ahead, forecasts.",
+            "start": 1996.152,
+            "end": 2004.552,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " On two meter temperature high, we used 20 years of forecast at six hour intervals.",
+            "start": 2005.052,
+            "end": 2011.052,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We then aggregated them into min, max, and mean, and actually computed the heating and cooling days associated that across the continental United States.",
+            "start": 2011.052,
+            "end": 2021.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Further make this, again, a deeper representation, we thought to ourselves, well, maybe perhaps for things like natural gas, it might depend on where you are in the United States.",
+            "start": 2023.552,
+            "end": 2034.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Perhaps dense, much farther than the areas might consume more natural gas than in the Midwest.",
+            "start": 2034.752,
+            "end": 2040.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So we actually did a weighting by population density.",
+            "start": 2040.252,
+            "end": 2042.952,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Using GPWV4 annual data.",
+            "start": 2044.052,
+            "end": 2046.552,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "with linear interpolation through the dates.",
+            "start": 2046.872,
+            "end": 2049.572,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that way we can overlay the weather forecast on top of population density together.",
+            "start": 2049.972,
+            "end": 2055.472,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then we applied the zigzag persistence technique that I described in the previous slide to compress all of that for a given day down to a compressed vector that can be incorporated.",
+            "start": 2055.972,
+            "end": 2069.072,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then we, of course, did that across the 20 days.",
+            "start": 2069.072,
+            "end": 2071.172,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so the real big takeaway is that if you can take weather forecasting and incorporate it into your graphs,",
+            "start": 2071.672,
+            "end": 2078.772,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "You can have a compressed representation and hopefully detect these regime shifts which can impact energy, agriculture, livestock, commodity prices, and have those spatial patterns of stress",
+            "start": 2079.668,
+            "end": 2092.768,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " more often than just a single national average or local averages.",
+            "start": 2093.368,
+            "end": 2096.868,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so the other neat thing that we did in this work compared to many traditional things",
+            "start": 2099.168,
+            "end": 2105.568,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " is that we actually forecasted the expected returns in the covariance matrix directly, whereas many alternative ways they actually will try to forecast returns",
+            "start": 2107.368,
+            "end": 2118.068,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "and then from that tried to produce the mean returns and the covariances.",
+            "start": 2118.224,
+            "end": 2123.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So that was a pretty unique contribution from this work.",
+            "start": 2123.624,
+            "end": 2128.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " It's more actually decision aligned than just predicting the intermediate quantities and then only later trying to forecast or trying to do the portfolio optimization.",
+            "start": 2128.624,
+            "end": 2137.224,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So we're trying to make that into a cohesive problem that we can solve.",
+            "start": 2138.724,
+            "end": 2143.124,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then we actually then send that into the portfolio allocation.",
+            "start": 2143.624,
+            "end": 2149.024,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "So related to why we did this, by forecasting the covariance matrix directly, is that we actually have differential end-to-end optimization.",
+            "start": 2153.2,
+            "end": 2162.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So when you experience these painful drawdowns, you don't want to just look at only variance in the classical way.",
+            "start": 2164.4,
+            "end": 2172.8,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We also look at conditional drawdown at risk, which focuses on the average of the worst tail.",
+            "start": 2173.3,
+            "end": 2178.9,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then that lets the model learn downside control and not just the average case accuracy.",
+            "start": 2180.1,
+            "end": 2186.1,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And that way we can optimize this in a gradient-based training.",
+            "start": 2186.4,
+            "end": 2191.0,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "To put it all together, we have a full end-to-end training that takes the raw features, we compute some intermediate node representations within each part of the graph.",
+            "start": 2192.476,
+            "end": 2202.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Those get passed to these stocks, which we also want to learn via these restriction maps what information gets transferred.",
+            "start": 2204.376,
+            "end": 2212.976,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We incorporated weather, and then from there we're directly forecasting the covariance matrix and the returns.",
+            "start": 2214.276,
+            "end": 2222.376,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And from that we actually did a top-based selection of not just all commodities, we wanted a sub-selection of that.",
+            "start": 2223.676,
+            "end": 2231.776,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then from that we did this conditional drawdown at risk.",
+            "start": 2232.276,
+            "end": 2235.176,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " That is fully ended.",
+            "start": 2235.876,
+            "end": 2236.876,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "and differential, which compared to many of the techniques applied today, where they view that first process as kind of your alpha signal generation process, and the second part is the portfolio optimization process.",
+            "start": 2237.048,
+            "end": 2251.648,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And here's a sampling of the commodity graph structure.",
+            "start": 2252.548,
+            "end": 2255.448,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Because we have many different commodities in different nodes, I subsampled that graph so that you can see some of the connectivity there.",
+            "start": 2256.048,
+            "end": 2263.248,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And we'll move forward with how we did the first.",
+            "start": 2264.248,
+            "end": 2268.148,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "So we use CUDA-Q, which is an NVIDIA library for doing quantum simulations.",
+            "start": 2269.712,
+            "end": 2275.912,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And this is an example of the VQE circuit that we did for the variational quantum eigensolver.",
+            "start": 2276.212,
+            "end": 2282.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And we estimate the returns and risk allocations, do those top K, and then do that single optimization objective.",
+            "start": 2282.712,
+            "end": 2288.512,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then we actually form started from a classical network, and then you fed that into the quantum optimization, and this did multiple GTOs.",
+            "start": 2289.012,
+            "end": 2297.212,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So we actually did also a number of contributions to speed up and accelerate, and these are a number of libraries, Signatory and DC Grill.",
+            "start": 2297.912,
+            "end": 2306.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We actually accelerated to make them much faster on GPUs.",
+            "start": 2307.112,
+            "end": 2310.012,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " As well and we did each sweep of this work consumed about 10 hours on a one rack of GB 200 NVL 72 or GB 300 NVL 72 and that doesn't count the weather processing.",
+            "start": 2310.712,
+            "end": 2322.612,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " I'm going to quickly talk about the T-SNE plot and you see here on the bottom in those blue you see all of the metals kind of",
+            "start": 2323.712,
+            "end": 2332.412,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "located together, even close to gold, and almost GC.",
+            "start": 2332.66,
+            "end": 2337.26,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then on the top, you'll see those red nodes connected together.",
+            "start": 2337.66,
+            "end": 2342.16,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " You have oil, nat gas, and others all close.",
+            "start": 2342.26,
+            "end": 2346.16,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And conveniently enough, you actually see the weather topology node also.",
+            "start": 2346.26,
+            "end": 2351.86,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Collected pretty close together so you see that there's some relationship between those nodes.",
+            "start": 2352.06,
+            "end": 2355.76,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so this was all learned directly from the graph itself.",
+            "start": 2356.56,
+            "end": 2360.06,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We actually look at the risk contribution of our model by sector.",
+            "start": 2361.66,
+            "end": 2365.76,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " You can see that compared to BCOM, which we have as a relative benchmark, the energy component is about 29%, which is actually a little bit lower.",
+            "start": 2365.76,
+            "end": 2376.66,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we try to minimize the risk on the downside.",
+            "start": 2376.96,
+            "end": 2380.36,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then here's an example of the 12-month information ratio versus the ECOM.",
+            "start": 2381.46,
+            "end": 2386.86,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so we have an information ratio, and what I'm showing you here, about 0.3.",
+            "start": 2387.56,
+            "end": 2391.06,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " So it's pretty modest.",
+            "start": 2391.46,
+            "end": 2392.46,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " But you can see that we did penalize ourselves in that number because when we started this roughly 20 years ago, that first, we basically started the model right before the financial crisis.",
+            "start": 2392.86,
+            "end": 2403.36,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so that was that initial drop.",
+            "start": 2403.76,
+            "end": 2405.36,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so the model paid a learning tax for that.",
+            "start": 2405.36,
+            "end": 2407.26,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And then we learned the regime sensitivity through the 2015.",
+            "start": 2407.86,
+            "end": 2411.96,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "We had a COVID drop, which we can take away as saying, well, we need to consider another node to capture those kinds of effects and moving forward.",
+            "start": 2414.852,
+            "end": 2424.352,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And so I'm going to skip over this and just talk about the overall takeaways.",
+            "start": 2424.352,
+            "end": 2428.252,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We have really an N10 differential process that integrates price, macro, and weather signals.",
+            "start": 2429.052,
+            "end": 2434.052,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " We detected stress and structural change, not just return forecasts.",
+            "start": 2434.752,
+            "end": 2438.452,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And we really have a modular framework for these multimodal investment decisions, which we feel is what's coming down the line.",
+            "start": 2438.852,
+            "end": 2445.552,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": "from the pipe for the financial services industry, and we can actually have explainable portfolio decisions.",
+            "start": 2445.752,
+            "end": 2451.752,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " And do you want to have the last word?",
+            "start": 2452.652,
+            "end": 2454.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_4"
+        },
+        {
+            "text": " Yeah, so I think that, thank you for the work.",
+            "start": 2454.952,
+            "end": 2458.152,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " The work is in development, we're expanding it, but it's, as I mentioned, you come out as a very unique asset class in this type of a framework where you're parsing together many different areas and trying to come up with a unified view is pretty critical.",
+            "start": 2458.152,
+            "end": 2472.652,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " So thank you for your time.",
+            "start": 2473.652,
+            "end": 2474.752,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_3"
+        },
+        {
+            "text": " Thanks so much, Manny and Eagle.",
+            "start": 2481.952,
+            "end": 2483.852,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " I think we are out of time.",
+            "start": 2483.952,
+            "end": 2486.152,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": "questions for this session, but they will definitely be around and feel free to talk to them individually for the questions.",
+            "start": 2486.98,
+            "end": 2493.68,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you again.",
+            "start": 2494.18,
+            "end": 2494.78,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_1"
+        },
+        {
+            "text": " Thank you for joining.",
+            "start": 2496.98,
+            "end": 2497.88,
+            "type": "transcription_segment",
+            "speaker_id": "speaker_2"
+        }
+    ],
+    "type": "transcription.done"
+}
